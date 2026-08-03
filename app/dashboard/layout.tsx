@@ -3,10 +3,24 @@
 import Image from 'next/image';
 import React from 'react';
 import clsx from 'clsx';
-
+import { usePathname } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
+import Link from 'next/link';
+
+const links = [
+  {
+    name: 'Home',
+    href: '/dashboard' },
+  {
+    name: 'Menu',
+    href: '/dashboard/menu'
+  },
+  { name: 'Checkout',
+    href: '/dashboard/checkout'
+  }
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   let [collapse, setCollapse] = React.useState(true);
@@ -14,6 +28,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   function collapseMenuClicked() {
     setCollapse(!collapse);
   }
+
+  const pathname = usePathname();
+  console.log("dbg pathname ", pathname)
 
   return (
     <>
@@ -68,21 +85,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               'collapse': collapse
             })}>
             <ul className="navbar-nav m-auto">
-                <li className="nav-item">
-                    <a className="nav-link active" aria-current="page">Home</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" aria-current="page">Menu</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="about.html">Checkout</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="menu.html">Order</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" href="chefs.html">Queue</a>
-                </li>
+              {links.map((link) => {
+                return <>
+                  <li className="nav-item">
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        className={clsx("nav-link", {"active": link.href.toLowerCase() === pathname.toLowerCase()})} aria-current="page">
+                        {link.name}
+                      </Link>
+                  </li>                
+                </>
+              })}
+
+              <li className="nav-item">
+                  <a className="nav-link" href="menu.html">Order</a>
+              </li>
+              <li className="nav-item">
+                  <a className="nav-link" href="chefs.html">Queue</a>
+              </li>
             </ul>
             <ul className="menu_icon d-flex flex-wrap">
                 <li>
