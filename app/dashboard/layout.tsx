@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 
-export default function Home() {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   let [collapse, setCollapse] = React.useState(true);
 
   function collapseMenuClicked() {
@@ -69,7 +69,10 @@ export default function Home() {
             })}>
             <ul className="navbar-nav m-auto">
                 <li className="nav-item">
-                    <a className="nav-link active" aria-current="page" href="index.html">Menu</a>
+                    <a className="nav-link active" aria-current="page">Home</a>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link" aria-current="page">Menu</a>
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" href="about.html">Checkout</a>
@@ -91,6 +94,8 @@ export default function Home() {
             </div>
         </div>
       </nav>
+
+      {children}
     </>
   );
 }
