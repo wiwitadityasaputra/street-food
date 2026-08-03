@@ -1,16 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,9 +14,35 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <link rel="stylesheet" href="css/all.min.css"></link>
+        <link rel="stylesheet" href="css/bootstrap.min.css"></link>
+        <link rel="stylesheet" href="css/slick.css"></link>
+        <link rel="stylesheet" href="css/nice-select.css"></link>
+        <link rel="stylesheet" href="css/custom_spacing.css"></link>
+        <link rel="stylesheet" href="css/venobox.min.css"></link>
+        <link rel="stylesheet" href="css/animate.css"></link>
+        <link rel="stylesheet" href="css/jquery.exzoom.css"></link>
+        <link rel="stylesheet" href="css/style.css"></link>
+        <link rel="stylesheet" href="css/responsive.css"></link>
+      </head>
+      <body>
+        {children}
+        <script src="js/jquery-3.6.0.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/Font-Awesome.js"></script>
+        <script src="js/slick.min.js"></script>
+        <script src="js/isotope.pkgd.min.js"></script>
+        <script src="js/jquery.waypoints.min.js"></script>
+        <script src="js/jquery.countup.min.js"></script>
+        <script src="js/jquery.nice-select.min.js"></script>
+        <script src="js/venobox.min.js"></script>
+        <script src="js/sticky_sidebar.js"></script>
+        <script src="js/wow.min.js"></script>
+        <script src="js/jquery.exzoom.js"></script>
+        <script src="js/main.js"></script>
+      </body>
     </html>
   );
 }
