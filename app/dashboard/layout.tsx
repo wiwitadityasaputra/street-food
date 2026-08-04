@@ -86,27 +86,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}>
             <ul className="navbar-nav m-auto">
               {links.map((link) => {
-                return <>
-                  <li className="nav-item">
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        className={clsx("nav-link", {"active": link.href.toLowerCase() === pathname.toLowerCase()})} aria-current="page">
-                        {link.name}
-                      </Link>
-                  </li>                
-                </>
+                return (<li className="nav-item" key={link.name}>
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={clsx("nav-link", {"active": link.href.toLowerCase() === pathname.toLowerCase()})} aria-current="page">
+                      {link.name}
+                    </Link>
+                  </li>);
               })}
 
-              <li className="nav-item">
+              <li className="nav-item" key="order">
                   <a className="nav-link" href="menu.html">Order</a>
               </li>
-              <li className="nav-item">
+              <li className="nav-item" key="queue">
                   <a className="nav-link" href="chefs.html">Queue</a>
               </li>
             </ul>
             <ul className="menu_icon d-flex flex-wrap">
-                <li>
+                <li key="account">
                     <a href="dashboard.html">
                       <FontAwesomeIcon icon={faUser} size="sm" />
                     </a>
