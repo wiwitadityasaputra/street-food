@@ -1,26 +1,12 @@
-export default function Menu() {
-    return (<>
-        <section  className="menu mt_95 xs_mt_65">
-            <div  className="container">
-                <div  className="row">
-                    <div  className="col-xl-6 col-lg-6 wow fadeInUp" data-wow-duration="1s">
-                        <div  className="section_heading mb_25">
-                            <h4>food Menu</h4>
-                            <h2>Popular Delicious Foods</h2>
-                        </div>
-                    </div>
-                    <div  className="col-xl-6 col-lg-6 wow fadeInUp" data-wow-duration="1s">
-                        <div  className="menu_filter d-flex flex-wrap">
-                            <button  className=" active" data-filter="*">all menu</button>
-                            <button data-filter=".burger">burger</button>
-                            <button data-filter=".chicken">chicken</button>
-                            <button data-filter=".pizza">pizza</button>
-                            <button data-filter=".dresserts">dresserts</button>
-                        </div>
-                    </div>
-                </div>
+import FoodMenu from "@/app/ui/menu/food-menu";
 
-                <div  className="row grid">
+export default function Menu() {
+    return (
+        <section className="menu mt_95 xs_mt_65">
+            <div className="container">
+                <FoodMenu />
+
+                <div className="row grid">
                     <div  className="col-xxl-3 col-sm-6 col-lg-4 chicken wow fadeInUp" data-wow-duration="1s">
                         <div  className="menu_item">
                             <div  className="menu_item_img">
@@ -232,5 +218,5 @@ export default function Menu() {
                 </div>
             </div>
         </section>
-    </>);
+    );
 }
