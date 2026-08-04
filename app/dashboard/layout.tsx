@@ -4,8 +4,6 @@ import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 import DashboardNav from '../ui/dashboard-nav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-
-
   return (
     <>
       <section className="topbar">
@@ -39,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </section>
 
       <DashboardNav />
-
+      
       {children}
     </>
   );
