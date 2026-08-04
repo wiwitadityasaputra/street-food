@@ -10,9 +10,8 @@ export default async function Menu(props: {
     const searchParams = await props.searchParams;
     const cuisine = (searchParams?.cuisine) || DEFAULT_CUISINE;
     return (
-        // style={{paddingLeft: "3vw", paddingRight: "3vw"}}
         <section className="section-menu">
-            <div>
+            <div className="container">
                 <Cuisines />
                 <FoodList cuisine={cuisine} />
             </div>
