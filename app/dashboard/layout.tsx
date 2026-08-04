@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="container">
             <a className="navbar-brand" href="index.html">
                 <Image
-                  src="/images/logo.png"
+                  src="/images/logo3.png"
                   width={1000}
                   height={760}
                   className="img-fluid"
