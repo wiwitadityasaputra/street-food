@@ -39,6 +39,7 @@ export default function DashboardNav() {
                   height={760}
                   className="img-fluid"
                   alt="Screenshots of the dashboard project showing desktop version"
+                  unoptimized
                 />
             </a>
 

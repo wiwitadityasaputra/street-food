@@ -53,6 +53,7 @@ export default async function FoodList(props: FoodListProps) {
                                     width={344}
                                     height={220}
                                     alt={cuisine.name}
+                                    unoptimized
                                 />
                             </div>
                             <div className="menu_item_text">
