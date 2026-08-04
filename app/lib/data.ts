@@ -24,9 +24,9 @@ export async function fetchCuisines(cuisine?: string): Promise<Cuisines[]> {
     try {
         let data;
         if (cuisine && allowedCuisine(cuisine)) {
-            data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate FROM cuisines WHERE cuisine = ${cuisine}::cuisine_type ORDER BY rate DESC`;
+            data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE cuisine = ${cuisine}::cuisine_type ORDER BY rate DESC`;
         } else {
-            data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate FROM cuisines ORDER BY rate DESC`;
+            data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines ORDER BY rate DESC`;
         }
         return data;
     } catch (error) {

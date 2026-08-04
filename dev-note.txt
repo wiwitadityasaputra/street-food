@@ -19,7 +19,6 @@ CREATE TABLE "cuisines" (
   "rate" real NOT NULL
 );
 
-
 INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Burger', 'western', 389, 4.2, 'A burger is a popular sandwich made of a cooked ground meat patty placed inside a sliced bread bun.');
 INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Kebab', 'western', 330, 4.1, 'A kebab is a popular dish of roasted or grilled meat, shish kebab, and döner kebab. It comes from the Middle East and uses meats like lamb, beef, or chicken.');
 INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Hotdog', 'western', 284, 4.3, 'A hot dog is a cooked, grilled, or steamed sausage—typically a wiener or frankfurter—served inside a partially sliced soft bread bun.');

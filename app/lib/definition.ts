@@ -5,4 +5,5 @@ export type Cuisines = {
     description: string;
     price: number;
     rate: number;
+    review: number;
 };

@@ -61,7 +61,7 @@ export default async function FoodList(props: FoodListProps) {
                                 <a className="title" href="#">{cuisine.name}</a>
                                 <p className="rating">
                                     {buildRating(cuisine.rate)}
-                                    <span>{cuisine.rate}</span>
+                                    <span>{cuisine.review}</span>
                                 </p>
                                 <h5 className="price">{formatCurrency(cuisine.price)}</h5>
                                 <a className="add_to_cart" href="#">add

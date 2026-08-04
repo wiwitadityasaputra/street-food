@@ -21,12 +21,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="col-xl-6 col-sm-6 col-md-4">
                     <ul className="topbar_icon d-flex flex-wrap">
                         <li>
-                          <a href="#">
+                          <a target='_blank' href="https://www.upwork.com/freelancers/wiwitadityasaputra">
                             <FontAwesomeIcon icon={faUpwork} size="sm" />
                           </a>
                         </li>
                         <li>
-                          <a href="#">
+                          <a target='_blank' href="https://github.com/wiwitadityasaputra#">
                             <FontAwesomeIcon icon={faGithub} size="sm" />
                           </a>
                         </li>
