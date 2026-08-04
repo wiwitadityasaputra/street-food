@@ -1,10 +1,9 @@
 import { fetchCuisines } from "@/app/lib/data";
 import { Cuisines } from "@/app/lib/definition";
 import { formatCurrency as fc } from "@/app/lib/utils";
-import { faStrava } from "@fortawesome/free-brands-svg-icons";
-import { faHeart, faL, faStar, faStarHalf, faStarHalfStroke, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
-import { faStream } from "@fortawesome/free-solid-svg-icons/faStream";
+import { faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from 'next/image';
 
 export type FoodListProps = {
     cuisine?: string;
@@ -49,7 +48,12 @@ export default async function FoodList(props: FoodListProps) {
                     <div key={cuisine.id} className="col-xxl-3 col-sm-6 col-lg-4">
                         <div className="menu_item">
                             <div className="menu_item_img">
-                                <img src="/images/menu2_img_1.jpg" alt="menu"  className="img-fluid w-100" />
+                                <Image
+                                    src={"/images/cuisine/" + cuisine.id + "/1.jpg"}
+                                    width={344}
+                                    height={220}
+                                    alt={cuisine.name}
+                                />
                             </div>
                             <div className="menu_item_text">
                                 <a className="category" href="#">{cuisine.cuisine}</a>
