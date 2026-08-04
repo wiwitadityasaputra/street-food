@@ -5,9 +5,10 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import clsx from "clsx";
 import React from "react";
 
-const menus = [
+export const DEFAULT_CUISINE = "all";
+const cuisines = [
     {
-        name: "all"
+        name: DEFAULT_CUISINE
     }, {
         name: "indonesian"
     }, {
@@ -19,26 +20,26 @@ const menus = [
     }, 
 ];
 
-export default function FoodMenu() {
+export default function Cuisines() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
     let [activeMenu, setActiveMenu] = React.useState("all");
 
-    const initMenu = searchParams.get("menu");
-    if (!initMenu) {
-        setMenu(activeMenu);
+    const initMenu = searchParams.get("cuisine");
+    if (initMenu) {
+        activeMenu = initMenu;
     }
 
-    function setMenu(menu: string) {
+    function changeMenu(menu: string) {
         const params = new URLSearchParams(searchParams);
-        params.set("menu", menu);
+        params.set("cuisine", menu);
         replace(`${pathname}?${params.toString()}`);
     }
 
     function menuClicked(selectedMenu: string) {
         setActiveMenu(selectedMenu);
-        setMenu(selectedMenu);
+        changeMenu(selectedMenu);
     }
 
     return (
@@ -52,7 +53,7 @@ export default function FoodMenu() {
             <div className="col-xl-6 col-lg-6 wow fadeInUp" data-wow-duration="1s">
                 <div className="menu_filter d-flex flex-wrap">
                     {
-                        menus.map((menu) => {
+                        cuisines.map((menu) => {
                             return (
                                 <button key={menu.name} className={clsx({"active": menu.name === activeMenu})}
                                     onClick={() => menuClicked(menu.name)}>
