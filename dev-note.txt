@@ -8,40 +8,60 @@
     Chinese -> Jianbing, Roujiamo, Cong You Bing, Xiaolongbao, Baozi
     Indonesian -> Bakso, Mie Ayam, Siomay, Ketoprak, Martabak Telur
 
-CREATE TYPE cuisine_type AS ENUM ('indonesian', 'western', 'korean', 'chinese');
 
-CREATE TABLE "cuisines" (
-  "id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "cuisines_id_seq"),
-  "name" varchar(100) NOT NULL,
-  "cuisine" cuisine_type NOT NULL,
-  "description" varchar(300) NOT NULL,
-  "price" smallint NOT NULL,
-  "rate" real NOT NULL
+CREATE TYPE cuisine_cart_types AS ENUM ('checkbox', 'radio');
+SELECT enum_range(NULL::cuisine_cart_types);
+
+CREATE TABLE "cuisine_cart" (
+  "id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "cuisine_cart_id_seq"),
+  "cuisine_id" smallint NOT NULL,
+  "cuisine_cart_type" cuisine_cart_types NOT NULL,
+  "group" varchar(25) NOT NULL,
+  "name" varchar(50) NOT NULL,
+  "price" smallint DEFAULT 0 NOT NULL,
+  "flag" boolean DEFAULT true NOT NULL
 );
 
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Burger', 'western', 389, 4.2, 'A burger is a popular sandwich made of a cooked ground meat patty placed inside a sliced bread bun.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Kebab', 'western', 330, 4.1, 'A kebab is a popular dish of roasted or grilled meat, shish kebab, and döner kebab. It comes from the Middle East and uses meats like lamb, beef, or chicken.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Hotdog', 'western', 284, 4.3, 'A hot dog is a cooked, grilled, or steamed sausage—typically a wiener or frankfurter—served inside a partially sliced soft bread bun.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Currywurst', 'western', 1300, 4.4, 'Currywurst is a famous German fast-food dish made of pork sausage, warm curry ketchup, and yellow curry powder. Invented in Berlin in 1949 by Herta Heuwer, it is typically steamed or fried, sliced into bite-sized pieces, and served fast and hot on a paper tray with french fries or a bread roll.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Fish & Chips', 'western', 12000, 4.4, 'Fish and chips is a classic hot meal from Britain featuring crispy deep-fried battered white fish served alongside thick-cut fried potatoes.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Shawarma & Gyros', 'western', 1000, 4.0, 'Shawarma and gyros are popular meat sandwiches cooked on a spinning vertical spit, featuring distinct origins, spice profiles, and toppings.');
+ALTER TABLE "cuisine_cart"
+ADD CONSTRAINT "cuisine_cart_fk_cuisine_id" FOREIGN KEY ("cuisine_id") REFERENCES "cuisines" ("id");
 
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Tteokbokki', 'korean', 300, 3.9, 'a popular Korean comfort and street food made from chewy cylindrical rice cakes cooked in a rich, sweet, and spicy red chili sauce.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Eomuk', 'korean', 500, 4.1, 'Eomuk (어묵) is a popular Korean fish cake made from ground white fish meat, starch, flour, and seasonings. It is commonly shaped into thin sheets, cylinders, or balls, and prepared by frying or steaming.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Gimbap/Kimbap', 'korean', 250, 4.2, 'a popular Korean dish made of cooked rice, vegetables, meat, or fish cake rolled in dried seaweed sheets and sliced into bite-sized pieces.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Gisa/Gamja', 'korean', 4.3, 299, 'Gil-gamja (길감자) is a viral Korean street food snack made of potatoes and starch that is crispy on the outside and stretchy or chewy on the inside. The word gamja means potato in Korean.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Twigim', 'korean', 40, 4.0, 'Twigim is a popular Korean street food consisting of vegetables, meat, or seafood coated in a light batter and deep-fried. It is very similar to Japanese tempura and is commonly served with soy dipping sauce or spicy tteokbokki sauce.');
+# burger
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'burger type', 'Big Mac', 50);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'burger type', 'Normal', 0);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'cheese', 'Extra', 10);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'cheese', 'Normal', 0);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'drinks', 'coca cola', 15);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'drinks', 'pepsi', 15);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'drinks', 'ice tea', 10);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'radio', 'drinks', 'mineral water', 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'checkbox', 'add ons', 'french fries', 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'checkbox', 'add ons', 'extra chili sauce sachet', 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price") values (1, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2);
 
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Jianbing', 'chinese', 60, 4.5, 'Jianbing is a popular traditional Chinese street food that resembles a savory breakfast crêpe, featuring a thin grain batter, cracked eggs, and crunchy fillings folded into a warm, handheld pocket.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Roujiamo', 'chinese', 85, 4.6, ' is a popular Chinese street food often called a "Chinese hamburger". It features tender, slow-cooked meat stuffed inside a crispy, chewy flatbread. This dish comes from the Shaanxi province and has a history that goes back thousands of years.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Cong You Bing', 'chinese', 80, 4.7, 'savory, unleavened Chinese flatbread known for wheat flour, minced scallions, and oil.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Xiaolongbao', 'chinese', 400, 4.8, 'Xiaolongbao are delicate Chinese soup dumplings featuring a thin wheat dough wrapper, savory minced pork, and a hot, flavorful broth trapped inside. They are traditionally cooked in small bamboo steaming baskets, which give the dumplings their name.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Baozi', 'chinese', 50, 4.9, 'yeast-leavened, filled steamed buns with a soft, fluffy exterior and savory or sweet fillings, originating as a popular everyday staple in Chinese cuisine.');
+cuisine_cart
+    id, cuisine_id, 
+    cuisine_cart_type,
+    group,
+    name,
+    price
+    flag
 
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Bakso', 'indonesian', 60, 4.5, ' is a popular Indonesian meatball soup featuring springy meatballs, a savory clear broth, and noodles.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Mie Ayam', 'indonesian', 65, 4.6, ' comfort food consisting of yellow wheat noodles, savory seasoned diced chicken, and a side of clear broth.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Siomay', 'indonesian', 40, 4.7, 'a popular Indonesian steamed fish dish, fish dumplings, and steamed vegetables served with a thick peanut sauce. Inspired by Chinese shumai, it is a beloved street food in Indonesia.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Ketoprak', 'indonesian', 80, 4.8, 'Ketoprak is a famous Indonesian street food that acts like a savory tofu and rice noodle salad, made with fried tofu, rice cakes, and rice vermicelli.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Martabak Telur', 'indonesian', 15, 4.9, 'Martabak telur is a popular savory Indonesian street food consisting of a crispy pan-fried folded pancake stuffed with a seasoned mixture of eggs, minced meat, and scallions.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Nasi Goreng', 'indonesian', 10, 3.6, 'Nasi goreng is Indonesian popular national dish of fried rice flavored with sweet soy sauce, shrimp paste, and chili, and typically topped with a fried egg and crackers.');
-INSERT INTO cuisines (name, cuisine, price, rate, description) VALUES ('Sate Ayam', 'indonesian', 60, 3.5, 'Sate ayam is a famous Indonesian dish made of small pieces of grilled chicken on wooden sticks, served with peanut sauce, sweet soy sauce, and rice cakes.');
+size
+    Large    20
+    Medium   15
+    Standar  10
+
+spicy level
+    hell
+    hot
+    medium
+    mild
+    normal
+
+drink
+    coca-cola
+    pepsi
+    ice tea
+    mineral water
+
+add on
