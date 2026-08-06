@@ -65,3 +65,274 @@ drink
     mineral water
 
 add on
+
+Twigim Type
+    Yachae Twigim
+    Ojingeo Twigim
+    Gochu Twigim
+    Goguma Twigim
+portion
+    standard
+    large
+Twigim
+    hot
+    medium
+    mild
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'twigim type', 'yachae twigim', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'twigim type', 'ojingeo twigim', 20, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'twigim type', 'gochu twigim', 40, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'twigim type', 'goguma twigim', 60, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'portion', 'standard', 0, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'portion', 'large', 50, 6);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'spicy level', 'mild', 0, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'spicy level', 'medium', 10, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'radio', 'spicy level', 'hot', 20, 9);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'checkbox', 'add ons', 'french fries', 5, 10);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 11);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (11, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 12);
+
+16-baozi
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'radio', 'portion', '3 item', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'radio', 'portion', '5 item', 30, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'radio', 'portion', '7 item', 50, 3);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'radio', 'flavor', 'soy sauce', 0, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'radio', 'flavor', 'grilled', 10, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'radio', 'flavor', 'roasted', 20, 6);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'checkbox', 'add ons', 'french fries', 5, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (16, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 9);
+
+21 martabak telur
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'egg quantity', 'enough', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'egg quantity', 'plenty', 30, 2);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'beff quantity', 'enough', 0, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'beff quantity', 'plenty', 40, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'spicy level', 'normal', 0, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'spicy level', 'mild', 10, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'spicy level', 'medium', 20, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'spicy level', 'hot', 30, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'radio', 'spicy level', 'hell', 40, 9);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'checkbox', 'add ons', 'french fries', 5, 10);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 11);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (21, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 12);
+
+15 xiaolongbao
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'food filling', 'pork', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'food filling', 'chicken', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'food filling', 'shrimp', 10, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'food filling', 'crab', 15, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'quantity', '5 item', 0, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'quantity', '7 item', 20, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'radio', 'quantity', '9 item', 40, 7);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'checkbox', 'add ons', 'french fries', 5, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 9);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (15, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 10);
+
+20 ketoprak
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'egg quantity', 'enough', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'egg quantity', 'plenty', 30, 2);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'spicy level', 'normal', 0, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'spicy level', 'mild', 10, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'spicy level', 'medium', 20, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'spicy level', 'hot', 30, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'radio', 'spicy level', 'hell', 40, 8);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'checkbox', 'add ons', 'french fries', 5, 9);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 10);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (20, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 11);
+
+14 cong you bing
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'radio', 'texture', 'chewy', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'radio', 'texture', 'crispy', 10, 2);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'radio', 'portion', 'standard', 0, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'radio', 'portion', 'large', 30, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'checkbox', 'add ons', 'french fries', 5, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (14, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 7);
+
+19 siomay
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'portion', 'standard', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'portion', 'large', 40, 2);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'spicy level', 'normal', 0, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'spicy level', 'mild', 10, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'spicy level', 'medium', 20, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'spicy level', 'hot', 30, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'radio', 'spicy level', 'hell', 40, 7);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'checkbox', 'add ons', 'french fries', 5, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 9);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (19, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 10);
+
+13 roujiamo
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'portion', '3 item', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'portion', '5 item', 20, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'portion', '7 item', 40, 3);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'food filling', 'pork', 0, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'food filling', 'chicken', 10, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'food filling', 'shrimp', 10, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'radio', 'food filling', 'crab', 15, 7);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'checkbox', 'add ons', 'french fries', 5, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 9);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (13, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 10);
+
+18 mie ayam
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'radio', 'texture', 'standar', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'radio', 'texture', 'yamin', 5, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'radio', 'texture', 'standar + meetbal', 15, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'radio', 'texture', 'yamin + meetbal', 20, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'checkbox', 'add ons', 'french fries', 5, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (18, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 7);
+
+12 jianbing
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'radio', 'types', 'Shandong Jianbing', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'radio', 'types', 'Tianjin Jianbing Guozi', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'radio', 'types', 'Beijing Style', 20, 3);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'radio', 'portion', '3 item', 0, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'radio', 'portion', '5 item', 15, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'radio', 'portion', '7 item', 30, 6);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'checkbox', 'add ons', 'french fries', 5, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (12, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 7);
+
+17 bakso
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'radio', 'portion', 'standard', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'radio', 'portion', 'large', 10, 2);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'radio', 'pangsit', 'standard', 0, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'radio', 'pangsit', 'extra', 5, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'radio', 'noodle', 'standard', 0, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'radio', 'noodle', 'extra', 10, 6);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'checkbox', 'add ons', 'french fries', 5, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (17, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 9);
+
+5 fish & chips
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (5, 'radio', 'portion', 'standard', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (5, 'radio', 'portion', 'large', 10, 2);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (5, 'radio', 'french fries', 'standard', 0, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (5, 'radio', 'french fries', 'extra', 10, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (5, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (5, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 6);
+
+4 currywurst
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'radio', 'sausage', 'Rindswurst', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'radio', 'sausage', 'Mit Darm', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'radio', 'sausage', 'Ohne Darm', 15, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'radio', 'sausage', 'Vegetarian', 5, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'radio', 'french fries', 'standard', 0, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'radio', 'french fries', 'extra', 10, 6);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (4, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 8);
+
+
+3 hotdog
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'spicy level', 'normal', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'spicy level', 'mild', 10, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'spicy level', 'medium', 20, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'spicy level', 'hot', 30, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'spicy level', 'hell', 40, 5);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'sausage', 'standard', 0, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'radio', 'sausage', 'extra', 30, 7);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'checkbox', 'add ons', 'french fries', 5, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 9);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (3, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 10);
+
+10 gisa
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (10, 'checkbox', 'add ons', 'french fries', 5, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (10, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (10, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 3);
+
+6 shawarma
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'radio', 'type', 'Chicken Shawarma', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'radio', 'type', 'Beef or Lamb Shawarma', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'radio', 'type', 'Mixed Shawarma', 20, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'radio', 'type', 'Levantine Variations', 30, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'checkbox', 'add ons', 'french fries', 5, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (6, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 7);
+
+22 nasi goreng
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (22, 'radio', 'spicy level', 'mild', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (22, 'radio', 'spicy level', 'medium', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (22, 'radio', 'spicy level', 'hot', 20, 3);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (22, 'checkbox', 'add ons', 'french fries', 5, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (22, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (22, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 6);
+
+23 sate ayam
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'satai type', 'Chicken', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'satai type', 'Beef', 20, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'satai type', 'Sheep', 15, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'satai type', 'Rabbit', 10, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'spicy level', 'mild', 0, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'spicy level', 'medium', 10, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'radio', 'spicy level', 'hot', 20, 7);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'checkbox', 'add ons', 'french fries', 5, 8);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 9);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (23, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 10);
+
+9 gimbap
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'radio', 'gimbap type', 'Ilban Gimbap', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'radio', 'gimbap type', 'Chamchi Gimbap', 20, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'radio', 'gimbap type', 'So-gogi Gimbap', 15, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'radio', 'gimbap type', 'Cheese Gimbap', 10, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'radio', 'gimbap type', 'Kimchi Gimbap', 10, 5);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'checkbox', 'add ons', 'french fries', 5, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (9, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 8);
+
+8 Eomuk
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'radio', 'eomuk type', 'Flat Sheet', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'radio', 'eomuk type', 'Cylindrical', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'radio', 'eomuk type', 'Skewered', 20, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'radio', 'eomuk type', 'Ball and Cake Bites', 25, 4);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'checkbox', 'add ons', 'french fries', 5, 5);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (8, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 7);
+
+7 tteokbokki
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'radio', 'spicy level', 'normal', 0, 1);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'radio', 'spicy level', 'mild', 10, 2);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'radio', 'spicy level', 'medium', 20, 3);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'radio', 'spicy level', 'hot', 30, 4);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'radio', 'spicy level', 'hell', 40, 5);
+
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'checkbox', 'add ons', 'french fries', 5, 6);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, 7);
+INSERT INTO cuisine_cart ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "order") values (7, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, 8);
+
