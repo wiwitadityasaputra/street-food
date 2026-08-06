@@ -9,6 +9,7 @@ export type Cuisines = {
 };
 
 export type CuisinesChart = {
+    id: number;
     cartType: string;
     group: string;
     name: string;
