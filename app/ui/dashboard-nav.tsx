@@ -1,12 +1,12 @@
 "use client";
 
-import Image from 'next/image';
 import React from 'react';
 import clsx from 'clsx';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
 
 const links = [
   {

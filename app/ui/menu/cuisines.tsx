@@ -1,9 +1,8 @@
 "use client";
 
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-
 import clsx from "clsx";
 import React from "react";
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 export const DEFAULT_CUISINE = "all";
 const cuisines = [

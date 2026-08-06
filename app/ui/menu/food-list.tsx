@@ -1,9 +1,9 @@
+import Image from 'next/image';
 import { fetchCuisinesByCuisine } from "@/app/lib/data";
 import { Cuisines } from "@/app/lib/definition";
 import { formatCurrency as fc } from "@/app/lib/utils";
-import Image from 'next/image';
-import AddToChartButton from "./add-to-chart-button";
-import CuisineRating from "./cusine-rating/cuisine-rating";
+import AddToChartButton from "@/app/ui/menu/add-to-chart-button";
+import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 
 export type FoodListProps = {
     cuisine?: string;

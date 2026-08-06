@@ -1,8 +1,7 @@
 "use client";
 
-import { Cuisines } from "@/app/lib/definition";
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-
+import { Cuisines } from "@/app/lib/definition";
 
 export default function AddToChartButton({cuisine}: {cuisine: Cuisines}) {
   const router = useRouter();

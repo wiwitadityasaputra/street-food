@@ -1,4 +1,4 @@
-import "./menu.css";
+import "@/app/dashboard/menu/menu.css";
 import FoodList from "@/app/ui/menu/food-list";
 import Cuisines, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines";
 import AddToChartModal from "@/app/ui/menu/add-to-chart-modal/add-to-chart-modal";

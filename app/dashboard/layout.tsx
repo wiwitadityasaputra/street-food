@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
-import DashboardNav from '../ui/dashboard-nav';
+import DashboardNav from '@/app/ui/dashboard-nav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (

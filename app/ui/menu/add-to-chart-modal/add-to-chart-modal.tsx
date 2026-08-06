@@ -1,12 +1,13 @@
 "use client";
 
-import "./add-to-chart-modal.css";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+
+import "@/app/ui/menu/add-to-chart-modal/add-to-chart-modal.css"
 import { Cuisines, CuisinesChart } from "@/app/lib/definition";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faUser } from "@fortawesome/free-solid-svg-icons";
-import CuisineRating from "../cusine-rating/cuisine-rating";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 
 export interface AddToChartModalProps {
     cuisine: Cuisines;
