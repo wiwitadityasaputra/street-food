@@ -3,6 +3,7 @@ import FoodList from "@/app/ui/menu/food-list";
 import Cuisines, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines";
 import AddToChartModal from "@/app/ui/menu/add-to-chart-modal/add-to-chart-modal";
 import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/data";
+import { Cuisines as CusinesDef, CuisinesChart } from "@/app/lib/definition";
 
 export default async function Menu(props: {
   searchParams?: Promise<{
@@ -13,13 +14,15 @@ export default async function Menu(props: {
 }) {
     const searchParams = await props.searchParams;
     const cuisineParams = (searchParams?.cuisine) || DEFAULT_CUISINE;
-
     const cuisineId = searchParams?.cuisineId;
-    const showModal = searchParams?.showModal === 'true';
-    
-    if (cuisineId && showModal) {
-        const cuisineCarts = await fetchCuisineCartByCuisineId(cuisineId);
-        const cuisine = await fetchCuisinesById(cuisineId);
+    const showModal = searchParams?.showModal === "true" && cuisineId;
+
+    let cuisineCarts: CuisinesChart[] | undefined = undefined;
+    let cuisine: CusinesDef | undefined = undefined;
+
+    if (showModal) {
+        cuisineCarts = await fetchCuisineCartByCuisineId(cuisineId);
+        cuisine = await fetchCuisinesById(cuisineId);
     }
 
     return (
@@ -30,7 +33,7 @@ export default async function Menu(props: {
                     <FoodList cuisine={cuisineParams} />
                 </div>
             </section>
-            {showModal && <AddToChartModal />}
+            {cuisineCarts && cuisine && <AddToChartModal cuisine={cuisine} cuisineCarts={cuisineCarts} />}
         </>
     );
 }

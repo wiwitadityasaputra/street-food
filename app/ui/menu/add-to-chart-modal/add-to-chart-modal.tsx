@@ -1,31 +1,33 @@
-'use client'
+"use client";
 
 import "./add-to-chart-modal.css";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Cuisines, CuisinesChart } from "@/app/lib/definition";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose, faUser } from "@fortawesome/free-solid-svg-icons";
+import CuisineRating from "../cusine-rating/cuisine-rating";
 
 export interface AddToChartModalProps {
     cuisine: Cuisines;
-    cuisineCart: CuisinesChart;
+    cuisineCarts: CuisinesChart[];
 }
 
-export default function AddToChartModal() {
+export default function AddToChartModal(props: AddToChartModalProps) {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const cuisineId = searchParams.get("cuisineId");
+    console.log("dbg props ", props)
 
     return (<>
-        <div className="add-to-chart-modal modal show">
+        <div className="add-to-chart-modal modal show cart_popup">
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-body">
-                        <button onClick={router.back} type="button" className="btn-close" aria-label="Close">
-                            <i className="fal fa-times"></i>
+                        <button onClick={router.back} type="button" className="btn-close">
+                            <FontAwesomeIcon icon={faClose} size="sm" />
                         </button>
                         <div className="cart_popup_img">
                             <Image
-                                src={`/images/cuisine/${cuisineId}/1.jpg`}
+                                src={`/images/cuisine/${props.cuisine.id}/1.jpg`}
                                 width={344}
                                 height={220}
                                 alt={"cuisine.name"}
@@ -34,8 +36,12 @@ export default function AddToChartModal() {
                         </div>
                         <div className="cart_popup_text">
                             <a href="#" className="title">
-                                Maxican Pizza Test Better
+                                {props.cuisine.name}
                             </a>
+                            <p className="rating">
+                                <CuisineRating rate={props.cuisine.rate} />
+                                <span>(201)</span>
+                            </p>
                         </div>
                     </div>
                 </div>
