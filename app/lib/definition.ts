@@ -10,7 +10,8 @@ export type Cuisines = {
 
 export type CuisinesChart = {
     cartType: string;
-    groupName: string;
+    group: string;
     name: string;
-    price: string;
+    price: number;
+    order: number;
 }

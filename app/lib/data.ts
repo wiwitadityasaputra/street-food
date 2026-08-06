@@ -40,7 +40,7 @@ export async function fetchCuisinesById(id: string): Promise<Cuisines | undefine
 
 export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesChart[]> {
     try {
-        const data = await sql<CuisinesChart[]>`SELECT cuisine_cart_type as "cartType","group",name,price FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
+        const data = await sql<CuisinesChart[]>`SELECT cuisine_cart_type as "cartType","group",name,price,"order" FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);
