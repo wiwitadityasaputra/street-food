@@ -17,7 +17,7 @@ export default function AddToChartButton({cuisine}: {cuisine: Cuisines}) {
         params.set("cuisineId", String(cuisine.id));
         
         // 3. Update the URL with the combined parameters
-        router.push(`${pathname}?${params.toString()}`);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }
 
     return (
