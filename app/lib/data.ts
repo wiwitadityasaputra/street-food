@@ -11,6 +11,7 @@ function allowedCuisine(cuisine?: string) {
 }
 
 export async function fetchCuisinesByCuisine(cuisine?: string): Promise<Cuisines[]> {
+    // await new Promise((resolve) => setTimeout(resolve, 3000));// food-list
     try {
         let data;
         if (cuisine && allowedCuisine(cuisine)) {
@@ -27,7 +28,7 @@ export async function fetchCuisinesByCuisine(cuisine?: string): Promise<Cuisines
 
 export async function fetchCuisinesById(id: string): Promise<Cuisines | undefined> {
     try {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        // await new Promise((resolve) => setTimeout(resolve, 3000));// addtochart
         const data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE id = ${id}`;
         if (data.length) {
             return data[0];
@@ -40,6 +41,7 @@ export async function fetchCuisinesById(id: string): Promise<Cuisines | undefine
 }
 
 export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesCart[]> {
+    // await new Promise((resolve) => setTimeout(resolve, 3000));// addtochart
     try {
         const data = await sql<CuisinesCart[]>`SELECT id,cuisine_cart_type as "cartType","group",name,price,"order" FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
         return data;
