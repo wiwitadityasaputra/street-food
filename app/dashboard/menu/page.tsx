@@ -1,9 +1,10 @@
+import { Suspense } from 'react';
+
 import "@/app/dashboard/menu/menu.css";
 import FoodList from "@/app/ui/menu/food-list";
 import Cuisines, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines";
-import AddToChartModal from "@/app/ui/menu/add-to-chart-modal/add-to-chart-modal";
-import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/data";
-import { Cuisines as CusinesDef, CuisinesChart } from "@/app/lib/definition";
+import { Modal01Skeleton } from '@/app/ui/menu/add-to-chart-modal/modal01-skeleton';
+import { Modal01 } from '@/app/ui/menu/add-to-chart-modal/modal01';
 
 export default async function Menu(props: {
   searchParams?: Promise<{
@@ -17,23 +18,18 @@ export default async function Menu(props: {
     const cuisineId = searchParams?.cuisineId;
     const showModal = searchParams?.showModal === "true" && cuisineId;
 
-    let cuisineCarts: CuisinesChart[] | undefined = undefined;
-    let cuisine: CusinesDef | undefined = undefined;
-
-    if (showModal) {
-        cuisineCarts = await fetchCuisineCartByCuisineId(cuisineId);
-        cuisine = await fetchCuisinesById(cuisineId);
-    }
-
     return (
         <>
+            {showModal && <Suspense fallback={<Modal01Skeleton />}>
+                <Modal01 cuisineId={cuisineId} />
+            </Suspense>}
+            
             <section className="section-menu">
                 <div className="container">
                     <Cuisines />
                     <FoodList cuisine={cuisineParams} />
                 </div>
             </section>
-            {cuisineCarts && cuisine && <AddToChartModal cuisine={cuisine} cuisineCarts={cuisineCarts} />}
         </>
     );
 }

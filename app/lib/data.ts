@@ -27,6 +27,7 @@ export async function fetchCuisinesByCuisine(cuisine?: string): Promise<Cuisines
 
 export async function fetchCuisinesById(id: string): Promise<Cuisines | undefined> {
     try {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         const data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE id = ${id}`;
         if (data.length) {
             return data[0];
