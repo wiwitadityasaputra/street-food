@@ -20,14 +20,14 @@ export default async function Menu(props: {
 
     return (
         <>
-            {!!cuisineId && <Suspense fallback={<ModalSkeleton />}>
+            {!!cuisineId && <Suspense key={cuisineId} fallback={<ModalSkeleton />}>
                 <ModalWrapper cuisineId={cuisineId} />
             </Suspense>}
             
             <section className="section-menu">
                 <div className="container">
                     <Cuisines />
-                    <Suspense fallback={<FoodListSkeleton />}>
+                    <Suspense key={cuisineParams} fallback={<FoodListSkeleton />}>
                         <FoodList cuisine={cuisineParams} />
                     </Suspense>
                 </div>

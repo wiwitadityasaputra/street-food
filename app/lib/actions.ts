@@ -1,6 +1,5 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import {
     CART_OPTION_CHECKBOX_PREFIX,
