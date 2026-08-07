@@ -16,11 +16,10 @@ export default async function Menu(props: {
     const searchParams = await props.searchParams;
     const cuisineParams = (searchParams?.cuisine) || DEFAULT_CUISINE;
     const cuisineId = searchParams?.cuisineId;
-    const showModal = searchParams?.showModal === "true" && cuisineId;
 
     return (
         <>
-            {showModal && <Suspense fallback={<ModalSkeleton />}>
+            {!!cuisineId && <Suspense fallback={<ModalSkeleton />}>
                 <ModalWrapper cuisineId={cuisineId} />
             </Suspense>}
             

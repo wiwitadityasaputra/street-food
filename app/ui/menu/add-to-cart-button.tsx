@@ -13,7 +13,6 @@ export default function AddToCartButton({cuisine}: {cuisine: Cuisines}) {
         const params = new URLSearchParams(searchParams.toString());
         
         // 2. Set or update the new parameter
-        params.set("showModal", "true");
         params.set("cuisineId", String(cuisine.id));
         
         // 3. Update the URL with the combined parameters

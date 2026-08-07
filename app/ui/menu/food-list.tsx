@@ -35,7 +35,6 @@ export default async function FoodList(props: FoodListProps) {
                                     <a className="category" href="#">{cuisine.cuisine}</a>
                                     <a className="title" href="#">{cuisine.name}</a>
                                     <p className="rating">
-                                        {/* {buildRating(cuisine.rate)} */}
                                         <CuisineRating rate={cuisine.rate} />
                                         <span>{cuisine.review}</span>
                                     </p>
