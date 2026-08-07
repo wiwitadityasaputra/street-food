@@ -149,7 +149,7 @@ export function ModalContent(props: ModalContentOptions) {
     useEffect(() => {
         if (state.successMessage === "OK" && state.successObject) {
             addToCartStorage(state.successObject);
-            replace("/dahsboard/cart");
+            replace("/dashboard/cart");
         }
     }, [state.successMessage, state.successObject]);
 

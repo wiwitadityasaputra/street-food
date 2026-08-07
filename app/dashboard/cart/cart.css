@@ -3,3 +3,13 @@
     padding-right: 4vw;
     margin-top: 140px;
 }
+.item-image img {
+    max-width: 109px;
+    max-height: 105px;
+}
+.item-name {
+    font-weight: bold;
+}
+.action-remove {
+    cursor: pointer;
+}

@@ -8,10 +8,10 @@ export async function CartWrapper() {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(true);
-        }, 1000)
+        }, 500)
     });
 
     return (<>
-        <CartContent data="cart-conent" />
+        <CartContent />
     </>)
 }

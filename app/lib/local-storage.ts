@@ -26,6 +26,14 @@ export function getUser(): UserSession {
     return JSON.parse(userString);
 }
 
+export function getCartItems(): AddtoCartActionSuccessObject[] {
+    const items = getUser().items;
+    if (items && items.length) {
+        return items;
+    }
+    return [];
+}
+
 function saveUser(user: UserSession) {
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
 }
