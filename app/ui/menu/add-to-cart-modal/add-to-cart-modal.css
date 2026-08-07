@@ -1,4 +1,4 @@
-.add-to-chart-modal {
+.add-to-cart-modal {
   display: block !important; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1000; /* Sit on top */
@@ -12,7 +12,7 @@
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
-.add-to-chart-detail-price {
+.add-to-cart-detail-price {
   max-width: 70% !important;
 }
 

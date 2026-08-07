@@ -30,7 +30,7 @@ function saveUser(user: UserSession) {
     localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
 }
 
-export function addToChart(data: AddtoCartActionSuccessObject) {
+export function addToCart(data: AddtoCartActionSuccessObject) {
     const user = getUser();
     if (!user.items) {
         user.items = [];

@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import "@/app/dashboard/menu/menu.css";
 import FoodList from "@/app/ui/menu/food-list";
 import Cuisines, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines";
-import { ModalSkeleton } from '@/app/ui/menu/add-to-chart-modal/modal-skeleton';
-import { ModalWrapper } from '@/app/ui/menu/add-to-chart-modal/modal-wrapper';
+import { ModalSkeleton } from '@/app/ui/menu/add-to-cart-modal/modal-skeleton';
+import { ModalWrapper } from '@/app/ui/menu/add-to-cart-modal/modal-wrapper';
 
 export default async function Menu(props: {
   searchParams?: Promise<{

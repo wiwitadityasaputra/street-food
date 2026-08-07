@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { fetchCuisinesByCuisine } from "@/app/lib/data";
 import { Cuisines } from "@/app/lib/definition";
 import { formatCurrency as fc } from "@/app/lib/utils";
-import AddToChartButton from "@/app/ui/menu/add-to-chart-button";
+import AddToCartButton from "@/app/ui/menu/add-to-cart-button";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 
 export type FoodListProps = {
@@ -40,7 +40,7 @@ export default async function FoodList(props: FoodListProps) {
                                         <span>{cuisine.review}</span>
                                     </p>
                                     <h5 className="price">{formatCurrency(cuisine.price)}</h5>
-                                    <AddToChartButton cuisine={cuisine} />
+                                    <AddToCartButton cuisine={cuisine} />
                                     <ul className="d-flex flex-wrap justify-content-end">
                                         <li>
                                             <a href="#">

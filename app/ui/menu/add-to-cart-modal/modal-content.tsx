@@ -5,36 +5,36 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import "@/app/ui/menu/add-to-chart-modal/add-to-chart-modal.css"
+import "@/app/ui/menu/add-to-cart-modal/add-to-cart-modal.css"
 import {
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_CHECKBOX_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
     Cuisines,
-    CuisinesChart
+    CuisinesCart
 } from "@/app/lib/definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/utils';
-import { addToChart as addToChartAction } from '@/app/lib/actions';
-import { addToChart as addToChartStorage } from '@/app/lib/local-storage';
+import { addToCart as addToCartAction } from '@/app/lib/actions';
+import { addToCart as addToCartStorage } from '@/app/lib/local-storage';
 import { useRouter } from 'next/navigation';
 
 export interface ModalContentOptions {
     cuisine: Cuisines;
-    cuisineCarts: CuisinesChart[];
+    cuisineCarts: CuisinesCart[];
 }
 
-export interface AddToChartOptionsDetail {
+export interface AddToCartOptionsDetail {
     id: number;
     name: string;
     price: number;
     checked: boolean;
 }
 
-export interface AddToChartOptions {
+export interface AddToCartOptions {
     name: string;
     mandatory: boolean;
-    detail: AddToChartOptionsDetail[];
+    detail: AddToCartOptionsDetail[];
     latestPriceIncrease: number;
 }
 
@@ -46,13 +46,13 @@ export interface CheckboxOptionsState {
 export function ModalContent(props: ModalContentOptions) {
     const { replace } = useRouter();
 
-    const compareCuisineCart = (a: CuisinesChart, b: CuisinesChart) => {
+    const compareCuisineCart = (a: CuisinesCart, b: CuisinesCart) => {
         return a.order - b.order;
     }
     const cuisineCarts = props.cuisineCarts.sort(compareCuisineCart);
 
     const checkboxOptions: CheckboxOptionsState[] = [];
-    const options: AddToChartOptions[] = [];
+    const options: AddToCartOptions[] = [];
     cuisineCarts.forEach((c) => {
         const finded = options.find((o) => {
             return o.name.toLowerCase() === c.group.toLowerCase();
@@ -86,14 +86,14 @@ export function ModalContent(props: ModalContentOptions) {
         }
     });
 
-    const compareDetail = (a: AddToChartOptionsDetail, b: AddToChartOptionsDetail) => {
+    const compareDetail = (a: AddToCartOptionsDetail, b: AddToCartOptionsDetail) => {
         return a.price - b.price;
     }
     options.forEach(o => {
         o.detail = o.detail.sort(compareDetail);
     })
 
-    const radioOnChange = (o: AddToChartOptions, d: AddToChartOptionsDetail) => {
+    const radioOnChange = (o: AddToCartOptions, d: AddToCartOptionsDetail) => {
         let minus = 0;
         radioState.find(opt => {
             const finded = opt.name === o.name;
@@ -114,7 +114,7 @@ export function ModalContent(props: ModalContentOptions) {
         setRadioState(radioState);
     }
 
-    const checkboxOnChange = (d: AddToChartOptionsDetail) => {
+    const checkboxOnChange = (d: AddToCartOptionsDetail) => {
         checkboxState.find(c => {
             const finded = c.name === d.name;
             if (finded) {
@@ -145,10 +145,10 @@ export function ModalContent(props: ModalContentOptions) {
     let [quantity, setQuantity] = React.useState(1);
     let [radioState, setRadioState] = React.useState(options);
     let [checkboxState, setCheckboxState] = React.useState(checkboxOptions);
-    const [state, formAction, pending] = useActionState(addToChartAction, {erroMessage: ''});
+    const [state, formAction, pending] = useActionState(addToCartAction, {erroMessage: ''});
     useEffect(() => {
         if (state.successMessage === "OK" && state.successObject) {
-            addToChartStorage(state.successObject);
+            addToCartStorage(state.successObject);
             replace("/dahsboard/cart");
         }
     }, [state.successMessage, state.successObject]);
@@ -197,7 +197,7 @@ export function ModalContent(props: ModalContentOptions) {
                                             checkboxOnChange(d);
                                         }
                                     }}/>
-                                <label className="form-check-label add-to-chart-detail-price">
+                                <label className="form-check-label add-to-cart-detail-price">
                                     {d.name} <span>+ {formatCurrency(d.price)}</span>
                                 </label>
                             </div>;

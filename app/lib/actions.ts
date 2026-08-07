@@ -6,14 +6,14 @@ import {
     CART_OPTION_CHECKBOX_PREFIX,
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
-    AddToChartOption, 
+    AddToCartOption, 
     CuisineCartPrice,
     AddtoCartActionResponse,
     AddtoCartActionSuccessObject
 } from './definition';
 import { fetchCuisineCartPrices, fetchCuisinesById } from './data';
 
-export async function addToChart(prevState: any, formData: FormData): Promise<AddtoCartActionResponse> {
+export async function addToCart(prevState: any, formData: FormData): Promise<AddtoCartActionResponse> {
     const finalPrice = Number(formData.get("finalPrice"));
     const quantity = Number(formData.get("quantity"));
     const pricePerItem = Number(formData.get("pricePerItem"));
@@ -25,14 +25,14 @@ export async function addToChart(prevState: any, formData: FormData): Promise<Ad
         return { erroMessage: "Can't find pricePerItem value"};
     }
 
-    const options: AddToChartOption[] = [];
-    formData.forEach((value: FormDataEntryValue, cuisinesChartId: string) => {
-        if (cuisinesChartId.indexOf(CART_OPTION_CHECKBOX_PREFIX) >= 0 ||
-            cuisinesChartId.indexOf(CART_OPTION_RADIO_PREFIX) >= 0) {
+    const options: AddToCartOption[] = [];
+    formData.forEach((value: FormDataEntryValue, cuisinesCartId: string) => {
+        if (cuisinesCartId.indexOf(CART_OPTION_CHECKBOX_PREFIX) >= 0 ||
+            cuisinesCartId.indexOf(CART_OPTION_RADIO_PREFIX) >= 0) {
 
             const splits = String(value).split(CART_OPTION_VALUE_SEPARATOR);
             options.push({
-                cuisinesChartId: splits[0],
+                cuisinesCartId: splits[0],
                 price: splits[1]
             });
         }
@@ -43,7 +43,7 @@ export async function addToChart(prevState: any, formData: FormData): Promise<Ad
         if (index > 0) {
             sqlString += " OR";
         }
-        sqlString += " (id=" + o.cuisinesChartId + " and cuisine_id=" + cuisineId + " and price=" + o.price + ")";
+        sqlString += " (id=" + o.cuisinesCartId + " and cuisine_id=" + cuisineId + " and price=" + o.price + ")";
     });
 
     // validation, db check cuisine_cart, cart options lenght should match with db results

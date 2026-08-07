@@ -3,12 +3,12 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Cuisines } from "@/app/lib/definition";
 
-export default function AddToChartButton({cuisine}: {cuisine: Cuisines}) {
+export default function AddToCartButton({cuisine}: {cuisine: Cuisines}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-    const addToChart = (cuisine: Cuisines) => {
+    const addToCart = (cuisine: Cuisines) => {
         // 1. Create a mutable copy of existing parameters
         const params = new URLSearchParams(searchParams.toString());
         
@@ -21,7 +21,7 @@ export default function AddToChartButton({cuisine}: {cuisine: Cuisines}) {
     }
 
     return (
-        <button className="add_to_cart" onClick={() => addToChart(cuisine)}>
+        <button className="add_to_cart" onClick={() => addToCart(cuisine)}>
             add to cart
         </button>
     );

@@ -8,7 +8,7 @@ export type Cuisines = {
     review: number;
 };
 
-export type CuisinesChart = {
+export type CuisinesCart = {
     id: number;
     cartType: string;
     group: string;
@@ -21,8 +21,8 @@ export const CART_OPTION_RADIO_PREFIX = "radio-";
 export const CART_OPTION_CHECKBOX_PREFIX = "checkbox-";
 export const CART_OPTION_VALUE_SEPARATOR = "-";
 
-export type AddToChartOption = {
-    cuisinesChartId: string;
+export type AddToCartOption = {
+    cuisinesCartId: string;
     price: string;
 }
 

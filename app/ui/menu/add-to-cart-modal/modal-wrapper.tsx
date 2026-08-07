@@ -17,7 +17,7 @@ export async function ModalWrapper(props: ModalWrapperOptions) {
     }
 
     return (
-        <div className="add-to-chart-modal modal show cart_popup">
+        <div className="add-to-cart-modal modal show cart_popup">
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-body">

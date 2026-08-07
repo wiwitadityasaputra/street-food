@@ -16,8 +16,8 @@ const links = [
     name: 'Menu',
     href: '/dashboard/menu'
   },
-  { name: 'Chart',
-    href: '/dashboard/chart'
+  { name: 'Cart',
+    href: '/dashboard/cart'
   }
 ];
 
