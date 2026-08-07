@@ -1,5 +1,5 @@
 import postgres from 'postgres';
-import { Cuisines, CuisinesChart } from './definition';
+import { CuisineCartPrice, Cuisines, CuisinesChart } from './definition';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -42,6 +42,16 @@ export async function fetchCuisinesById(id: string): Promise<Cuisines | undefine
 export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesChart[]> {
     try {
         const data = await sql<CuisinesChart[]>`SELECT id,cuisine_cart_type as "cartType","group",name,price,"order" FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function fetchCuisineCartPrices(sqlString: string): Promise<CuisineCartPrice[]> {
+    try {
+        const data = await sql.unsafe<CuisineCartPrice[]>(sqlString);
         return data;
     } catch (error) {
         console.error('Database Error:', error);

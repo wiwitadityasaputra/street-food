@@ -1,16 +1,23 @@
 "use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useActionState, useEffect } from 'react';
 import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import "@/app/ui/menu/add-to-chart-modal/add-to-chart-modal.css"
-import { Cuisines, CuisinesChart } from "@/app/lib/definition";
+import {
+    CART_OPTION_RADIO_PREFIX,
+    CART_OPTION_CHECKBOX_PREFIX,
+    CART_OPTION_VALUE_SEPARATOR,
+    Cuisines,
+    CuisinesChart
+} from "@/app/lib/definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/utils';
-import { addToChart } from '@/app/lib/actions';
+import { addToChart as addToChartAction } from '@/app/lib/actions';
+import { addToChart as addToChartStorage } from '@/app/lib/local-storage';
+import { useRouter } from 'next/navigation';
 
 export interface ModalContentOptions {
     cuisine: Cuisines;
@@ -37,6 +44,8 @@ export interface CheckboxOptionsState {
 }
 
 export function ModalContent(props: ModalContentOptions) {
+    const { replace } = useRouter();
+
     const compareCuisineCart = (a: CuisinesChart, b: CuisinesChart) => {
         return a.order - b.order;
     }
@@ -136,8 +145,13 @@ export function ModalContent(props: ModalContentOptions) {
     let [quantity, setQuantity] = React.useState(1);
     let [radioState, setRadioState] = React.useState(options);
     let [checkboxState, setCheckboxState] = React.useState(checkboxOptions);
-    
-    const addToChartAction = addToChart.bind(null);
+    const [state, formAction, pending] = useActionState(addToChartAction, {erroMessage: ''});
+    useEffect(() => {
+        if (state.successMessage === "OK" && state.successObject) {
+            addToChartStorage(state.successObject);
+            replace("/dahsboard/cart");
+        }
+    }, [state.successMessage, state.successObject]);
 
     return (<>
          <div className="cart_popup_img">
@@ -148,7 +162,7 @@ export function ModalContent(props: ModalContentOptions) {
                 alt={"cuisine.name"}
                 unoptimized />
         </div>
-        <form action={addToChartAction}>
+        <form action={formAction}>
             <div className="cart_popup_text">
                 <a href="#" className="title">
                     {props.cuisine.name}
@@ -164,11 +178,10 @@ export function ModalContent(props: ModalContentOptions) {
                     return <div key={o.name} className="details_size">
                         <h5>{o.name} {!o.mandatory && <span>(optional)</span>}</h5>
                         {o.detail.map((d) => {
-                            let name = "checkbox-" + d.id;
-                            let value: any = d.id;
+                            let name = CART_OPTION_CHECKBOX_PREFIX + d.id;
+                            const value: any = d.id + CART_OPTION_VALUE_SEPARATOR + d.price;
                             if (o.mandatory) {
-                                name = "radio-" + o.name;
-                                value = d.id;
+                                name = CART_OPTION_RADIO_PREFIX + o.name;
                             }
                             return <div key={d.name} className="form-check">
                                 <input 
@@ -209,10 +222,16 @@ export function ModalContent(props: ModalContentOptions) {
                 </div>
                 <ul className="details_button_area d-flex flex-wrap">
                     <li>
+                        <input type="hidden" name="cuisineId" value={props.cuisine.id}></input>
                         <input type="hidden" name="pricePerItem" value={pricePerItem}></input>
                         <input type="hidden" name="quantity" value={quantity}></input>
                         <input type="hidden" name="finalPrice" value={finalPrice}></input>
-                        <button className="common_btn" type="submit">
+                        {state.erroMessage && (
+                            <div className="form-action-error">
+                                {state.erroMessage}
+                            </div>
+                        )}
+                        <button className="common_btn" type="submit" disabled={pending}>
                             add to cart
                         </button>
                     </li>

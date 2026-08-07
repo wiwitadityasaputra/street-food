@@ -15,3 +15,7 @@
 .add-to-chart-detail-price {
   max-width: 70% !important;
 }
+
+.form-action-error {
+  color: red
+}
