@@ -14,16 +14,26 @@ const getRandomInt = (min: number, max: number): number => {
 const STORAGE_KEY_USER = "street-food-user";
 
 export function getUser(): UserSession {
-    let userString = localStorage.getItem(STORAGE_KEY_USER);
-    if (!userString) {
-        const newUser: UserSession = {
-            userId: String(getRandomInt(1, 100))
-        };
-        userString = JSON.stringify(newUser);
-        localStorage.setItem(STORAGE_KEY_USER, userString);
-    }
+    if (typeof window !== "undefined") {
+        let userString = localStorage.getItem(STORAGE_KEY_USER);
+        if (!userString) {
+            const newUser: UserSession = {
+                userId: String(getRandomInt(1, 100))
+            };
+            userString = JSON.stringify(newUser);
+            localStorage.setItem(STORAGE_KEY_USER, userString);
+        }
 
-    return JSON.parse(userString);
+        return JSON.parse(userString);
+    } else {
+        return {};
+    }
+}
+
+function saveUser(user: UserSession) {
+    if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+    }
 }
 
 export function getCartItems(): AddtoCartActionSuccessObject[] {
@@ -32,10 +42,6 @@ export function getCartItems(): AddtoCartActionSuccessObject[] {
         return items;
     }
     return [];
-}
-
-function saveUser(user: UserSession) {
-    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
 }
 
 export function addToCart(data: AddtoCartActionSuccessObject) {
