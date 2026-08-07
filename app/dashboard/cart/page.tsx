@@ -1,9 +1,12 @@
-import "@/app/dashboard/cart/cart.css"
+import { Suspense } from "react";
+import "@/app/dashboard/cart/cart.css";
+import { CartWrapper } from "./cart-wrapper";
+import { CartSkeleton } from "./cart-skeleton";
 
 export default function Cart() {
     return (<>
-        <div className="cart">
-            Cart
-        </div>
+        <Suspense fallback={<CartSkeleton />}>
+            <CartWrapper/>
+        </Suspense>
     </>);
 }
