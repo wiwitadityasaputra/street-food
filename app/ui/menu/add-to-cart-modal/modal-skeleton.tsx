@@ -2,13 +2,17 @@ import "@/app/ui/menu/add-to-cart-modal/add-to-cart-modal.css"
 
 import { CloseButton } from "./close-btn";
 
-export async function ModalSkeleton() {
+export interface ModalSkeletonProps {
+    cuisine: string;
+}
+
+export async function ModalSkeleton(props: ModalSkeletonProps) {
     return (<>
         <div className="add-to-cart-modal modal show cart_popup">
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-body">
-                        <CloseButton />
+                        <CloseButton cuisine={props.cuisine} />
                         please wait...
                     </div>
                 </div>

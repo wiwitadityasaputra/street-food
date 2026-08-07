@@ -89,6 +89,6 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
     };
 }
 
-export async function closeAddToCartModal() {
-    redirect('/dashboard/menu');
+export async function closeAddToCartModal(cuisine: string) {
+    redirect(`/dashboard/menu?cuisine=${cuisine}`);
 }

@@ -11,7 +11,6 @@ export default async function Menu(props: {
   searchParams?: Promise<{
     cuisine?: string;
     cuisineId?: string;
-    showModal?: string;
   }>;
 }) {
     const searchParams = await props.searchParams;
@@ -20,8 +19,8 @@ export default async function Menu(props: {
 
     return (
         <>
-            {!!cuisineId && <Suspense key={cuisineId} fallback={<ModalSkeleton />}>
-                <ModalWrapper cuisineId={cuisineId} />
+            {!!cuisineId && <Suspense key={cuisineId} fallback={<ModalSkeleton cuisine={cuisineParams} />}>
+                <ModalWrapper cuisineId={cuisineId} cuisine={cuisineParams} />
             </Suspense>}
             
             <section className="section-menu">

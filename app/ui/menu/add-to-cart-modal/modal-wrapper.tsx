@@ -5,6 +5,7 @@ import { ModalContent } from "./modal-content";
 
 export interface ModalWrapperOptions {
     cuisineId: string;
+    cuisine: string;
 }
 
 export async function ModalWrapper(props: ModalWrapperOptions) {
@@ -21,7 +22,7 @@ export async function ModalWrapper(props: ModalWrapperOptions) {
             <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-body">
-                        <CloseButton />
+                        <CloseButton cuisine={props.cuisine} />
                         <ModalContent cuisine={cuisine} cuisineCarts={cuisineCarts} />
                     </div>
                 </div>
