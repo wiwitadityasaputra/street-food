@@ -5,11 +5,11 @@ import { faClose, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { CloseButton } from "./close-btn";
 import { ModalContent } from "./modal-content";
 
-export interface Modal01Options {
+export interface ModalWrapperOptions {
     cuisineId: string;
 }
 
-export async function Modal01(props: Modal01Options) {
+export async function ModalWrapper(props: ModalWrapperOptions) {
     const cuisineId = props.cuisineId;
     const cuisineCarts = await fetchCuisineCartByCuisineId(cuisineId);
     const cuisine = await fetchCuisinesById(cuisineId);

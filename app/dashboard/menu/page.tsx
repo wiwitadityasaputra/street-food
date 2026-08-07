@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import "@/app/dashboard/menu/menu.css";
 import FoodList from "@/app/ui/menu/food-list";
 import Cuisines, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines";
-import { Modal01Skeleton } from '@/app/ui/menu/add-to-chart-modal/modal01-skeleton';
-import { Modal01 } from '@/app/ui/menu/add-to-chart-modal/modal01';
+import { ModalSkeleton } from '@/app/ui/menu/add-to-chart-modal/modal-skeleton';
+import { ModalWrapper } from '@/app/ui/menu/add-to-chart-modal/modal-wrapper';
 
 export default async function Menu(props: {
   searchParams?: Promise<{
@@ -20,8 +20,8 @@ export default async function Menu(props: {
 
     return (
         <>
-            {showModal && <Suspense fallback={<Modal01Skeleton />}>
-                <Modal01 cuisineId={cuisineId} />
+            {showModal && <Suspense fallback={<ModalSkeleton />}>
+                <ModalWrapper cuisineId={cuisineId} />
             </Suspense>}
             
             <section className="section-menu">
