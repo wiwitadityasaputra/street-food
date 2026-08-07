@@ -776,6 +776,12 @@ button {
     left: 150px;
 }
 
+@media (max-width: 580px) {
+    .banner_img .img {
+        display: none;
+    }
+}
+
 .banner_img .img::after {
     position: absolute;
     content: "";
