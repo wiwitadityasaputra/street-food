@@ -13,3 +13,15 @@
 .action-remove {
     cursor: pointer;
 }
+.cart .total-cart-items {
+    border: none;
+}
+.cart .add-more-btn {
+    background: #ff7c08;
+    border: none;
+    border-radius: 30px;
+}
+.cart .add-more-btn:hover {
+    background: var(--colorBlack);
+    color: var(--colorWhite);
+}

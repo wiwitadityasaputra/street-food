@@ -7,12 +7,14 @@ import { UserCartResponse } from "@/app/lib/definition";
 import { formatCurrency } from "@/app/lib/utils";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from 'next/navigation';
 
 export interface CartContnetProps {
     carts: UserCartResponse[]
 }
 
 export function CartContent(props: CartContnetProps) {
+    const { replace } = useRouter();
     const cartItems = props.carts;
     if (cartItems.length === 0) {
         return (<div className="cart">Empty Cart, please choose cuisine first.</div>);
@@ -21,6 +23,11 @@ export function CartContent(props: CartContnetProps) {
 	cartItems.forEach(c => {
 		finalPrice += c.finalPrice;
 	});
+
+    const addMoreClicked = () => {
+        console.log("dbg addMoreClicked")
+        replace("/dashboard/menu");
+    }
 
     return (<>
         <div className="cart">
@@ -76,6 +83,16 @@ export function CartContent(props: CartContnetProps) {
 													</tr>
 												)
 											})}
+                                            <tr>
+                                                <td style={{width: "100%", textAlign: "left"}}>
+                                                    <div style={{width: "100%", textAlign: "left"}}>
+                                                        <button type="button" className="btn btn-success add-more-btn"
+                                                            onClick={addMoreClicked}>
+                                                            Add More
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -88,7 +105,7 @@ export function CartContent(props: CartContnetProps) {
                                     </div>
                                     <div className="col-xl-5 col-md-6">
                                         <div className="cart_list_footer_button_text">
-                                            <h6>total cart ({cartItems.length})</h6>
+                                            <h6 className="total-cart-items">total cart ({cartItems.length})</h6>
                                             <p className="total">
 												<span>total:</span> <span>{formatCurrency(finalPrice)}</span>
 											</p>

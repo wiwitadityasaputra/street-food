@@ -11,8 +11,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <section className="topbar">
         <div className="container">
             <div className="row">
-                <div className="col-xl-6 col-sm-6 col-md-8">
-                    <ul className="topbar_info d-flex flex-wrap d-none d-sm-flex">
+                <div className="col-xl-6 col-sm-6 col-md-6 col-8">
+                    <ul className="topbar_info d-flex flex-wrap">
                         <li>
                           <a href="mailto:wiwit.aditya.saputra@gmail.com">
                             <i className="fas fa-envelope" aria-hidden="true"></i> wiwit.aditya.saputra@gmail.com
@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         </li>
                     </ul>
                 </div>
-                <div className="col-xl-6 col-sm-6 col-md-4">
+                <div className="col-xl-6 col-sm-6 col-md-6 col-4">
                     <ul className="topbar_icon d-flex flex-wrap">
                         <li>
                           <a target='_blank' href="https://www.upwork.com/freelancers/wiwitadityasaputra">
