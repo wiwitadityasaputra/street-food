@@ -7,7 +7,7 @@ export const USER_CART_OPTIONS_SEPARATOR = "___";
 export type UserCartResponse = {
     cuisineId: string;
     cuisineName: string;
-    userChartId: string;
+    userCartId: string;
     pricePerItem: number;
     quantity: number;
     finalPrice: number;

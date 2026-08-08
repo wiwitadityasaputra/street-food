@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+// import React, { useActionState, useEffect } from 'react';
 
 import "@/app/ui/cart/cart.css";
 import { formatCurrency } from "@/app/lib/util/utils";
@@ -8,12 +9,15 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from 'next/navigation';
 import { CartContentProps } from "./cart-content.definition";
+import { deleteCartItemAction } from "@/app/lib/form-action/cart.action";
 
 export function CartContent(props: CartContentProps) {
     const { replace } = useRouter();
     const cartItems = props.carts;
     if (cartItems.length === 0) {
-        return (<div className="cart">Empty Cart, please choose cuisine first.</div>);
+        return (<div className="cart">
+            Empty Cart, please choose cuisine first.
+        </div>);
     }
 	let finalPrice = 0;
 	cartItems.forEach(c => {
@@ -21,9 +25,10 @@ export function CartContent(props: CartContentProps) {
 	});
 
     const addMoreClicked = () => {
-        console.log("dbg addMoreClicked")
         replace("/dashboard/menu");
     }
+
+    const formAction = deleteCartItemAction.bind(null);
 
     return (<>
         <div className="cart">
@@ -74,7 +79,17 @@ export function CartContent(props: CartContentProps) {
 															<h6>{formatCurrency(c.finalPrice)}</h6>
 														</td>
 														<td className="pro_icon">
-															<FontAwesomeIcon icon={faTimes} size="lg" className="action-remove" />
+                                                            <form action={formAction}>
+                                                                <input type="hidden" name="userId" value={props.userId}></input>
+                                                                <input type="hidden" name="userCartId" value={c.userCartId}></input>
+                                                                <button type="submit">
+                                                                    <FontAwesomeIcon
+                                                                        icon={faTimes}
+                                                                        size="lg"
+                                                                        className="action-remove"
+                                                                    />
+                                                                </button>
+                                                            </form>
 														</td>
 													</tr>
 												)

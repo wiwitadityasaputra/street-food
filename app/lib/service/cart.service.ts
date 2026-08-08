@@ -14,7 +14,7 @@ export async function getUserCarts(userId: string): Promise<UserCartResponse[]> 
         result.push({
             cuisineId: d.cuisine_id,
             cuisineName: d.cuisine_name,
-            userChartId: d.user_cart_id,
+            userCartId: d.user_cart_id,
             pricePerItem: d.price_per_item,
             quantity: d.quantity,
             finalPrice: d.final_price,

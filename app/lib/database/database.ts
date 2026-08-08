@@ -93,3 +93,12 @@ export async function countUserCartByUserAndFlag(userId: string, flag: string): 
         throw new Error('Failed to count data.');
     }
 }
+
+export async function deleteUserCartByUserAndUserCartId(userId: string, userCartId: string) {
+    try {
+        await sql`DELETE FROM user_cart WHERE user_cart_id = ${userCartId} AND user_id = ${userId}`;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to count data.');
+    }
+}

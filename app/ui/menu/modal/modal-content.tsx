@@ -13,7 +13,7 @@ import {
 } from "@/app/lib/service/service.definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/util/utils';
-import { addToCart as addToCartAction } from '@/app/lib/form-action/menu.actions';
+import { addToCart as addToCartAction } from '@/app/lib/form-action/menu.action';
 import { useRouter } from 'next/navigation';
 import { CheckboxOptionsState, CuisinesContentOptions, CuisinesOptions, CuisinesOptionsDetail } from './modal.definition';
 import { CuisinesCartDb } from '@/app/lib/database/database.definition';

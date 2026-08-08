@@ -7,13 +7,17 @@ import {
     CART_OPTION_VALUE_SEPARATOR,
     USER_CART_OPTIONS_SEPARATOR
 } from '../service/service.definition';
-import { cookiesSetUserIdAndTotalCart } from '../util/cookie-util';
+import {
+    cookiesSetUserIdAndTotalCart
+} from '../util/cookie-util';
 import {
     AddtoCartActionResponse,
     AddtoCartActionSuccessObject,
     AddToCartOption
 } from './form-action.definition';
-import { CuisinesCartDbGroupNamePrice } from '../database/database.definition';
+import {
+    CuisinesCartDbGroupNamePrice
+} from '../database/database.definition';
 import {
     countUserCartByUserAndFlag,
     fetchCuisineCartPrices,

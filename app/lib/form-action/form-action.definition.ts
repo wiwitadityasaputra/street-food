@@ -1,4 +1,4 @@
-// Form Action
+// Menu Form Action
 export type AddToCartOption = {
     cuisinesCartId: string;
     price: string;
@@ -19,4 +19,3 @@ export type AddtoCartActionSuccessObject = {
     finalPrice: number;
     options: string[];
 }
-

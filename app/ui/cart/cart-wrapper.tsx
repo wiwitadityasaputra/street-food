@@ -12,7 +12,7 @@ export async function CartWrapper() {
     if (userId) {
         const carts: UserCartResponse[] = await getUserCarts(userId);
         return (<>
-            <CartContent carts={carts} />
+            <CartContent carts={carts} userId={userId} />
         </>)
     } else {
         return (<>
