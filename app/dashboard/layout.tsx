@@ -2,8 +2,10 @@ import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 import DashboardNav from '@/app/ui/dashboard-nav';
+import { cookisGetTotalCart } from '../lib/cookie-util';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const totalCart = await cookisGetTotalCart();
   return (
     <>
       <section className="topbar">
@@ -36,7 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </section>
 
-      <DashboardNav />
+      <DashboardNav totalCart={totalCart} />
       
       {children}
     </>

@@ -8,11 +8,15 @@ import {
     AddToCartOption, 
     CuisineCartPrice,
     AddtoCartActionResponse,
-    AddtoCartActionSuccessObject
+    AddtoCartActionSuccessObject,
+    USER_CART_OPTIONS_SEPARATOR
 } from './definition';
-import { fetchCuisineCartPrices, fetchCuisinesById } from './data';
+import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, writeToUserCart } from './data';
+import { cookiesSetUserIdAndTotalCart } from './cookie-util';
 
 export async function addToCart(prevState: any, formData: FormData): Promise<AddtoCartActionResponse> {
+    const userId = String(formData.get("userId"));
+    const cuisineName = String(formData.get("cuisineName"));
     const finalPrice = Number(formData.get("finalPrice"));
     const quantity = Number(formData.get("quantity"));
     const pricePerItem = Number(formData.get("pricePerItem"));
@@ -72,6 +76,7 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
     }
 
     const response: AddtoCartActionSuccessObject = {
+        userId: userId,
         cuisineId: cuisineId,
         cuisineName: cuisine.name,
         pricePerItem: pricePerItem,
@@ -79,9 +84,21 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
         finalPrice: finalPrice,
         options: []
     };
-    cuisinesCart.forEach(c => {
-        response.options.push(c.group + ": " + c.name);
+
+    let userCartOptions = "";
+    cuisinesCart.forEach((c, index) => {
+        const option = c.group + ": " + c.name;
+        response.options.push(option);
+
+        if (index > 0) {
+            userCartOptions += USER_CART_OPTIONS_SEPARATOR;
+        }
+        userCartOptions += option;
     });
+
+    await writeToUserCart(cuisineId, cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
+    const totalCart = await countUserCartByUserAndFlag(userId, "active");
+    await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
     return {
         successMessage: "OK",

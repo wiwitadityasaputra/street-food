@@ -8,9 +8,6 @@ export interface CloseButtonProps {
 
 export async function CloseButton(props: CloseButtonProps) {
 
-
-    console.log("dbg props ", props)
-
     const formAction = closeAddToCartModal.bind(null, props.cuisine);
     return (<>
         <form action={formAction}>

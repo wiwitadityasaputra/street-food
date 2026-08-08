@@ -39,8 +39,31 @@ export type AddtoCartActionResponse = {
 }
 
 export type AddtoCartActionSuccessObject = {
+    userId: string;
     cuisineId: string;
     cuisineName: string;
+    pricePerItem: number;
+    quantity: number;
+    finalPrice: number;
+    options: string[];
+}
+
+export const USER_CART_OPTIONS_SEPARATOR = "___";
+
+export type UserCartDb = {
+    cuisine_id: string;
+    cuisine_name: string;
+    user_cart_id: string;
+    price_per_item: number;
+    quantity: number;
+    final_price: number;
+    options: string;
+}
+
+export type UserCartResponse = {
+    cuisineId: string;
+    cuisineName: string;
+    userChartId: string;
     pricePerItem: number;
     quantity: number;
     finalPrice: number;

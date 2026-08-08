@@ -16,12 +16,12 @@ import {
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/utils';
 import { addToCart as addToCartAction } from '@/app/lib/actions';
-import { addToCart as addToCartStorage } from '@/app/lib/local-storage';
 import { useRouter } from 'next/navigation';
 
 export interface ModalContentOptions {
     cuisine: Cuisines;
     cuisineCarts: CuisinesCart[];
+    userId: string;
 }
 
 export interface AddToCartOptionsDetail {
@@ -45,6 +45,7 @@ export interface CheckboxOptionsState {
 
 export function ModalContent(props: ModalContentOptions) {
     const { replace } = useRouter();
+    const userId = props.userId;
 
     const compareCuisineCart = (a: CuisinesCart, b: CuisinesCart) => {
         return a.order - b.order;
@@ -148,7 +149,6 @@ export function ModalContent(props: ModalContentOptions) {
     const [state, formAction, pending] = useActionState(addToCartAction, {erroMessage: ''});
     useEffect(() => {
         if (state.successMessage === "OK" && state.successObject) {
-            addToCartStorage(state.successObject);
             replace("/dashboard/cart");
         }
     }, [state.successMessage, state.successObject]);
@@ -222,7 +222,9 @@ export function ModalContent(props: ModalContentOptions) {
                 </div>
                 <ul className="details_button_area d-flex flex-wrap">
                     <li>
+                        <input type="hidden" name="userId" value={userId}></input>
                         <input type="hidden" name="cuisineId" value={props.cuisine.id}></input>
+                        <input type="hidden" name="cuisineName" value={props.cuisine.name}></input>
                         <input type="hidden" name="pricePerItem" value={pricePerItem}></input>
                         <input type="hidden" name="quantity" value={quantity}></input>
                         <input type="hidden" name="finalPrice" value={finalPrice}></input>

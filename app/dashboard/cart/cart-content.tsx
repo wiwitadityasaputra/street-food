@@ -1,14 +1,17 @@
 "use client";
 
-import { getCartItems } from "@/app/lib/local-storage";
+import { UserCartResponse } from "@/app/lib/definition";
 import { formatCurrency } from "@/app/lib/utils";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 
+export interface CartContnetProps {
+    carts: UserCartResponse[]
+}
 
-export function CartContent() {
-    const cartItems = getCartItems();
+export function CartContent(props: CartContnetProps) {
+    const cartItems = props.carts;
     if (cartItems.length === 0) {
         return (<div className="cart">Empty Cart, please choose cuisine first.</div>);
     }
@@ -51,7 +54,7 @@ export function CartContent() {
 														<td className="pro_name">
 															<p className="item-name">{c.cuisineName}</p>
 															{c.options.map(o => {
-																return (<p>{o}</p>)
+																return (<p key={o}>{o}</p>)
 															})}
 														</td>
 														<td className="pro_status">

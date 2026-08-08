@@ -5,9 +5,9 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
-import { getCartItems, getUser } from '../lib/local-storage';
 
 const MENU_CART = "Cart";
 const links = [
@@ -23,7 +23,11 @@ const links = [
   }
 ];
 
-export default function DashboardNav() {
+export interface DashboardNavProps {
+  totalCart: number;
+}
+
+export default function DashboardNav(props: DashboardNavProps) {
   let [collapse, setCollapse] = React.useState(true);
 
   function collapseMenuClicked() {
@@ -31,11 +35,10 @@ export default function DashboardNav() {
   }
 
   const pathname = usePathname();
-  const cartSize = getCartItems().length;
 
   const generateName = (menuName: string) => {
     if (MENU_CART === menuName) {
-      return `${menuName} (${cartSize})`;
+      return `${menuName} (${props.totalCart})`;
     }
     return menuName;
   }
@@ -64,7 +67,8 @@ export default function DashboardNav() {
           })}>
           <ul className="navbar-nav m-auto">
             {links.map((link) => {
-              return (<li className="nav-item" key={link.name}>
+              return (
+                <li className="nav-item" key={link.name}>
                   <Link
                     key={link.name}
                     href={link.href}
