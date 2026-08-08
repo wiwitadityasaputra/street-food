@@ -31,6 +31,7 @@ export default function DashboardNav(props: DashboardNavProps) {
   let [collapse, setCollapse] = React.useState(true);
 
   function collapseMenuClicked() {
+    console.log("dbg clicked")
     setCollapse(!collapse);
   }
 
@@ -57,7 +58,8 @@ export default function DashboardNav(props: DashboardNavProps) {
               />
           </a>
 
-          <button className={clsx('navbar-toggler', {'show': !collapse})} type="button" onClick={collapseMenuClicked}>
+          <button className={clsx('navbar-toggler', {'show': !collapse})} type="button"
+            onClick={collapseMenuClicked}>
             { collapse && <FontAwesomeIcon icon={faBars} size="sm" />}
             { !collapse && <FontAwesomeIcon icon={faTimes} size="sm" />}
           </button>
@@ -72,7 +74,8 @@ export default function DashboardNav(props: DashboardNavProps) {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={clsx("nav-link", {"active": link.href.toLowerCase() === pathname.toLowerCase()})} aria-current="page">
+                    className={clsx("nav-link", {"active": link.href.toLowerCase() === pathname.toLowerCase()})} aria-current="page"
+                    onClick={collapseMenuClicked}>
                     {generateName(link.name)}
                   </Link>
                 </li>);
