@@ -86,8 +86,7 @@ export async function fetchUserCartByUserAndFlag(userId: string, flag: string) {
 
 export async function countUserCartByUserAndFlag(userId: string, flag: string) {
     try {
-        const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_cart`;
-        // const [{ total }] = await sql`SELECT count(*) FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
+        const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
         return total;
     } catch (error) {
         console.error('Database Error:', error);
