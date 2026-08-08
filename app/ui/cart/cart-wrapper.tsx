@@ -2,9 +2,9 @@
 
 import "@/app/ui/cart/cart.css";
 import { CartContent } from "./cart-content";
-import { getUserCarts } from '@/app/lib/cart.service';
-import { UserCartResponse } from '@/app/lib/definition';
-import { cookiesGetUserId } from '@/app/lib/cookie-util';
+import { getUserCarts } from '@/app/lib/service/cart.service';
+import { UserCartResponse } from '@/app/lib/service/service.definition';
+import { cookiesGetUserId } from '@/app/lib/util/cookie-util';
 
 export async function CartWrapper() {
     

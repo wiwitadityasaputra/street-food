@@ -10,9 +10,9 @@ import {
     AddtoCartActionResponse,
     AddtoCartActionSuccessObject,
     USER_CART_OPTIONS_SEPARATOR
-} from './definition';
-import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, writeToUserCart } from './data';
-import { cookiesSetUserIdAndTotalCart } from './cookie-util';
+} from '../service/service.definition';
+import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, writeToUserCart } from '../service/database.service';
+import { cookiesSetUserIdAndTotalCart } from '../util/cookie-util';
 
 export async function addToCart(prevState: any, formData: FormData): Promise<AddtoCartActionResponse> {
     const userId = String(formData.get("userId"));

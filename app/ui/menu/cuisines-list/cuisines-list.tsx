@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { fetchCuisinesByCuisine } from "@/app/lib/data";
-import { CuisinesDb } from "@/app/lib/definition";
-import { formatCurrency as fc } from "@/app/lib/utils";
+import { fetchCuisinesByCuisine } from "@/app/lib/service/database.service";
+import { CuisinesDb } from "@/app/lib/service/service.definition";
+import { formatCurrency as fc } from "@/app/lib/util/utils";
 import AddToCartButton from "@/app/ui/menu/add-to-cart-button/add-to-cart-button";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { CuisinesListProps } from './cuisines-list.definition';

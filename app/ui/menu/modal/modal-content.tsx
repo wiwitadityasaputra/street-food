@@ -11,10 +11,10 @@ import {
     CART_OPTION_CHECKBOX_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
     CuisinesCartDb
-} from "@/app/lib/definition";
+} from "@/app/lib/service/service.definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
-import { formatCurrency } from '@/app/lib/utils';
-import { addToCart as addToCartAction } from '@/app/lib/actions';
+import { formatCurrency } from '@/app/lib/util/utils';
+import { addToCart as addToCartAction } from '@/app/lib/form-action/menu.actions';
 import { useRouter } from 'next/navigation';
 import { CheckboxOptionsState, CuisinesContentOptions, CuisinesOptions, CuisinesOptionsDetail } from './modal.definition';
 

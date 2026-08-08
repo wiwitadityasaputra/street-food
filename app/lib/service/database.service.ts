@@ -1,5 +1,5 @@
 import postgres from 'postgres';
-import { CuisinesCartDbGroupNamePrice, CuisinesDb, CuisinesCartDb, UserCartDb } from './definition';
+import { CuisinesCartDbGroupNamePrice, CuisinesDb, CuisinesCartDb, UserCartDb } from './service.definition';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 

@@ -22,6 +22,7 @@ export type CuisinesCartDb = {
     price: number;
     order: number;
 }
+
 export type CuisinesCartDbGroupNamePrice = {
     group: string;
     name: string;
@@ -38,6 +39,18 @@ export type UserCartDb = {
     options: string;
 }
 
+// Service
+export type UserCartResponse = {
+    cuisineId: string;
+    cuisineName: string;
+    userChartId: string;
+    pricePerItem: number;
+    quantity: number;
+    finalPrice: number;
+    options: string[];
+}
+
+// Form Action
 export type AddToCartOption = {
     cuisinesCartId: string;
     price: string;
@@ -53,16 +66,6 @@ export type AddtoCartActionSuccessObject = {
     userId: string;
     cuisineId: string;
     cuisineName: string;
-    pricePerItem: number;
-    quantity: number;
-    finalPrice: number;
-    options: string[];
-}
-
-export type UserCartResponse = {
-    cuisineId: string;
-    cuisineName: string;
-    userChartId: string;
     pricePerItem: number;
     quantity: number;
     finalPrice: number;

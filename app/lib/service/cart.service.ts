@@ -1,5 +1,5 @@
-import { fetchUserCartByUserAndFlag } from "./data";
-import { USER_CART_OPTIONS_SEPARATOR, UserCartDb, UserCartResponse } from "./definition";
+import { fetchUserCartByUserAndFlag } from "./database.service";
+import { USER_CART_OPTIONS_SEPARATOR, UserCartDb, UserCartResponse } from "./service.definition";
 
 export async function getUserCarts(userId: string): Promise<UserCartResponse[]> {
     const data: UserCartDb[] = await fetchUserCartByUserAndFlag(userId, "active");

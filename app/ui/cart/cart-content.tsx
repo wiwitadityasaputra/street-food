@@ -3,17 +3,13 @@
 import Image from "next/image";
 
 import "@/app/ui/cart/cart.css";
-import { UserCartResponse } from "@/app/lib/definition";
-import { formatCurrency } from "@/app/lib/utils";
+import { formatCurrency } from "@/app/lib/util/utils";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from 'next/navigation';
+import { CartContentProps } from "./cart-content.definition";
 
-export interface CartContnetProps {
-    carts: UserCartResponse[]
-}
-
-export function CartContent(props: CartContnetProps) {
+export function CartContent(props: CartContentProps) {
     const { replace } = useRouter();
     const cartItems = props.carts;
     if (cartItems.length === 0) {
