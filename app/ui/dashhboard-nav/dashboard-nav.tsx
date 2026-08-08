@@ -28,7 +28,6 @@ export default function DashboardNav(props: DashboardNavProps) {
   let [collapse, setCollapse] = React.useState(true);
 
   function collapseMenuClicked() {
-    console.log("dbg clicked")
     setCollapse(!collapse);
   }
 
