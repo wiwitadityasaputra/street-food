@@ -78,10 +78,6 @@ export default function DashboardNav(props: DashboardNavProps) {
                   </Link>
                 </li>);
             })}
-
-            <li className="nav-item" key="order">
-                <a className="nav-link" href="menu.html">Order</a>
-            </li>
             <li className="nav-item" key="queue">
                 <a className="nav-link" href="chefs.html">Queue</a>
             </li>
