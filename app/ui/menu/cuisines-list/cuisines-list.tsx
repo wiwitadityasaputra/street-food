@@ -2,12 +2,9 @@ import Image from 'next/image';
 import { fetchCuisinesByCuisine } from "@/app/lib/data";
 import { CuisinesDb } from "@/app/lib/definition";
 import { formatCurrency as fc } from "@/app/lib/utils";
-import AddToCartButton from "@/app/ui/menu/add-to-cart-button";
+import AddToCartButton from "@/app/ui/menu/add-to-cart-button/add-to-cart-button";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
-
-export type CuisinesListProps = {
-    cuisine?: string;
-}
+import { CuisinesListProps } from './cuisines-list.definition';
 
 export default async function CusinesList(props: CuisinesListProps) {
 

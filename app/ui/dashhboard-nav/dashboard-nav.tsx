@@ -8,6 +8,7 @@ import Link from 'next/link';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
+import { DashboardNavProps } from './dashboard-nav.definition';
 
 const MENU_CART = "Cart";
 const links = [
@@ -22,10 +23,6 @@ const links = [
     href: '/dashboard/cart'
   }
 ];
-
-export interface DashboardNavProps {
-  totalCart: number;
-}
 
 export default function DashboardNav(props: DashboardNavProps) {
   let [collapse, setCollapse] = React.useState(true);
@@ -47,26 +44,27 @@ export default function DashboardNav(props: DashboardNavProps) {
   return (<>
     <nav className="navbar navbar-expand-lg main_menu">
       <div className="container">
-          <a className="navbar-brand" href="index.html">
-              <Image
-                src="/images/logo3.png"
-                width={1000}
-                height={760}
-                className="img-fluid"
-                alt="Screenshots of the dashboard project showing desktop version"
-                unoptimized
-              />
-          </a>
+        <a className="navbar-brand" href="index.html">
+            <Image
+              src="/images/logo3.png"
+              width={1000}
+              height={760}
+              className="img-fluid"
+              alt="Screenshots of the dashboard project showing desktop version"
+              unoptimized
+            />
+        </a>
 
-          <button className={clsx('navbar-toggler', {'show': !collapse})} type="button"
-            onClick={collapseMenuClicked}>
-            { collapse && <FontAwesomeIcon icon={faBars} size="sm" />}
-            { !collapse && <FontAwesomeIcon icon={faTimes} size="sm" />}
-          </button>
-                        
-          <div className={clsx('navbar-collapse', {
-            'collapse': collapse
-          })}>
+        <button className={clsx('navbar-toggler', {'show': !collapse})} type="button"
+          onClick={collapseMenuClicked}>
+          { collapse && <FontAwesomeIcon icon={faBars} size="sm" />}
+          { !collapse && <FontAwesomeIcon icon={faTimes} size="sm" />}
+        </button>
+                      
+        <div className={clsx('navbar-collapse', {
+          'collapse': collapse
+          })}
+        >
           <ul className="navbar-nav m-auto">
             {links.map((link) => {
               return (
@@ -95,7 +93,7 @@ export default function DashboardNav(props: DashboardNavProps) {
                   </a>
               </li>
           </ul>
-          </div>
+        </div>
       </div>
     </nav>
   </>);

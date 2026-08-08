@@ -1,13 +1,9 @@
 import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/data";
 
-import { CloseButton } from "../close-btn";
+import { CloseButton } from "../close-button/close-btn";
 import { ModalContent } from "./modal-content";
 import { cookiesGetUserId } from "@/app/lib/cookie-util";
-
-export interface ModalWrapperOptions {
-    cuisineId: string;
-    cuisine: string;
-}
+import { ModalWrapperOptions } from "./modal.definition";
 
 export async function ModalWrapper(props: ModalWrapperOptions) {
     const cuisineId = props.cuisineId;

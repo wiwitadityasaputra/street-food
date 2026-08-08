@@ -2,8 +2,9 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { CuisinesDb } from "@/app/lib/definition";
+import { AddToCartButtonProps } from './add-to-cart-button.definition';
 
-export default function AddToCartButton({cuisine}: {cuisine: CuisinesDb}) {
+export default function AddToCartButton(props: AddToCartButtonProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -20,7 +21,7 @@ export default function AddToCartButton({cuisine}: {cuisine: CuisinesDb}) {
     }
 
     return (
-        <button className="add_to_cart" onClick={() => addToCart(cuisine)}>
+        <button className="add_to_cart" onClick={() => addToCart(props.cuisine)}>
             add to cart
         </button>
     );

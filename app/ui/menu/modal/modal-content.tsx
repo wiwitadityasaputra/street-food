@@ -10,38 +10,13 @@ import {
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_CHECKBOX_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
-    CuisinesDb,
     CuisinesCartDb
 } from "@/app/lib/definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/utils';
 import { addToCart as addToCartAction } from '@/app/lib/actions';
 import { useRouter } from 'next/navigation';
-
-export interface CuisinesContentOptions {
-    cuisine: CuisinesDb;
-    cuisineCarts: CuisinesCartDb[];
-    userId: string;
-}
-
-export interface CuisinesOptionsDetail {
-    id: number;
-    name: string;
-    price: number;
-    checked: boolean;
-}
-
-export interface CuisinesOptions {
-    name: string;
-    mandatory: boolean;
-    detail: CuisinesOptionsDetail[];
-    latestPriceIncrease: number;
-}
-
-export interface CheckboxOptionsState {
-    name: string;
-    price: number;
-}
+import { CheckboxOptionsState, CuisinesContentOptions, CuisinesOptions, CuisinesOptionsDetail } from './modal.definition';
 
 export function ModalContent(props: CuisinesContentOptions) {
     const { replace } = useRouter();

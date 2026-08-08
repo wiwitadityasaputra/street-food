@@ -1,10 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { closeAddToCartModal } from "@/app/lib/actions";
-
-export interface CloseButtonProps {
-    cuisine: string;
-}
+import { CloseButtonProps } from "./close-btn.definition";
 
 export async function CloseButton(props: CloseButtonProps) {
 

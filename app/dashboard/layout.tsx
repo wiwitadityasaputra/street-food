@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
-import DashboardNav from '@/app/ui/dashboard-nav';
+import DashboardNav from '@/app/ui/dashhboard-nav/dashboard-nav';
 import { cookisGetTotalCart } from '../lib/cookie-util';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
