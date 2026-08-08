@@ -1,4 +1,4 @@
-import { CuisinesCartDb, CuisinesDb } from "@/app/lib/service/service.definition";
+import { CuisinesCartDb, CuisinesDb } from "@/app/lib/database/database.definition";
 
 export interface CuisinesContentOptions {
     cuisine: CuisinesDb;

@@ -1,9 +1,8 @@
-import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/service/database.service";
-
 import { CloseButton } from "../close-button/close-btn";
 import { ModalContent } from "./modal-content";
 import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
 import { ModalWrapperOptions } from "./modal.definition";
+import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/database/database";
 
 export async function ModalWrapper(props: ModalWrapperOptions) {
     const cuisineId = props.cuisineId;

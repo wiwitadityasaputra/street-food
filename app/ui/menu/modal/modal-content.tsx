@@ -10,13 +10,13 @@ import {
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_CHECKBOX_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
-    CuisinesCartDb
 } from "@/app/lib/service/service.definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/util/utils';
 import { addToCart as addToCartAction } from '@/app/lib/form-action/menu.actions';
 import { useRouter } from 'next/navigation';
 import { CheckboxOptionsState, CuisinesContentOptions, CuisinesOptions, CuisinesOptionsDetail } from './modal.definition';
+import { CuisinesCartDb } from '@/app/lib/database/database.definition';
 
 export function ModalContent(props: CuisinesContentOptions) {
     const { replace } = useRouter();

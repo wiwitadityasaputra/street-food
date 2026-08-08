@@ -1,4 +1,4 @@
-import { CuisinesDb } from "@/app/lib/service/service.definition";
+import { CuisinesDb } from "@/app/lib/database/database.definition";
 
 export interface AddToCartButtonProps {
     cuisine: CuisinesDb;
