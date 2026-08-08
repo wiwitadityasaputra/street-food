@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { v4 as uuidv4 } from 'uuid';
+import { faker } from '@faker-js/faker';
 
 export const COOKIES_KEY = "street-food-cookie";
 
@@ -23,7 +23,7 @@ export async function cookiesGetUserId(): Promise<string> {
     if (cookieData && cookieData.userId) {
         return cookieData.userId;
     }
-    return uuidv4();
+    return faker.string.uuid();
 }
 
 export async function cookisGetTotalCart(): Promise<number> {
