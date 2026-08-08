@@ -1,20 +1,20 @@
 import Image from 'next/image';
 import { fetchCuisinesByCuisine } from "@/app/lib/data";
-import { Cuisines } from "@/app/lib/definition";
+import { CuisinesDb } from "@/app/lib/definition";
 import { formatCurrency as fc } from "@/app/lib/utils";
 import AddToCartButton from "@/app/ui/menu/add-to-cart-button";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 
-export type FoodListProps = {
+export type CuisinesListProps = {
     cuisine?: string;
 }
 
-export default async function FoodList(props: FoodListProps) {
+export default async function CusinesList(props: CuisinesListProps) {
 
     const formatCurrency = (price: number) => {
         return fc(price);
     };
-    const data: Cuisines[] = await fetchCuisinesByCuisine(props.cuisine);
+    const data: CuisinesDb[] = await fetchCuisinesByCuisine(props.cuisine);
     return (
         <>
             <div className="row grid">

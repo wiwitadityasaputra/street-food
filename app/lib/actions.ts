@@ -6,7 +6,7 @@ import {
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
     AddToCartOption, 
-    CuisineCartPrice,
+    CuisinesCartDbGroupNamePrice,
     AddtoCartActionResponse,
     AddtoCartActionSuccessObject,
     USER_CART_OPTIONS_SEPARATOR
@@ -50,7 +50,7 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
     });
 
     // validation, db check cuisine_cart, cart options lenght should match with db results
-    const cuisinesCart: CuisineCartPrice[] = await fetchCuisineCartPrices(sqlString);
+    const cuisinesCart: CuisinesCartDbGroupNamePrice[] = await fetchCuisineCartPrices(sqlString);
     if (cuisinesCart.length != options.length) {
         return { erroMessage: "Cuisine options is not match with database" };
     }

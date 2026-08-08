@@ -5,36 +5,36 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import "@/app/ui/menu/add-to-cart-modal/add-to-cart-modal.css"
+import "@/app/ui/menu/modal/modal.css"
 import {
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_CHECKBOX_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
-    Cuisines,
-    CuisinesCart
+    CuisinesDb,
+    CuisinesCartDb
 } from "@/app/lib/definition";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
 import { formatCurrency } from '@/app/lib/utils';
 import { addToCart as addToCartAction } from '@/app/lib/actions';
 import { useRouter } from 'next/navigation';
 
-export interface ModalContentOptions {
-    cuisine: Cuisines;
-    cuisineCarts: CuisinesCart[];
+export interface CuisinesContentOptions {
+    cuisine: CuisinesDb;
+    cuisineCarts: CuisinesCartDb[];
     userId: string;
 }
 
-export interface AddToCartOptionsDetail {
+export interface CuisinesOptionsDetail {
     id: number;
     name: string;
     price: number;
     checked: boolean;
 }
 
-export interface AddToCartOptions {
+export interface CuisinesOptions {
     name: string;
     mandatory: boolean;
-    detail: AddToCartOptionsDetail[];
+    detail: CuisinesOptionsDetail[];
     latestPriceIncrease: number;
 }
 
@@ -43,17 +43,17 @@ export interface CheckboxOptionsState {
     price: number;
 }
 
-export function ModalContent(props: ModalContentOptions) {
+export function ModalContent(props: CuisinesContentOptions) {
     const { replace } = useRouter();
     const userId = props.userId;
 
-    const compareCuisineCart = (a: CuisinesCart, b: CuisinesCart) => {
+    const compareCuisineCart = (a: CuisinesCartDb, b: CuisinesCartDb) => {
         return a.order - b.order;
     }
     const cuisineCarts = props.cuisineCarts.sort(compareCuisineCart);
 
     const checkboxOptions: CheckboxOptionsState[] = [];
-    const options: AddToCartOptions[] = [];
+    const options: CuisinesOptions[] = [];
     cuisineCarts.forEach((c) => {
         const finded = options.find((o) => {
             return o.name.toLowerCase() === c.group.toLowerCase();
@@ -87,14 +87,14 @@ export function ModalContent(props: ModalContentOptions) {
         }
     });
 
-    const compareDetail = (a: AddToCartOptionsDetail, b: AddToCartOptionsDetail) => {
+    const compareDetail = (a: CuisinesOptionsDetail, b: CuisinesOptionsDetail) => {
         return a.price - b.price;
     }
     options.forEach(o => {
         o.detail = o.detail.sort(compareDetail);
     })
 
-    const radioOnChange = (o: AddToCartOptions, d: AddToCartOptionsDetail) => {
+    const radioOnChange = (o: CuisinesOptions, d: CuisinesOptionsDetail) => {
         let minus = 0;
         radioState.find(opt => {
             const finded = opt.name === o.name;
@@ -115,7 +115,7 @@ export function ModalContent(props: ModalContentOptions) {
         setRadioState(radioState);
     }
 
-    const checkboxOnChange = (d: AddToCartOptionsDetail) => {
+    const checkboxOnChange = (d: CuisinesOptionsDetail) => {
         checkboxState.find(c => {
             const finded = c.name === d.name;
             if (finded) {

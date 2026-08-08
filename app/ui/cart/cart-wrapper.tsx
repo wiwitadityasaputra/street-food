@@ -1,6 +1,6 @@
 "use server";
 
-import "@/app/dashboard/cart/cart.css";
+import "@/app/ui/cart/cart.css";
 import { CartContent } from "./cart-content";
 import { getUserCarts } from '@/app/lib/cart.service';
 import { UserCartResponse } from '@/app/lib/definition';

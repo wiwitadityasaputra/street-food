@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
+
+import "@/app/ui/cart/cart.css";
 import { UserCartResponse } from "@/app/lib/definition";
 import { formatCurrency } from "@/app/lib/utils";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
 
 export interface CartContnetProps {
     carts: UserCartResponse[]

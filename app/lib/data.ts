@@ -1,5 +1,5 @@
 import postgres from 'postgres';
-import { CuisineCartPrice, Cuisines, CuisinesCart, UserCartDb } from './definition';
+import { CuisinesCartDbGroupNamePrice, CuisinesDb, CuisinesCartDb, UserCartDb } from './definition';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -10,14 +10,14 @@ function allowedCuisine(cuisine?: string) {
     return false;
 }
 
-export async function fetchCuisinesByCuisine(cuisine?: string): Promise<Cuisines[]> {
+export async function fetchCuisinesByCuisine(cuisine?: string): Promise<CuisinesDb[]> {
     // await new Promise((resolve) => setTimeout(resolve, 3000));// food-list
     try {
         let data;
         if (cuisine && allowedCuisine(cuisine)) {
-            data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE cuisine = ${cuisine}::cuisine_type ORDER BY rate DESC`;
+            data = await sql<CuisinesDb[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE cuisine = ${cuisine}::cuisine_type ORDER BY rate DESC`;
         } else {
-            data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines ORDER BY rate DESC`;
+            data = await sql<CuisinesDb[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines ORDER BY rate DESC`;
         }
         return data;
     } catch (error) {
@@ -26,10 +26,10 @@ export async function fetchCuisinesByCuisine(cuisine?: string): Promise<Cuisines
     }
 }
 
-export async function fetchCuisinesById(id: string): Promise<Cuisines | undefined> {
+export async function fetchCuisinesById(id: string): Promise<CuisinesDb | undefined> {
     try {
         // await new Promise((resolve) => setTimeout(resolve, 3000));// addtocart
-        const data = await sql<Cuisines[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE id = ${id}`;
+        const data = await sql<CuisinesDb[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE id = ${id}`;
         if (data.length) {
             return data[0];
         }
@@ -40,10 +40,10 @@ export async function fetchCuisinesById(id: string): Promise<Cuisines | undefine
     }
 }
 
-export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesCart[]> {
+export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesCartDb[]> {
     // await new Promise((resolve) => setTimeout(resolve, 3000));// addtocart
     try {
-        const data = await sql<CuisinesCart[]>`SELECT id,cuisine_cart_type as "cartType","group",name,price,"order" FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
+        const data = await sql<CuisinesCartDb[]>`SELECT id,cuisine_cart_type as "cartType","group",name,price,"order" FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);
@@ -51,9 +51,9 @@ export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<Cu
     }
 }
 
-export async function fetchCuisineCartPrices(sqlString: string): Promise<CuisineCartPrice[]> {
+export async function fetchCuisineCartPrices(sqlString: string): Promise<CuisinesCartDbGroupNamePrice[]> {
     try {
-        const data = await sql.unsafe<CuisineCartPrice[]>(sqlString);
+        const data = await sql.unsafe<CuisinesCartDbGroupNamePrice[]>(sqlString);
         return data;
     } catch (error) {
         console.error('Database Error:', error);
@@ -73,7 +73,7 @@ export async function writeToUserCart(cuisineId: string, cuisineName: string, us
     }
 }
 
-export async function fetchUserCartByUserAndFlag(userId: string, flag: string) {
+export async function fetchUserCartByUserAndFlag(userId: string, flag: string): Promise<UserCartDb[]> {
     try {
         const data = await sql<UserCartDb[]>`SELECT cuisine_id,cuisine_name,user_cart_id,price_per_item,quantity,final_price,options 
             FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
@@ -84,7 +84,7 @@ export async function fetchUserCartByUserAndFlag(userId: string, flag: string) {
     }
 }
 
-export async function countUserCartByUserAndFlag(userId: string, flag: string) {
+export async function countUserCartByUserAndFlag(userId: string, flag: string): Promise<number> {
     try {
         const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
         return total;

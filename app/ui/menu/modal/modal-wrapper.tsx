@@ -1,6 +1,6 @@
 import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/data";
 
-import { CloseButton } from "./close-btn";
+import { CloseButton } from "../close-btn";
 import { ModalContent } from "./modal-content";
 import { cookiesGetUserId } from "@/app/lib/cookie-util";
 

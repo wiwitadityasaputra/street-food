@@ -19,7 +19,7 @@ const cuisines = [
     }, 
 ];
 
-export default function Cuisines() {
+export default function CuisinesMenu() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();

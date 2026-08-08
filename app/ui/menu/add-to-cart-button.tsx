@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Cuisines } from "@/app/lib/definition";
+import { CuisinesDb } from "@/app/lib/definition";
 
-export default function AddToCartButton({cuisine}: {cuisine: Cuisines}) {
+export default function AddToCartButton({cuisine}: {cuisine: CuisinesDb}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-    const addToCart = (cuisine: Cuisines) => {
+    const addToCart = (cuisine: CuisinesDb) => {
         // 1. Create a mutable copy of existing parameters
         const params = new URLSearchParams(searchParams.toString());
         

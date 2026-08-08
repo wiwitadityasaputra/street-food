@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
 
 import "@/app/dashboard/menu/menu.css";
-import FoodList from "@/app/ui/menu/food-list";
-import Cuisines, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines";
-import { ModalSkeleton } from '@/app/ui/menu/add-to-cart-modal/modal-skeleton';
-import { ModalWrapper } from '@/app/ui/menu/add-to-cart-modal/modal-wrapper';
-import { FoodListSkeleton } from '@/app/ui/menu/food-list-skeleton';
+import CusinesList from "@/app/ui/menu/cuisines-list/cuisines-list";
+import CuisinesMenu, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines-menu";
+import { ModalSkeleton } from '@/app/ui/menu/modal/modal-skeleton';
+import { ModalWrapper } from '@/app/ui/menu/modal/modal-wrapper';
+import { CuisinesListSkeleton } from '@/app/ui/menu/cuisines-list/cuisines-list-skeleton';
 
 export default async function Menu(props: {
   searchParams?: Promise<{
@@ -25,9 +25,9 @@ export default async function Menu(props: {
             
             <section className="section-menu">
                 <div className="container">
-                    <Cuisines />
-                    <Suspense key={cuisineParams} fallback={<FoodListSkeleton />}>
-                        <FoodList cuisine={cuisineParams} />
+                    <CuisinesMenu />
+                    <Suspense key={cuisineParams} fallback={<CuisinesListSkeleton />}>
+                        <CusinesList cuisine={cuisineParams} />
                     </Suspense>
                 </div>
             </section>

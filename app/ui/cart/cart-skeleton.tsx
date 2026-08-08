@@ -1,6 +1,6 @@
 "use server";
 
-import "@/app/dashboard/cart/cart.css";
+import "@/app/ui/cart/cart.css";
 
 export async function CartSkeleton() {
     return (<>

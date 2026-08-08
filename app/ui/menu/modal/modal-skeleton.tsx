@@ -1,6 +1,6 @@
-import "@/app/ui/menu/add-to-cart-modal/add-to-cart-modal.css"
+import "@/app/ui/menu/modal/modal.css"
 
-import { CloseButton } from "./close-btn";
+import { CloseButton } from "../close-btn";
 
 export interface ModalSkeletonProps {
     cuisine: string;

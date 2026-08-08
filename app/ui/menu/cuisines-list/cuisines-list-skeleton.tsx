@@ -1,5 +1,5 @@
 
-export async function FoodListSkeleton() {
+export async function CuisinesListSkeleton() {
     return (<>
         <div>
             <div>
