@@ -1,9 +1,9 @@
 "use server";
 
-import "@/app/ui/cart/cart.css";
+import "@/app/ui/cart/checkout/checkout.css"
 
 export async function CheckoutSkeleton() {
     return (<>
-        <div className="cart">please wait,,,</div>
+        <div className="checkout">please wait,,,</div>
     </>)
 }

@@ -9,8 +9,11 @@ export const getRandomLastname = () => {
 export const getRandomEmail = () => {
     return faker.internet.email();
 };
-export const getRandomStreet = () => {
+export const getRandomStreetAddress = () => {
     return faker.location.streetAddress();
+};
+export const getRandomSecondaryAddress = () => {
+    return faker.location.secondaryAddress();
 };
 export const getRandomCity = () => {
     return faker.location.city();
@@ -23,4 +26,7 @@ export const getRandomZipcode = () => {
 };
 export const getRandomPhonenumber = () => {
     return faker.phone.number();
+};
+export const getRandomInfo = () => {
+    return faker.lorem.words();
 };

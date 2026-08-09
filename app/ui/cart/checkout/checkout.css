@@ -1,0 +1,15 @@
+.checkout {
+    padding-left: 4vw;
+    padding-right: 4vw;
+    margin-top: 140px;
+}
+
+.checkout .cost-info {
+    margin-top: 67px;
+}
+
+.checkout .sticky-sidebar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 150px;
+}
