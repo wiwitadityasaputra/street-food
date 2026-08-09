@@ -1,10 +1,13 @@
 import postgres from 'postgres';
+
 import {
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
     CuisinesDb,
+    OrderDbFlag,
     UserCartDb,
-    UserCartDbFlag
+    UserCartDbFlag,
+    UserCartDbUserCartId
 } from '@/app/lib/database/database.definition';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -90,6 +93,16 @@ export async function fetchUserCartByUserAndFlag(userId: string, flag: UserCartD
     }
 }
 
+export async function fetchUserCartIdByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<UserCartDbUserCartId[]> {
+    try {
+        const data = await sql<UserCartDbUserCartId[]>`SELECT user_cart_id as usercartid FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
 export async function countUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<number> {
     try {
         const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
@@ -106,5 +119,25 @@ export async function deleteUserCartByUserAndUserCartId(userId: string, userCart
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to count data.');
+    }
+}
+
+export async function writeToOrder(flag: OrderDbFlag): Promise<any> {
+    try {
+        const result = await sql`INSERT INTO user_order (flag, created_date) VALUES (${flag}, current_timestamp) returning user_order_id as orderid`;
+        return (result as any)[0].orderid;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to write data.');
+    }
+}
+
+export async function updateUserCartFlagIsCooking(sqlString: string): Promise<any> {
+    try {
+        const data = await sql.unsafe(sqlString);
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
     }
 }

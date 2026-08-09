@@ -1,13 +1,17 @@
 "use client";
-import { useActionState, useEffect } from 'react';
+
+import React from 'react';
 
 import "@/app/ui/cart/checkout/checkout.css"
-import { CheckoutContentProps } from "./checkout.definition";
+import { useRouter } from 'next/navigation';
+import { CheckoutContentProps, CheckoutContentState } from "./checkout.definition";
 import { formatCurrency } from "@/app/lib/util/utils";
 import { processCarts } from "@/app/lib/form-action/cart.action";
 import { DEFAULT_SUCCESS_MESSAGE } from '@/app/lib/form-action/form-action.definition';
+import clsx from 'clsx';
 
 export default function CheckoutContent(props: CheckoutContentProps) {
+    const { replace } = useRouter();
     let subTotal = 0;
     let total = 0;
     props.carts.forEach(c => {
@@ -15,15 +19,21 @@ export default function CheckoutContent(props: CheckoutContentProps) {
     });
     total = subTotal;
 
-    const [state, formAction, pending] = useActionState(processCarts, {erroMessage: ''});
-    useEffect(() => {
+    const [state, formAction, pending] = React.useActionState(processCarts, {});
+    React.useEffect(() => {
+        console.log("dbg cart state ", state)
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE ) {
-            // replace("/queue");
+            setCheckoutContentState(CheckoutContentState.SUCCESS_CHECKOUT);
+            setTimeout(() => {
+                replace("/queue");
+            }, 10000)
         }
-    }, [state.successMessage]);
+    }, [state]);
+    let [checkoutContentState, setCheckoutContentState] = React.useState(CheckoutContentState.INIT);
 
     return (<>
-        <form action={formAction}>
+        <form action={formAction}
+            className={clsx({"checkout-hide": checkoutContentState === CheckoutContentState.SUCCESS_CHECKOUT})}>
             <div className="checkout">
                 <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70">
                     <div className="container">
@@ -141,6 +151,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                             <p className="total"><span>total:</span> <span>{formatCurrency(total)}</span></p>
                                         </div>
                                         <div className="process">
+                                            <input type="hidden" name="userId" value={props.userId}></input>
                                             <button type="submit" disabled={pending}>
                                                 Process
                                             </button>
@@ -153,5 +164,24 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                 </section>
             </div>
         </form>
+        <div className={clsx("checkout", {"checkout-hide": checkoutContentState === CheckoutContentState.INIT})}>
+            <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70">
+                <div className="container">
+                    <div className="row">
+                        <div className="section_heading">
+                            <h4>Success Checkout</h4>
+                            <h5>Thank your for using our services.</h5>
+                            <p className="success-checkout-info">
+                                We still processing your request, please check <strong>{props.emailAddress}</strong> or 
+                                <strong> {props.phoneNumber}</strong> regularly. We will send your order information there.
+                            </p>
+                            <p className="success-checkout-info">
+                                You can also visit <strong>/queue</strong> page to check other orders, we will redirect you in seconds.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </>)
 }

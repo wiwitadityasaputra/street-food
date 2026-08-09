@@ -28,3 +28,10 @@
 .checkout .process button:disabled {
     background: gray;
 }
+.checkout-hide {
+    display: none;
+}
+.success-checkout-info {
+    text-align: left !important;
+    padding-left: 0px !important;
+}

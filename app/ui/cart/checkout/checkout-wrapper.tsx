@@ -39,6 +39,7 @@ export async function CheckoutWrapper() {
             const additionalInfo = getRandomInfo();
             return (<>
                 <CheckoutContent
+                    userId={userId}
                     carts={carts}
                     firstName={firstName}
                     lastName={lastName}

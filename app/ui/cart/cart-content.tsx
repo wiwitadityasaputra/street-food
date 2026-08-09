@@ -37,6 +37,9 @@ export function CartContent(props: CartContentProps) {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12 wow fadeInUp" data-wow-duration="1s">
+                            <div className="checkout_form">
+                                <h5>Your Order</h5>
+                            </div>
                             <div className="cart_list">
                                 <div className="table-responsive">
                                     <table>

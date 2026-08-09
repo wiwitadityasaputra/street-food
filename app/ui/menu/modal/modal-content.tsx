@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useActionState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -127,12 +127,13 @@ export function ModalContent(props: CuisinesContentOptions) {
     let [quantity, setQuantity] = React.useState(1);
     let [radioState, setRadioState] = React.useState(options);
     let [checkboxState, setCheckboxState] = React.useState(checkboxOptions);
-    const [state, formAction, pending] = useActionState(addToCartAction, {erroMessage: ''});
-    useEffect(() => {
+    const [state, formAction, pending] = React.useActionState(addToCartAction, {erroMessage: ''});
+    React.useEffect(() => {
+        console.log("dbg menu state ", state)
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE && state.successObject) {
             replace("/cart");
         }
-    }, [state.successMessage, state.successObject]);
+    }, [state]);
 
     return (<>
          <div className="cart_popup_img">

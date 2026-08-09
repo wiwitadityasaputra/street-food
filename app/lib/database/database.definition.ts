@@ -34,9 +34,21 @@ export type UserCartDb = {
     options: string;
 }
 
+export type UserCartDbUserCartId = {
+    usercartid: string;
+}
+
 export enum UserCartDbFlag {
     ACTIVE = 1,
     DELETED = 2,
     COOKING = 3,
     DONE = 4
 };
+
+export enum OrderDbFlag {
+    CREATED = 1,
+    COOKED = 2,
+    SHIPPED = 3,
+    DELIVERED = 4,
+    CANCELLED = 5
+}
