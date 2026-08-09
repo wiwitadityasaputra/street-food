@@ -1,9 +1,9 @@
 import { fetchUserCartByUserAndFlag } from "@/app/lib/database/database";
-import { UserCartDb } from "@/app/lib/database/database.definition";
+import { UserCartDb, UserCartDbFlag } from "@/app/lib/database/database.definition";
 import { USER_CART_OPTIONS_SEPARATOR, UserCartResponse } from "@/app/lib/service/service.definition";
 
 export async function getUserCarts(userId: string): Promise<UserCartResponse[]> {
-    const data: UserCartDb[] = await fetchUserCartByUserAndFlag(userId, "active");
+    const data: UserCartDb[] = await fetchUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     const result: UserCartResponse[] = [];
     data.forEach(d => {
         const options: string[] = [];

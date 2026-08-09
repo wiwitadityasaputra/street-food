@@ -9,13 +9,14 @@ import {
 import {
     cookiesSetUserIdAndTotalCart
 } from '@/app/lib/util/cookie-util';
+import { UserCartDbFlag } from '../database/database.definition';
 
 export async function deleteCartItemAction(formData: FormData): Promise<void> {
     const userId = String(formData.get("userId"));
     const userCartId = String(formData.get("userCartId"));
     await deleteUserCartByUserAndUserCartId(userId, userCartId);
 
-    const totalCart = await countUserCartByUserAndFlag(userId, "active");
+    const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
     redirect(`/cart`);

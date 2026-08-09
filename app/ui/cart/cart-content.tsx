@@ -10,6 +10,7 @@ import "@/app/ui/cart/cart.css";
 import { formatCurrency } from "@/app/lib/util/utils";
 import { CartContentProps } from "@/app/ui/cart/cart-content.definition";
 import { deleteCartItemAction } from "@/app/lib/form-action/cart.action";
+import Link from "next/link";
 
 export function CartContent(props: CartContentProps) {
     const { replace } = useRouter();
@@ -123,7 +124,9 @@ export function CartContent(props: CartContentProps) {
                                             <form>
                                                 <button type="submit">apply</button>
                                             </form>
-                                            <a className="common_btn" href="check_out.html">checkout</a>
+                                            <Link className="common_btn" href={"/cart/checkout"}>
+                                                Checkout
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

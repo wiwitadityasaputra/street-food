@@ -40,6 +40,16 @@ export default function DashboardNav(props: DashboardNavProps) {
     return menuName;
   }
 
+  const isActive = (href: string, pathname: string) => {
+    const a = pathname.toLowerCase().slice(1);
+    const b = href.toLowerCase().slice(1);
+    if (a === "" || b === "") {
+      return a === b;
+    }
+    const result = a.indexOf(b) === 0
+    return result;
+  }
+
   return (<>
     <nav className="navbar navbar-expand-lg main_menu">
       <div className="container">
@@ -71,7 +81,7 @@ export default function DashboardNav(props: DashboardNavProps) {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={clsx("nav-link", {"active": link.href.toLowerCase() === pathname.toLowerCase()})} aria-current="page"
+                    className={clsx("nav-link", {"active": isActive(link.href, pathname)})} aria-current="page"
                     onClick={collapseMenuClicked}>
                     {generateName(link.name)}
                   </Link>

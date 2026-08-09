@@ -16,7 +16,8 @@ import {
     AddToCartOption
 } from '@/app/lib/form-action/form-action.definition';
 import {
-    CuisinesCartDbGroupNamePrice
+    CuisinesCartDbGroupNamePrice,
+    UserCartDbFlag
 } from '@/app/lib/database/database.definition';
 import {
     countUserCartByUserAndFlag,
@@ -108,7 +109,7 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
     });
 
     await writeToUserCart(cuisineId, cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
-    const totalCart = await countUserCartByUserAndFlag(userId, "active");
+    const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
     return {

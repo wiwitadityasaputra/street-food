@@ -33,3 +33,10 @@ export type UserCartDb = {
     final_price: number;
     options: string;
 }
+
+export enum UserCartDbFlag {
+    ACTIVE = 1,
+    DELETED = 2,
+    COOKING = 3,
+    DONE = 4
+};

@@ -3,7 +3,8 @@ import {
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
     CuisinesDb,
-    UserCartDb
+    UserCartDb,
+    UserCartDbFlag
 } from '@/app/lib/database/database.definition';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -70,7 +71,7 @@ export async function writeToUserCart(cuisineId: string, cuisineName: string, us
     try {
         const data = await sql`
             INSERT INTO user_cart (cuisine_id, cuisine_name, user_id, price_per_item, quantity, final_price, options, flag)
-                VALUES (${cuisineId}, ${cuisineName}, ${userId}, ${pricePerItem}, ${quantity}, ${finalPrice}, ${options}, 'active');`;
+                VALUES (${cuisineId}, ${cuisineName}, ${userId}, ${pricePerItem}, ${quantity}, ${finalPrice}, ${options}, ${UserCartDbFlag.ACTIVE});`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);
@@ -78,7 +79,7 @@ export async function writeToUserCart(cuisineId: string, cuisineName: string, us
     }
 }
 
-export async function fetchUserCartByUserAndFlag(userId: string, flag: string): Promise<UserCartDb[]> {
+export async function fetchUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<UserCartDb[]> {
     try {
         const data = await sql<UserCartDb[]>`SELECT cuisine_id,cuisine_name,user_cart_id,price_per_item,quantity,final_price,options 
             FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
@@ -89,7 +90,7 @@ export async function fetchUserCartByUserAndFlag(userId: string, flag: string): 
     }
 }
 
-export async function countUserCartByUserAndFlag(userId: string, flag: string): Promise<number> {
+export async function countUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<number> {
     try {
         const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
         return total;
@@ -101,7 +102,7 @@ export async function countUserCartByUserAndFlag(userId: string, flag: string): 
 
 export async function deleteUserCartByUserAndUserCartId(userId: string, userCartId: string) {
     try {
-        await sql`DELETE FROM user_cart WHERE user_cart_id = ${userCartId} AND user_id = ${userId}`;
+        await sql`UPDATE user_cart SET flag = ${UserCartDbFlag.DELETED} WHERE user_cart_id = ${userCartId} AND user_id = ${userId}`;
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to count data.');
