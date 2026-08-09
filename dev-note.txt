@@ -9,34 +9,3 @@ user_cart
     user_cart_id
     order_id
 
-order
-    order_id
-    user_id
-        first_name
-        last_name
-        main_address
-        second_address
-        city
-        state
-        zip_code
-        phone_number
-        email_address
-    flag            created cooked shipped delivered, cancelled
-    created_date
-    cooked_date
-    shipped_date
-    delivered_date
-    cancelled_date
-
-CREATE TABLE "user_order" (
-	"order_id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "order_order_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
-	"flag" varchar(20) NOT NULL,
-	"created_date" timestamp,
-	"cooked_date" timestamp,
-	"shipped_date" timestamp,
-	"delivered_date" timestamp,
-	"cancelled_date" timestamp
-);
-CREATE UNIQUE INDEX "order_pkey" ON "order" ("order_id");
-
-ALTER TABLE "user_cart" ADD COLUMN "user_order_id" integer;

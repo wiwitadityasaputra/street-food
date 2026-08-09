@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useRef } from 'react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 
@@ -24,24 +24,34 @@ export default function CheckoutContent(props: CheckoutContentProps) {
     total = subTotal;
 
     const [state, formAction, pending] = React.useActionState(processCarts, {});
+    const [checkoutContentState, setCheckoutContentState] = React.useState(CheckoutContentState.INIT);
+    const [time, setTime] = React.useState(10);
+
     React.useEffect(() => {
         let timeId: NodeJS.Timeout;
+        let t: number;
 
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE ) {
             setCheckoutContentState(CheckoutContentState.SUCCESS_CHECKOUT);
             dispatch(setTotalCart(0));
             timeId = setTimeout(() => {
                 replace("/queue");
-            }, 10000)
+            }, 11000);
+
+            t = window.setInterval(() => {
+                setTime(prevTime => prevTime - 1);
+            }, 1000);
         }
 
         return () => {
             if (timeId) {
-                clearTimeout(timeId)
+                window.clearTimeout(timeId)
+            }
+            if (t) {
+                window.clearInterval(t);
             }
         }
     }, [state]);
-    let [checkoutContentState, setCheckoutContentState] = React.useState(CheckoutContentState.INIT);
 
     return (<>
         <form action={formAction}
@@ -191,7 +201,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                 We will send your order information there.
                             </p>
                             <p className="success-checkout-info">
-                                You can also visit <strong>/queue</strong> page to check other orders, we will redirect you in seconds.
+                                You can also visit <strong>/queue</strong> page to check other orders, we will redirect you in {time} second.
                             </p>
                         </div>
                     </div>
