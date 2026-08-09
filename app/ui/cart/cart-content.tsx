@@ -24,13 +24,18 @@ export function CartContent(props: CartContentProps) {
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE && state.successObject) {
             const newTotalCart = state.successObject.totalCart;
             dispatch(setTotalCart(newTotalCart));
-            replace("/cart");
+            if (newTotalCart === 0) {
+                replace("/menu");
+            } else {
+                replace("/cart");
+            }
+            
         }
     }, [state]);
 
     const cartItems = props.carts;
     if (cartItems.length === 0) {
-        replace("/menu");
+        return <div className="cart">No cart data, please go to menu then select food.</div>;
     }
 	let finalPrice = 0;
 	cartItems.forEach(c => {

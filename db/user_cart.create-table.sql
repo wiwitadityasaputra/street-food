@@ -1,9 +1,9 @@
 CREATE TABLE "user_cart" (
 	"user_cart_id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "user_cart_user_cart_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"user_id" varchar(40) NOT NULL,
-	"price_per_item" smallint NOT NULL,
-	"quantity" smallint NOT NULL,
-	"final_price" smallint NOT NULL,
+	"price_per_item" integer NOT NULL,
+	"quantity" integer NOT NULL,
+	"final_price" integer NOT NULL,
 	"options" varchar(200) NOT NULL,
 	"flag" text NOT NULL,
 	"cuisine_id" smallint NOT NULL,
