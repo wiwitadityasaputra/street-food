@@ -53,7 +53,7 @@ export function CartContent(props: CartContentProps) {
                                             </tr>
 											{cartItems.map(c => {
 												return (
-													<tr key={c.cuisineId}>
+													<tr key={c.userCartId}>
 														<td className="pro_img item-image">
 															<Image
 																src={`/images/cuisine/${c.cuisineId}/1.jpg`}

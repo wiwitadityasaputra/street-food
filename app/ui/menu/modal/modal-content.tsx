@@ -22,6 +22,7 @@ import {
     CuisinesOptionsDetail
 } from '@/app/ui/menu/modal/modal.definition';
 import { CuisinesCartDb } from '@/app/lib/database/database.definition';
+import { DEFAULT_SUCCESS_MESSAGE } from '@/app/lib/form-action/form-action.definition';
 
 export function ModalContent(props: CuisinesContentOptions) {
     const { replace } = useRouter();
@@ -128,7 +129,7 @@ export function ModalContent(props: CuisinesContentOptions) {
     let [checkboxState, setCheckboxState] = React.useState(checkboxOptions);
     const [state, formAction, pending] = useActionState(addToCartAction, {erroMessage: ''});
     useEffect(() => {
-        if (state.successMessage === "OK" && state.successObject) {
+        if (state.successMessage === DEFAULT_SUCCESS_MESSAGE && state.successObject) {
             replace("/cart");
         }
     }, [state.successMessage, state.successObject]);
