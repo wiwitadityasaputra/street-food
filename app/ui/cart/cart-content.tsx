@@ -98,7 +98,7 @@ export function CartContent(props: CartContentProps) {
                                                             <form action={formAction}>
                                                                 <input type="hidden" name="userId" value={props.userId}></input>
                                                                 <input type="hidden" name="userCartId" value={c.userCartId}></input>
-                                                                <button type="submit">
+                                                                <button type="submit" disabled={pending}>
                                                                     <FontAwesomeIcon
                                                                         icon={faTimes}
                                                                         size="lg"

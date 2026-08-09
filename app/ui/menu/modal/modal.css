@@ -19,3 +19,36 @@
 .form-action-error {
   color: red
 }
+
+.qty-btn:disabled {
+  background-color: gray !important;
+}
+
+.add-to-cart-wrapper {
+  height: 32px !important;
+}
+
+button.add-to-cart-btn {
+  margin-top: 10px;
+  text-transform: capitalize;
+  padding: 12px 40px 12px 40px;
+  text-align: center;
+  border-radius: 30px;
+  background: var(--colorPrimary);
+  color: var(--colorWhite);
+  font-size: 16px;
+  font-weight: 600;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transition: all linear .3s;
+  -webkit-transition: all linear .3s;
+  -moz-transition: all linear .3s;
+  -ms-transition: all linear .3s;
+  -o-transition: all linear .3s;
+}
+button.add-to-cart-btn:disabled {
+  background: gray !important;
+}

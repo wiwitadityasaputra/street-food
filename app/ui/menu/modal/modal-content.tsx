@@ -181,7 +181,9 @@ export function ModalContent(props: CuisinesContentOptions) {
                                         } else {
                                             checkboxOnChange(d);
                                         }
-                                    }}/>
+                                    }}
+                                    disabled={pending}
+                                />
                                 <label className="form-check-label add-to-cart-detail-price">
                                     {d.name} <span>+ {formatCurrency(d.price)}</span>
                                 </label>
@@ -194,18 +196,22 @@ export function ModalContent(props: CuisinesContentOptions) {
                     <h5>select quanitty</h5>
                     <div className="quentity_btn_area d-flex flex-wrapa align-items-center">
                         <div className="quentity_btn">
-                            <button type="button" className="btn btn-danger" onClick={() => {multipleOrder(-1)}}>
+                            <button type="button" className="btn btn-danger qty-btn"
+                                disabled={pending}
+                                onClick={() => {multipleOrder(-1)}}>
                                 <FontAwesomeIcon icon={faMinus} size="sm" />
                             </button>
                             <input type="text" name="quantity" value={quantity} placeholder={String(quantity)} disabled></input>
-                            <button type="button" className="btn btn-success" onClick={() => {multipleOrder(1)}}>
+                            <button type="button" className="btn btn-success qty-btn"
+                                disabled={pending}
+                                onClick={() => {multipleOrder(1)}}>
                                 <FontAwesomeIcon icon={faPlus} size="sm" />
                             </button>
                         </div>
                         <h3>{formatCurrency(finalPrice)}</h3>
                     </div>
                 </div>
-                <ul className="details_button_area d-flex flex-wrap">
+                <ul className="details_button_area d-flex flex-wrap add-to-cart-wrapper">
                     <li>
                         <input type="hidden" name="userId" value={userId}></input>
                         <input type="hidden" name="cuisineId" value={props.cuisine.id}></input>
@@ -218,8 +224,8 @@ export function ModalContent(props: CuisinesContentOptions) {
                                 {state.erroMessage}
                             </div>
                         )}
-                        <button className="common_btn" type="submit" disabled={pending}>
-                            add to cart
+                        <button className="add-to-cart-btn" type="submit" disabled={pending}>
+                            Add To Cart
                         </button>
                     </li>
                 </ul>
