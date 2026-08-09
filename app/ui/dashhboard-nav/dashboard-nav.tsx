@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { DashboardNavProps } from '@/app/ui/dashhboard-nav/dashboard-nav.definition';
-import TotalCart from '@/app/ui/dashhboard-nav/total-cart';
+import { useAppSelector } from "@/app/lib/util/redux-provider";
+import { DEFAULT_TOTALCART_APPSLICE } from "@/app/lib/util/redux-provider/app-slice";
 
 const MENU_CART = "Cart";
 const links = [
@@ -27,12 +28,21 @@ const links = [
 
 export default function DashboardNav(props: DashboardNavProps) {
   let [collapse, setCollapse] = React.useState(true);
+  const pathname = usePathname();
+
+  const totalCart = useAppSelector((state) => state.app.totalCart);
+  let [finalCart, setFinalCart] = React.useState(props.totalCart);
+  let [showCardMenu, setShowCardMenu] = React.useState(false);
+  React.useEffect(() => {
+    if (totalCart != DEFAULT_TOTALCART_APPSLICE) {
+      setFinalCart(totalCart);
+      setShowCardMenu(totalCart > 0);
+    }
+  }, [totalCart]); 
 
   function collapseMenuClicked() {
     setCollapse(!collapse);
-  }
-
-  const pathname = usePathname();
+  } 
 
   const isCartMenu = (menuName: string) => {
     return MENU_CART === menuName;
@@ -43,6 +53,10 @@ export default function DashboardNav(props: DashboardNavProps) {
       return `${menuName} (${props.totalCart})`;
     }
     return menuName;
+  }
+
+  const generateCartName = (menuName: string) => {
+    return (<>{menuName} ({finalCart})</>);
   }
 
   const isActive = (href: string, pathname: string) => {
@@ -81,17 +95,26 @@ export default function DashboardNav(props: DashboardNavProps) {
         >
           <ul className="navbar-nav m-auto">
             {links.map((link) => {
-              return (
-                <li className="nav-item" key={link.name}>
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={clsx("nav-link", {"active": isActive(link.href, pathname)})} aria-current="page"
-                    onClick={collapseMenuClicked}>
-                    {isCartMenu(link.name) ? <TotalCart totalCartInit={props.totalCart} menuName={link.name} /> :  generateName(link.name)}
-                  </Link>
-                </li>);
-            })}
+              const isCart = isCartMenu(link.name);
+              if (!(isCart && !showCardMenu)) {
+                return (
+                  <li className="nav-item" key={link.name}>
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={clsx("nav-link", {"active": isActive(link.href, pathname)})} aria-current="page"
+                      onClick={collapseMenuClicked}>
+                      {
+                        isCart ?
+                          generateCartName(link.name) : 
+                          generateName(link.name)
+                      }
+                    </Link>
+                  </li>);
+                }                
+              }
+
+            )}
             <li className="nav-item" key="queue">
                 <a className="nav-link" href="chefs.html">Queue</a>
             </li>

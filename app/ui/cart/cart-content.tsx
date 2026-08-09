@@ -30,9 +30,7 @@ export function CartContent(props: CartContentProps) {
 
     const cartItems = props.carts;
     if (cartItems.length === 0) {
-        return (<div className="cart">
-            Empty Cart, please choose cuisine first.
-        </div>);
+        replace("/menu");
     }
 	let finalPrice = 0;
 	cartItems.forEach(c => {
