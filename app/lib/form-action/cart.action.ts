@@ -9,9 +9,6 @@ import {
     updateUserCartFlagIsCooking,
     writeToOrder
 } from "@/app/lib/database/database";
-import {
-    cookiesSetUserIdAndTotalCart
-} from '@/app/lib/util/cookie-util';
 import { OrderDbFlag, UserCartDbFlag } from '../database/database.definition';
 import { DEFAULT_SUCCESS_MESSAGE, DeleteCartActionResponse, ProcessCartActionResponse } from './form-action.definition';
 
@@ -19,12 +16,13 @@ export async function deleteCartItemAction(prevState: any, formData: FormData): 
     const userId = String(formData.get("userId"));
     const userCartId = String(formData.get("userCartId"));
     await deleteUserCartByUserAndUserCartId(userId, userCartId);
-
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
-    await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
     return {
-        successMessage: DEFAULT_SUCCESS_MESSAGE
+        successMessage: DEFAULT_SUCCESS_MESSAGE,
+        successObject: {
+            totalCart: totalCart
+        }
     }
 }
 
@@ -56,7 +54,7 @@ export async function processCarts(prevState: any, formData: FormData): Promise<
 
         // update cookie, set cart to 0
         // dev-note by adding "await", somehow it will refresh the page 
-        cookiesSetUserIdAndTotalCart(userId, 0);
+        // cookiesSetUserId(userId);
     } catch (error) {
         return {
             erroMessage: String(error)

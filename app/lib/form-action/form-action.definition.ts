@@ -13,22 +13,20 @@ export type AddtoCartActionResponse = {
 }
 
 export type AddtoCartActionSuccessObject = {
-    userId: string;
-    cuisineId: string;
-    cuisineName: string;
-    pricePerItem: number;
-    quantity: number;
-    finalPrice: number;
-    options: string[];
     totalCart: number;
 }
 
-
 // Cart Form Action
+export type DeleteCartActionSuccessObject = {
+    totalCart: number;
+}
+
 export type DeleteCartActionResponse = {
     erroMessage?: string;
-    successMessage?: string;    
+    successMessage?: string;
+    successObject?: DeleteCartActionSuccessObject;
 }
+
 export type ProcessCartActionResponse = {
     erroMessage?: string;
     successMessage?: string;

@@ -25,12 +25,20 @@ export default function CheckoutContent(props: CheckoutContentProps) {
 
     const [state, formAction, pending] = React.useActionState(processCarts, {});
     React.useEffect(() => {
+        let timeId: NodeJS.Timeout;
+
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE ) {
             setCheckoutContentState(CheckoutContentState.SUCCESS_CHECKOUT);
             dispatch(setTotalCart(0));
-            setTimeout(() => {
+            timeId = setTimeout(() => {
                 replace("/queue");
             }, 10000)
+        }
+
+        return () => {
+            if (timeId) {
+                clearTimeout(timeId)
+            }
         }
     }, [state]);
     let [checkoutContentState, setCheckoutContentState] = React.useState(CheckoutContentState.INIT);

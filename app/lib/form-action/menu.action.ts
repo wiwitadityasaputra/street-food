@@ -8,11 +8,10 @@ import {
     USER_CART_OPTIONS_SEPARATOR
 } from '@/app/lib/service/service.definition';
 import {
-    cookiesSetUserIdAndTotalCart
+    cookiesSetUserId
 } from '@/app/lib/util/cookie-util';
 import {
     AddtoCartActionResponse,
-    AddtoCartActionSuccessObject,
     AddToCartOption,
     DEFAULT_SUCCESS_MESSAGE
 } from '@/app/lib/form-action/form-action.definition';
@@ -88,22 +87,9 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
         return { erroMessage: "Final price is not match with database."};
     }
 
-    const response: AddtoCartActionSuccessObject = {
-        userId: userId,
-        cuisineId: cuisineId,
-        cuisineName: cuisine.name,
-        pricePerItem: pricePerItem,
-        quantity: quantity,
-        finalPrice: finalPrice,
-        options: [],
-        totalCart: 0
-    };
-
     let userCartOptions = "";
     cuisinesCart.forEach((c, index) => {
         const option = c.group + ": " + c.name;
-        response.options.push(option);
-
         if (index > 0) {
             userCartOptions += USER_CART_OPTIONS_SEPARATOR;
         }
@@ -112,12 +98,13 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
 
     await writeToUserCart(cuisineId, cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
-    response.totalCart = totalCart;
-    await cookiesSetUserIdAndTotalCart(userId, totalCart);
+    await cookiesSetUserId(userId);
 
     return {
         successMessage: DEFAULT_SUCCESS_MESSAGE,
-        successObject: response
+        successObject: {
+            totalCart: totalCart
+        }
     };
 }
 

@@ -4,8 +4,7 @@ import { faker } from '@faker-js/faker';
 export const COOKIES_KEY = "street-food-cookie";
 
 export interface CookieDataInterface {
-    userId?: string;
-    totalCart?: number;
+    userId: string;
 }
 
 export async function getCookieData(): Promise<CookieDataInterface> {
@@ -23,20 +22,13 @@ export async function cookiesGetUserId(): Promise<string> {
     if (cookieData && cookieData.userId) {
         return cookieData.userId;
     }
-    return faker.string.uuid();
+
+    const uuid = faker.string.uuid();
+    return uuid;
 }
 
-export async function cookisGetTotalCart(): Promise<number> {
-    const cookieData = await getCookieData();
-    if (cookieData && cookieData.totalCart) {
-        return cookieData.totalCart;
-    }
-    return 0;
-}
-
-export async function cookiesSetUserIdAndTotalCart(userId: string, totalCart: number): Promise<void> {
+export async function cookiesSetUserId(userId: string): Promise<void> {
     const cookieData = await getCookieData();
     cookieData.userId = userId;
-    cookieData.totalCart = totalCart;
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }
