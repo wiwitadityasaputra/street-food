@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { getUserCarts } from "@/app/lib/service/cart.service";
 import { UserCartResponse } from "@/app/lib/service/service.definition";
 import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
-import CheckoutContent from "./checkout-content";
+import CheckoutContent from "@/app/ui/cart/checkout/checkout-content";
 import {
     getRandomCity,
     getRandomEmail,

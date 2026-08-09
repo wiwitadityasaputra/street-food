@@ -2,10 +2,10 @@
 
 import React from 'react';
 import clsx from 'clsx';
+import { useRouter } from 'next/navigation';
 
 import "@/app/ui/cart/checkout/checkout.css"
-import { useRouter } from 'next/navigation';
-import { CheckoutContentProps, CheckoutContentState } from "./checkout.definition";
+import { CheckoutContentProps, CheckoutContentState } from "@/app/ui/cart/checkout/checkout.definition";
 import { formatCurrency } from "@/app/lib/util/utils";
 import { processCarts } from "@/app/lib/form-action/cart.action";
 import { DEFAULT_SUCCESS_MESSAGE } from '@/app/lib/form-action/form-action.definition';

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import { formatCurrency as fc } from "@/app/lib/util/utils";
 import AddToCartButton from "@/app/ui/menu/add-to-cart-button/add-to-cart-button";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";

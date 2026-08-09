@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "@/app/globals.css";
+import dynamic from "next/dynamic";
 
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; 
@@ -7,14 +7,13 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 
+import "@/app/globals.css";
 import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
 import DashboardNav from "@/app/ui/dashhboard-nav/dashboard-nav";
-import { countUserCartByUserAndFlag } from "./lib/database/database";
-import { UserCartDbFlag } from "./lib/database/database.definition";
-import dynamic from "next/dynamic";
+import { countUserCartByUserAndFlag } from "@/app/lib/database/database";
+import { UserCartDbFlag } from "@/app/lib/database/database.definition";
 
 const ReduxProvider = dynamic(() => import("@/app/lib/util/redux-provider/redux-provider"));
-
 
 export const metadata: Metadata = {
   title: "Wiwit Aditya - Street Food",

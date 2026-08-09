@@ -1,8 +1,9 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
-
+import Link from "next/link";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -10,8 +11,6 @@ import "@/app/ui/cart/cart.css";
 import { formatCurrency } from "@/app/lib/util/utils";
 import { CartContentProps } from "@/app/ui/cart/cart-content.definition";
 import { deleteCartItemAction } from "@/app/lib/form-action/cart.action";
-import Link from "next/link";
-import React from "react";
 import { DEFAULT_SUCCESS_MESSAGE } from "@/app/lib/form-action/form-action.definition";
 import { useAppDispatch } from "@/app/lib/util/redux-provider";
 import { setTotalCart } from "@/app/lib/util/redux-provider/app-slice";
