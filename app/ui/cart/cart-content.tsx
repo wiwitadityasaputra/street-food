@@ -121,9 +121,6 @@ export function CartContent(props: CartContentProps) {
                                             <p className="total">
 												<span>total:</span> <span>{formatCurrency(finalPrice)}</span>
 											</p>
-                                            <form>
-                                                <button type="submit">apply</button>
-                                            </form>
                                             <Link className="common_btn" href={"/cart/checkout"}>
                                                 Checkout
                                             </Link>

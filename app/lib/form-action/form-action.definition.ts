@@ -1,3 +1,5 @@
+export const DEFAULT_SUCCESS_MESSAGE = "ok";
+
 // Menu Form Action
 export type AddToCartOption = {
     cuisinesCartId: string;
@@ -18,4 +20,11 @@ export type AddtoCartActionSuccessObject = {
     quantity: number;
     finalPrice: number;
     options: string[];
+}
+
+
+// Cart Form Action
+export type ProcessCartActionResponse = {
+    erroMessage?: string;
+    successMessage?: string;
 }

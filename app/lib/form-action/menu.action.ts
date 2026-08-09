@@ -13,7 +13,8 @@ import {
 import {
     AddtoCartActionResponse,
     AddtoCartActionSuccessObject,
-    AddToCartOption
+    AddToCartOption,
+    DEFAULT_SUCCESS_MESSAGE
 } from '@/app/lib/form-action/form-action.definition';
 import {
     CuisinesCartDbGroupNamePrice,
@@ -113,7 +114,7 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
     await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
     return {
-        successMessage: "OK",
+        successMessage: DEFAULT_SUCCESS_MESSAGE,
         successObject: response
     };
 }
