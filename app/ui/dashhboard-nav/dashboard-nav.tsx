@@ -23,6 +23,10 @@ const links = [
   },
   { name: MENU_CART,
     href: '/cart'
+  },
+  {
+    name: 'Queue',
+    href: '/queue'
   }
 ];
 
@@ -113,11 +117,7 @@ export default function DashboardNav(props: DashboardNavProps) {
                   </li>);
                 }                
               }
-
             )}
-            <li className="nav-item" key="queue">
-                <a className="nav-link" href="chefs.html">Queue</a>
-            </li>
           </ul>
           <ul className="menu_icon d-flex flex-wrap">
               <li key="account">
