@@ -95,7 +95,8 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
         pricePerItem: pricePerItem,
         quantity: quantity,
         finalPrice: finalPrice,
-        options: []
+        options: [],
+        totalCart: 0
     };
 
     let userCartOptions = "";
@@ -111,6 +112,7 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
 
     await writeToUserCart(cuisineId, cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
+    response.totalCart = totalCart;
     await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
     return {

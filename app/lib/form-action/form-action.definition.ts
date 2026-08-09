@@ -20,10 +20,15 @@ export type AddtoCartActionSuccessObject = {
     quantity: number;
     finalPrice: number;
     options: string[];
+    totalCart: number;
 }
 
 
 // Cart Form Action
+export type DeleteCartActionResponse = {
+    erroMessage?: string;
+    successMessage?: string;    
+}
 export type ProcessCartActionResponse = {
     erroMessage?: string;
     successMessage?: string;

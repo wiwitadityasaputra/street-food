@@ -7,7 +7,7 @@ import { CuisinesDb } from '@/app/lib/database/database.definition';
 import { fetchCuisinesByCuisine } from '@/app/lib/database/database';
 
 export default async function CusinesList(props: CuisinesListProps) {
-
+    
     const formatCurrency = (price: number) => {
         return fc(price);
     };

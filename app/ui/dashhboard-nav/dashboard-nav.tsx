@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
 import { DashboardNavProps } from '@/app/ui/dashhboard-nav/dashboard-nav.definition';
+import TotalCart from './total-cart';
 
 const MENU_CART = "Cart";
 const links = [
@@ -32,6 +33,10 @@ export default function DashboardNav(props: DashboardNavProps) {
   }
 
   const pathname = usePathname();
+
+  const isCartMenu = (menuName: string) => {
+    return MENU_CART === menuName;
+  }
 
   const generateName = (menuName: string) => {
     if (MENU_CART === menuName) {
@@ -83,7 +88,7 @@ export default function DashboardNav(props: DashboardNavProps) {
                     href={link.href}
                     className={clsx("nav-link", {"active": isActive(link.href, pathname)})} aria-current="page"
                     onClick={collapseMenuClicked}>
-                    {generateName(link.name)}
+                    {isCartMenu(link.name) ? <TotalCart totalCartInit={props.totalCart} menuName={link.name} /> :  generateName(link.name)}
                   </Link>
                 </li>);
             })}

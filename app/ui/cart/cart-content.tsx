@@ -11,9 +11,25 @@ import { formatCurrency } from "@/app/lib/util/utils";
 import { CartContentProps } from "@/app/ui/cart/cart-content.definition";
 import { deleteCartItemAction } from "@/app/lib/form-action/cart.action";
 import Link from "next/link";
+import React from "react";
+import { DEFAULT_SUCCESS_MESSAGE } from "@/app/lib/form-action/form-action.definition";
+import { useAppSelector } from "@/app/lib/util/redux-provider";
+import { useAppDispatch } from "@/app/lib/util/redux-provider";
+import { setTotalCart } from "@/app/lib/util/redux-provider/app-slice";
 
 export function CartContent(props: CartContentProps) {
     const { replace } = useRouter();
+    const dispatch = useAppDispatch();
+    const totalCart = useAppSelector((state) => state.app.totalCart);
+
+    const [state, formAction, pending] = React.useActionState(deleteCartItemAction, {});
+    React.useEffect(() => {;
+        if (state.successMessage === DEFAULT_SUCCESS_MESSAGE ) {
+            const newTotalCart = totalCart - 1;
+            dispatch(setTotalCart(newTotalCart));
+        }
+    }, [state]);
+
     const cartItems = props.carts;
     if (cartItems.length === 0) {
         return (<div className="cart">
@@ -28,8 +44,6 @@ export function CartContent(props: CartContentProps) {
     const addMoreClicked = () => {
         replace("/menu");
     }
-
-    const formAction = deleteCartItemAction.bind(null);
 
     return (<>
         <div className="cart">

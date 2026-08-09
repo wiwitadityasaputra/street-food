@@ -11,6 +11,10 @@ import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
 import DashboardNav from "@/app/ui/dashhboard-nav/dashboard-nav";
 import { countUserCartByUserAndFlag } from "./lib/database/database";
 import { UserCartDbFlag } from "./lib/database/database.definition";
+import dynamic from "next/dynamic";
+
+const ReduxProvider = dynamic(() => import("@/app/lib/util/redux-provider/redux-provider"));
+
 
 export const metadata: Metadata = {
   title: "Wiwit Aditya - Street Food",
@@ -72,9 +76,10 @@ export default async function AppLayout({
           </div>
         </section>
 
-        <DashboardNav totalCart={totalCartDb} />
-
-        {children}
+        <ReduxProvider>
+          <DashboardNav totalCart={totalCartDb} />
+          {children}
+        </ReduxProvider>
       </body>
     </html>
   );

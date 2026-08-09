@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import clsx from 'clsx';
 
 import "@/app/ui/cart/checkout/checkout.css"
 import { useRouter } from 'next/navigation';
@@ -8,10 +9,13 @@ import { CheckoutContentProps, CheckoutContentState } from "./checkout.definitio
 import { formatCurrency } from "@/app/lib/util/utils";
 import { processCarts } from "@/app/lib/form-action/cart.action";
 import { DEFAULT_SUCCESS_MESSAGE } from '@/app/lib/form-action/form-action.definition';
-import clsx from 'clsx';
+import { useAppDispatch } from "@/app/lib/util/redux-provider";
+import { setTotalCart } from "@/app/lib/util/redux-provider/app-slice";
 
 export default function CheckoutContent(props: CheckoutContentProps) {
     const { replace } = useRouter();
+    const dispatch = useAppDispatch();
+
     let subTotal = 0;
     let total = 0;
     props.carts.forEach(c => {
@@ -21,9 +25,9 @@ export default function CheckoutContent(props: CheckoutContentProps) {
 
     const [state, formAction, pending] = React.useActionState(processCarts, {});
     React.useEffect(() => {
-        console.log("dbg cart state ", state)
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE ) {
             setCheckoutContentState(CheckoutContentState.SUCCESS_CHECKOUT);
+            dispatch(setTotalCart(0));
             setTimeout(() => {
                 replace("/queue");
             }, 10000)

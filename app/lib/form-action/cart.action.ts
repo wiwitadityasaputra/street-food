@@ -10,13 +10,12 @@ import {
     writeToOrder
 } from "@/app/lib/database/database";
 import {
-    cookiesGetUserId,
     cookiesSetUserIdAndTotalCart
 } from '@/app/lib/util/cookie-util';
 import { OrderDbFlag, UserCartDbFlag } from '../database/database.definition';
-import { DEFAULT_SUCCESS_MESSAGE, ProcessCartActionResponse } from './form-action.definition';
+import { DEFAULT_SUCCESS_MESSAGE, DeleteCartActionResponse, ProcessCartActionResponse } from './form-action.definition';
 
-export async function deleteCartItemAction(formData: FormData): Promise<void> {
+export async function deleteCartItemAction(prevState: any, formData: FormData): Promise<DeleteCartActionResponse> {
     const userId = String(formData.get("userId"));
     const userCartId = String(formData.get("userCartId"));
     await deleteUserCartByUserAndUserCartId(userId, userCartId);
@@ -24,7 +23,9 @@ export async function deleteCartItemAction(formData: FormData): Promise<void> {
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
-    redirect(`/cart`);
+    return {
+        successMessage: DEFAULT_SUCCESS_MESSAGE
+    }
 }
 
 export async function processCarts(prevState: any, formData: FormData): Promise<ProcessCartActionResponse> {

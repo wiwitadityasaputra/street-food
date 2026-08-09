@@ -23,9 +23,12 @@ import {
 } from '@/app/ui/menu/modal/modal.definition';
 import { CuisinesCartDb } from '@/app/lib/database/database.definition';
 import { DEFAULT_SUCCESS_MESSAGE } from '@/app/lib/form-action/form-action.definition';
+import { useAppDispatch } from "@/app/lib/util/redux-provider";
+import { setTotalCart } from "@/app/lib/util/redux-provider/app-slice";
 
 export function ModalContent(props: CuisinesContentOptions) {
     const { replace } = useRouter();
+    const dispatch = useAppDispatch();
     const userId = props.userId;
 
     const compareCuisineCart = (a: CuisinesCartDb, b: CuisinesCartDb) => {
@@ -129,14 +132,14 @@ export function ModalContent(props: CuisinesContentOptions) {
     let [checkboxState, setCheckboxState] = React.useState(checkboxOptions);
     const [state, formAction, pending] = React.useActionState(addToCartAction, {erroMessage: ''});
     React.useEffect(() => {
-        console.log("dbg menu state ", state)
         if (state.successMessage === DEFAULT_SUCCESS_MESSAGE && state.successObject) {
+            dispatch(setTotalCart(state.successObject.totalCart));
             replace("/cart");
         }
     }, [state]);
 
     return (<>
-         <div className="cart_popup_img">
+        <div className="cart_popup_img">
             <Image
                 src={`/images/cuisine/${props.cuisine.id}/1.jpg`}
                 width={344}
