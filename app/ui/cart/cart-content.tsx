@@ -1,14 +1,14 @@
 "use client";
 
 import Image from "next/image";
-// import React, { useActionState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "@/app/ui/cart/cart.css";
 import { formatCurrency } from "@/app/lib/util/utils";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter } from 'next/navigation';
-import { CartContentProps } from "./cart-content.definition";
+import { CartContentProps } from "@/app/ui/cart/cart-content.definition";
 import { deleteCartItemAction } from "@/app/lib/form-action/cart.action";
 
 export function CartContent(props: CartContentProps) {

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 
 import { config } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false; 
-
-import { cookisGetTotalCart } from "./lib/util/cookie-util";
-import DashboardNav from "./ui/dashhboard-nav/dashboard-nav";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
+
+import { cookisGetTotalCart } from "@/app/lib/util/cookie-util";
+import DashboardNav from "@/app/ui/dashhboard-nav/dashboard-nav";
 
 export const metadata: Metadata = {
   title: "Wiwit Aditya - Street Food",
@@ -46,7 +46,8 @@ export default async function AppLayout({
                       <ul className="topbar_info d-flex flex-wrap">
                           <li>
                             <a href="mailto:wiwit.aditya.saputra@gmail.com">
-                              <i className="fas fa-envelope" aria-hidden="true"></i> wiwit.aditya.saputra@gmail.com
+                              <i className="fas fa-envelope" aria-hidden="true"></i>
+                              wiwit.aditya.saputra@gmail.com
                             </a>
                           </li>
                       </ul>

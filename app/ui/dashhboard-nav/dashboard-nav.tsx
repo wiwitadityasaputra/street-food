@@ -5,10 +5,10 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { faBars, faTimes, faUser } from '@fortawesome/free-solid-svg-icons';
-import { DashboardNavProps } from './dashboard-nav.definition';
+import { DashboardNavProps } from '@/app/ui/dashhboard-nav/dashboard-nav.definition';
 
 const MENU_CART = "Cart";
 const links = [

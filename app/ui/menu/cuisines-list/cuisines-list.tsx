@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { formatCurrency as fc } from "@/app/lib/util/utils";
 import AddToCartButton from "@/app/ui/menu/add-to-cart-button/add-to-cart-button";
 import CuisineRating from "@/app/ui/menu/cusine-rating/cuisine-rating";
-import { CuisinesListProps } from './cuisines-list.definition';
+import { CuisinesListProps } from '@/app/ui/menu/cuisines-list/cuisines-list.definition';
 import { CuisinesDb } from '@/app/lib/database/database.definition';
 import { fetchCuisinesByCuisine } from '@/app/lib/database/database';
 

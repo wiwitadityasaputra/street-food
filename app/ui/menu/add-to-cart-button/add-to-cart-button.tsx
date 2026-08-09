@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { AddToCartButtonProps } from './add-to-cart-button.definition';
+
+import { AddToCartButtonProps } from '@/app/ui/menu/add-to-cart-button/add-to-cart-button.definition';
 import { CuisinesDb } from '@/app/lib/database/database.definition';
 
 export default function AddToCartButton(props: AddToCartButtonProps) {

@@ -6,24 +6,24 @@ import {
     CART_OPTION_RADIO_PREFIX,
     CART_OPTION_VALUE_SEPARATOR,
     USER_CART_OPTIONS_SEPARATOR
-} from '../service/service.definition';
+} from '@/app/lib/service/service.definition';
 import {
     cookiesSetUserIdAndTotalCart
-} from '../util/cookie-util';
+} from '@/app/lib/util/cookie-util';
 import {
     AddtoCartActionResponse,
     AddtoCartActionSuccessObject,
     AddToCartOption
-} from './form-action.definition';
+} from '@/app/lib/form-action/form-action.definition';
 import {
     CuisinesCartDbGroupNamePrice
-} from '../database/database.definition';
+} from '@/app/lib/database/database.definition';
 import {
     countUserCartByUserAndFlag,
     fetchCuisineCartPrices,
     fetchCuisinesById,
     writeToUserCart
-} from '../database/database';
+} from '@/app/lib/database/database';
 
 export async function addToCart(prevState: any, formData: FormData): Promise<AddtoCartActionResponse> {
     const userId = String(formData.get("userId"));

@@ -1,7 +1,7 @@
 "use server";
 
 import "@/app/ui/cart/cart.css";
-import { CartContent } from "./cart-content";
+import { CartContent } from "@/app/ui/cart/cart-content";
 import { getUserCarts } from '@/app/lib/service/cart.service';
 import { UserCartResponse } from '@/app/lib/service/service.definition';
 import { cookiesGetUserId } from '@/app/lib/util/cookie-util';

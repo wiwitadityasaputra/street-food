@@ -1,7 +1,7 @@
-import { CloseButton } from "../close-button/close-btn";
-import { ModalContent } from "./modal-content";
+import { CloseButton } from "@/app/ui/menu/close-button/close-btn";
+import { ModalContent } from "@/app/ui/menu/modal/modal-content";
 import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
-import { ModalWrapperOptions } from "./modal.definition";
+import { ModalWrapperOptions } from "@/app/ui/menu/modal/modal.definition";
 import { fetchCuisineCartByCuisineId, fetchCuisinesById } from "@/app/lib/database/database";
 
 export async function ModalWrapper(props: ModalWrapperOptions) {

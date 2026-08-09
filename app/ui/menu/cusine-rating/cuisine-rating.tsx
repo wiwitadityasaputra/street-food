@@ -1,7 +1,7 @@
 import "@/app/ui/menu/cusine-rating/cuisine-rating.css";
 import { faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CuisineRatingProps } from "./cuisine-rating.definition";
+import { CuisineRatingProps } from "@/app/ui/menu/cusine-rating/cuisine-rating.definition";
 
 export default function CuisineRating(props: CuisineRatingProps) {
 

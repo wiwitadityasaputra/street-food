@@ -2,8 +2,13 @@
 
 import { redirect } from 'next/navigation';
 
-import { countUserCartByUserAndFlag, deleteUserCartByUserAndUserCartId } from "../database/database";
-import { cookiesSetUserIdAndTotalCart } from '../util/cookie-util';
+import {
+    countUserCartByUserAndFlag,
+    deleteUserCartByUserAndUserCartId
+} from "@/app/lib/database/database";
+import {
+    cookiesSetUserIdAndTotalCart
+} from '@/app/lib/util/cookie-util';
 
 export async function deleteCartItemAction(formData: FormData): Promise<void> {
     const userId = String(formData.get("userId"));

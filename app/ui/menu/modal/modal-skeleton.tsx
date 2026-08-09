@@ -1,7 +1,7 @@
 import "@/app/ui/menu/modal/modal.css"
 
-import { CloseButton } from "../close-button/close-btn";
-import { ModalSkeletonProps } from "./modal.definition";
+import { CloseButton } from "@/app/ui/menu//close-button/close-btn";
+import { ModalSkeletonProps } from "@/app/ui/menu/modal/modal.definition";
 
 export async function ModalSkeleton(props: ModalSkeletonProps) {
     return (<>
