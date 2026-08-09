@@ -7,13 +7,12 @@ import { UserCartResponse } from '@/app/lib/service/service.definition';
 import { cookiesGetUserId } from '@/app/lib/util/cookie-util';
 
 export async function CartWrapper() {
-    
     const userId = await cookiesGetUserId();
     if (userId) {
         const carts: UserCartResponse[] = await getUserCarts(userId);
         return (<>
             <CartContent carts={carts} userId={userId} />
-        </>)
+        </>);
     } else {
         return (<>
             <div className="cart">no data</div>;

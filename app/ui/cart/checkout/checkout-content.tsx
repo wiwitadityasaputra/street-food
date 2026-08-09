@@ -38,7 +38,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
             setCheckoutContentState(CheckoutContentState.SUCCESS_CHECKOUT);
             dispatch(setTotalCart(0));
             timeId = setTimeout(() => {
-                replace("/queue");
+                replace("/queue/me");
             }, 11000);
 
             t = window.setInterval(() => {

@@ -26,7 +26,7 @@ const links = [
   },
   {
     name: 'Queue',
-    href: '/queue'
+    href: '/queue/me'
   }
 ];
 
