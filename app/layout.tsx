@@ -7,7 +7,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 
-import { cookiesGetUserId, cookiesSetUserIdAndTotalCart, cookisGetTotalCart } from "@/app/lib/util/cookie-util";
+import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
 import DashboardNav from "@/app/ui/dashhboard-nav/dashboard-nav";
 import { countUserCartByUserAndFlag } from "./lib/database/database";
 import { UserCartDbFlag } from "./lib/database/database.definition";
@@ -23,14 +23,7 @@ export default async function AppLayout({
   children: React.ReactNode;
 }>) {
   const userId = await cookiesGetUserId();
-  // const totalCartCookie = await cookisGetTotalCart();
   const totalCartDb = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
-  // console.log("dbg userId ", userId)
-  // console.log("dbg totalCartCookie ", totalCartCookie)
-  // console.log("dbg totalCartDb ", totalCartDb)
-  // if (totalCartCookie !== totalCartDb) {
-    // await cookiesSetUserIdAndTotalCart(userId, totalCartDb);
-  // }
 
   return (
     <html
