@@ -13,5 +13,5 @@ export async function deleteCartItemAction(formData: FormData): Promise<void> {
     const totalCart = await countUserCartByUserAndFlag(userId, "active");
     await cookiesSetUserIdAndTotalCart(userId, totalCart);
 
-    redirect(`/dashboard/cart`);
+    redirect(`/cart`);
 }

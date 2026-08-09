@@ -25,7 +25,7 @@ export function CartContent(props: CartContentProps) {
 	});
 
     const addMoreClicked = () => {
-        replace("/dashboard/menu");
+        replace("/menu");
     }
 
     const formAction = deleteCartItemAction.bind(null);

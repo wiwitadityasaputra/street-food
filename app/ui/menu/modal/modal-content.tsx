@@ -124,7 +124,7 @@ export function ModalContent(props: CuisinesContentOptions) {
     const [state, formAction, pending] = useActionState(addToCartAction, {erroMessage: ''});
     useEffect(() => {
         if (state.successMessage === "OK" && state.successObject) {
-            replace("/dashboard/cart");
+            replace("/cart");
         }
     }, [state.successMessage, state.successObject]);
 

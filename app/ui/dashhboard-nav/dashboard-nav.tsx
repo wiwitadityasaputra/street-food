@@ -14,13 +14,13 @@ const MENU_CART = "Cart";
 const links = [
   {
     name: 'Home',
-    href: '/dashboard' },
+    href: '/' },
   {
     name: 'Menu',
-    href: '/dashboard/menu'
+    href: '/menu'
   },
   { name: MENU_CART,
-    href: '/dashboard/cart'
+    href: '/cart'
   }
 ];
 

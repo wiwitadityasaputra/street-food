@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import "@/app/dashboard/menu/menu.css";
+import "@/app/menu/menu.css";
 import CusinesList from "@/app/ui/menu/cuisines-list/cuisines-list";
 import CuisinesMenu, { DEFAULT_CUISINE } from "@/app/ui/menu/cuisines-menu";
 import { ModalSkeleton } from '@/app/ui/menu/modal/modal-skeleton';
