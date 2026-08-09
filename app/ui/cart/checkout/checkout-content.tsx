@@ -227,8 +227,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                             <h4>Success Checkout</h4>
                             <h5>Thank you for using our services.</h5>
                             <p className="success-checkout-info">
-                                We still processing your request, please check <strong>{props.emailAddress}</strong> or 
-                                <strong> {props.phoneNumber}</strong> regularly.
+                                We still processing your request, please check <strong>{emailAddress}</strong> or 
+                                <strong> {phoneNumber}</strong> regularly.
                             </p>
                             <p className="success-checkout-info">
                                 We will send your order information there.
