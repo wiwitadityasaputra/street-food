@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
+import { faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "@/app/ui/cart/checkout/checkout.css"
 import { CheckoutContentProps, CheckoutContentState } from "@/app/ui/cart/checkout/checkout.definition";
@@ -11,6 +13,7 @@ import { processCarts } from "@/app/lib/form-action/cart.action";
 import { DEFAULT_SUCCESS_MESSAGE } from '@/app/lib/form-action/form-action.definition';
 import { useAppDispatch } from "@/app/lib/util/redux-provider";
 import { setTotalCart } from "@/app/lib/util/redux-provider/app-slice";
+import { getRandomCity, getRandomEmail, getRandomFirstname, getRandomInfo, getRandomLastname, getRandomPhonenumber, getRandomSecondaryAddress, getRandomState, getRandomStreetAddress, getRandomZipcode } from '@/app/lib/util/fake-input.util';
 
 export default function CheckoutContent(props: CheckoutContentProps) {
     const { replace } = useRouter();
@@ -53,6 +56,30 @@ export default function CheckoutContent(props: CheckoutContentProps) {
         }
     }, [state]);
 
+    const [firstName, setFirstName] = React.useState(getRandomFirstname());
+    const [lastName, setLastName] = React.useState(getRandomLastname());
+    const [streetAddress, setStreetAddress] = React.useState(getRandomStreetAddress());
+    const [secondAddress, setSecondAddress] = React.useState(getRandomSecondaryAddress());
+    const [city, setCity] = React.useState(getRandomCity());
+    const [stateField, setState] = React.useState(getRandomState());
+    const [zipCode, setZipCode] = React.useState(getRandomZipcode());
+    const [phoneNumber, setPhoneNumber] = React.useState(getRandomPhonenumber());
+    const [emailAddress, setEmailAddress] = React.useState(getRandomEmail());
+    const [additionalInfo, setAdditionalInfo] = React.useState(getRandomInfo());
+
+    const refreshAddress = () => {
+        setFirstName(getRandomFirstname());
+        setLastName(getRandomLastname());
+        setStreetAddress(getRandomStreetAddress());
+        setSecondAddress(getRandomSecondaryAddress());
+        setCity(getRandomCity());
+        setState(getRandomState());
+        setZipCode(getRandomZipcode());
+        setPhoneNumber(getRandomPhonenumber());
+        setEmailAddress(getRandomEmail());
+        setAdditionalInfo(getRandomInfo());
+    }
+
     return (<>
         <form action={formAction}
             className={clsx({"checkout-hide": checkoutContentState === CheckoutContentState.SUCCESS_CHECKOUT})}>
@@ -65,14 +92,20 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                     <div className="check_form">
                                         <div className="row mt_30">
                                             <div className="col-12">
-                                                <h5>billing address</h5>
+                                                <h5 className="billing-address-title">
+                                                    billing address
+                                                    <span className="refresh-address-btn">
+                                                        <FontAwesomeIcon icon={faArrowRotateLeft} size="sm" 
+                                                            onClick={refreshAddress}/>
+                                                    </span>
+                                                </h5>
                                             </div>
                                             <div className="col-md-6 col-lg-12 col-xl-6">
                                                 <div className="check_single_form">
                                                     <h6>First Name</h6>
                                                     <input type="text" placeholder="First Name" 
                                                         name="firstName"
-                                                        defaultValue={props.firstName} 
+                                                        defaultValue={firstName}
                                                         disabled={pending} />
                                                 </div>
                                             </div>
@@ -81,7 +114,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Last Name</h6>
                                                     <input type="text" placeholder="Last Name" 
                                                         name="lastName"
-                                                        defaultValue={props.lastName}
+                                                        defaultValue={lastName}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -90,7 +123,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Street Address</h6>
                                                     <input type="text" placeholder="Street Address *"
                                                         name="streetAddress"
-                                                        defaultValue={props.streetAddress}
+                                                        defaultValue={streetAddress}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -99,7 +132,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Second Address</h6>
                                                     <input type="text" placeholder="Apartment, suite, unit, etc. (optional)"
                                                         name="secondAddress"
-                                                        defaultValue={props.secondAddress}
+                                                        defaultValue={secondAddress}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -108,7 +141,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>City</h6>
                                                     <input type="text" placeholder="Town / City *"
                                                         name="city"
-                                                        defaultValue={props.city}
+                                                        defaultValue={city}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -117,7 +150,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>State</h6>
                                                     <input type="text" placeholder="State *"
                                                         name="state"
-                                                        defaultValue={props.state}
+                                                        defaultValue={stateField}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -126,7 +159,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Zip Code</h6>
                                                     <input type="text" placeholder="Zip *"
                                                         name="zipCode"
-                                                        defaultValue={props.zipCode}
+                                                        defaultValue={zipCode}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -135,7 +168,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Phone Number</h6>
                                                     <input type="text" placeholder="Phone *"
                                                         name="phoneNumber"
-                                                        defaultValue={props.phoneNumber}
+                                                        defaultValue={phoneNumber}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -144,7 +177,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Email Address</h6>
                                                     <input type="email" placeholder="Email *"
                                                         name="emailAddress"
-                                                        defaultValue={props.emailAddress}
+                                                        defaultValue={emailAddress}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -153,7 +186,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h5>Additional Information</h5>
                                                     <textarea cols={3} rows={4}
                                                         placeholder="Notes about your order, e.g. special notes for delivery"
-                                                        defaultValue={props.additionalInfo}
+                                                        defaultValue={additionalInfo}
                                                         disabled={pending}>
                                                     </textarea>
                                                 </div>

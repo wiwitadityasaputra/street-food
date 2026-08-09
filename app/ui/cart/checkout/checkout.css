@@ -35,3 +35,12 @@
     text-align: left !important;
     padding-left: 0px !important;
 }
+.billing-address-title {
+    justify-content: left !important;
+}
+.refresh-address-btn {
+    cursor: pointer;
+    position: relative;
+    top: 3px;
+    padding-left: 20px;
+}
