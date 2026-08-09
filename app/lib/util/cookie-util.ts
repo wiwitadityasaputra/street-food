@@ -14,21 +14,19 @@ export async function getCookieData(): Promise<CookieDataInterface> {
         const cookieData: CookieDataInterface = JSON.parse(str);
         return cookieData;
     }
-    return {};
+    return {
+        userId: faker.string.uuid()
+    };
 }
 
 export async function cookiesGetUserId(): Promise<string> {
     const cookieData = await getCookieData();
-    if (cookieData && cookieData.userId) {
-        return cookieData.userId;
-    }
-
-    const uuid = faker.string.uuid();
-    return uuid;
+    return cookieData.userId;
 }
 
 export async function cookiesSetUserId(userId: string): Promise<void> {
-    const cookieData = await getCookieData();
-    cookieData.userId = userId;
+    const cookieData: CookieDataInterface = {
+        userId: userId
+    };
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }

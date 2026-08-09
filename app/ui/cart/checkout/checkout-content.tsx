@@ -185,7 +185,10 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                             <h5>Thank your for using our services.</h5>
                             <p className="success-checkout-info">
                                 We still processing your request, please check <strong>{props.emailAddress}</strong> or 
-                                <strong> {props.phoneNumber}</strong> regularly. We will send your order information there.
+                                <strong> {props.phoneNumber}</strong> regularly.
+                            </p>
+                            <p className="success-checkout-info">
+                                We will send your order information there.
                             </p>
                             <p className="success-checkout-info">
                                 You can also visit <strong>/queue</strong> page to check other orders, we will redirect you in seconds.
