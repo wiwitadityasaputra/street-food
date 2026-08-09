@@ -182,7 +182,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                     <div className="row">
                         <div className="section_heading">
                             <h4>Success Checkout</h4>
-                            <h5>Thank your for using our services.</h5>
+                            <h5>Thank you for using our services.</h5>
                             <p className="success-checkout-info">
                                 We still processing your request, please check <strong>{props.emailAddress}</strong> or 
                                 <strong> {props.phoneNumber}</strong> regularly.
