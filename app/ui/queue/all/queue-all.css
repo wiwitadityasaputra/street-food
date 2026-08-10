@@ -6,6 +6,9 @@
 .cart_view.queue-content {
     margin-top: 0px !important;
 }
+.order-table {
+    overflow: hidden;
+}
 .order-row:nth-child(odd) {
     background: #d0d4d8 !important;
 }
@@ -23,16 +26,17 @@
 }
 .col-cart-item {
     display: block !important;
-    width: 30% !important;
-    min-width: 205px !important;
-}
-.col-cart-status {
-    display: block !important;
+    width: 25% !important;
+    min-width: 170px !important;
 }
 .col-cart-date {
     display: block !important;
-    width: 20% !important;
-    min-width: 175px !important;
+    width: 40% !important;
+    min-width: 348px !important;
+}
+.col-cart-date .order-status {
+    text-align: left;
+    margin-bottom: 10px;
 }
 .col-cart-date h6 {
     width: 100%;
@@ -53,4 +57,7 @@
 }
 .cuisine-option {
     padding-left: 15px;
+}
+.date-value {
+    padding-bottom: 10px;
 }

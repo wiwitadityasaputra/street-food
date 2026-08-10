@@ -12,9 +12,10 @@ export const formatDate = (date?: Date) => {
     return "-";
   }
   return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    weekday: "short",
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
     hour: '2-digit',
     minute: '2-digit'
   });

@@ -14,13 +14,12 @@ export function QueueAllContent(props: QueueAllContentProps) {
                         <div className="col-lg-12 wow fadeInUp">
                             <div className="cart_list">
                                 <div className="table-responsive">
-                                    <table>
+                                    <table className="order-table">
                                         <tbody>
                                             <tr>
                                                 <th className="pro_name">Address</th>
                                                 <th className="pro_name col-cart-item">Items</th>
-                                                <th className="pro_img">Status</th>
-                                                <th className="pro_img col-cart-date">Date</th>
+                                                <th className="pro_img col-cart-date">Status</th>
                                             </tr>
                                             {props.orders.map(o => {
                                                 return (<tr key={o.orderId} className="order-row">
@@ -43,24 +42,31 @@ export function QueueAllContent(props: QueueAllContentProps) {
                                                             </div>)  
                                                         })}
                                                     </td>
-                                                    <td className="pro_img col-cart-status">
-                                                        {orderFlagToStatus(o.flagOrder)}
-                                                    </td>
                                                     <td className="pro_img col-cart-date">
-                                                        <h6>Order Created Date</h6>
-                                                        <p>{formatDate(o.createdDate)}</p>
+                                                        <h5 className="order-status">{orderFlagToStatus(o.flagOrder)}</h5>
 
-                                                        <h6 className="not-first">Cooking Date</h6>
-                                                        <p>{formatDate(o.cookedDate)}</p>
-
-                                                        <h6 className="not-first">Shipped Date</h6>
-                                                        <p>{formatDate(o.shippedDate)}</p>
-
-                                                        <h6 className="not-first">Delivered Date</h6>
-                                                        <p>{formatDate(o.deliveredDate)}</p>
-
-                                                        <h6 className="not-first">Cancelled Date</h6>
-                                                        <p>{formatDate(o.cancelledDate)}</p>
+                                                        <div className="row">
+                                                            <div className="col-lg-6">
+                                                                <h6>Created Date</h6>
+                                                                <p className="date-value">{formatDate(o.createdDate)}</p>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <h6>Cooking Date</h6>
+                                                                <p className="date-value">{formatDate(o.cookedDate)}</p>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <h6>Shipped Date</h6>
+                                                                <p className="date-value">{formatDate(o.shippedDate)}</p>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <h6>Delivered Date</h6>
+                                                                <p className="date-value">{formatDate(o.deliveredDate)}</p>
+                                                            </div>
+                                                            <div className="col-lg-6">
+                                                                <h6>Cancelled Date</h6>
+                                                                <p className="date-value">{formatDate(o.cancelledDate)}</p>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                 </tr>)
                                             })}
