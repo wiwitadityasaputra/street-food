@@ -187,3 +187,7 @@ insert into "cuisine_cart" ("id", "cuisine_id", "cuisine_cart_type", "group", "n
 insert into "cuisine_cart" ("id", "cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (196, 7, 'checkbox', 'add ons', 'french fries', 5, true, 6);
 insert into "cuisine_cart" ("id", "cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (197, 7, 'checkbox', 'add ons', 'extra chili sauce sachet', 2, true, 7);
 insert into "cuisine_cart" ("id", "cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (198, 7, 'checkbox', 'add ons', 'extra tomato sauce sachet', 2, true, 8);
+insert into "cuisine_cart" ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (2, 'radio', 'drinks', 'coca cola', 15, true, 1);
+insert into "cuisine_cart" ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (2, 'radio', 'drinks', 'no drink', 0, true, 2);
+insert into "cuisine_cart" ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (2, 'radio', 'drinks', 'ice tea', 10, true, 3);
+insert into "cuisine_cart" ("cuisine_id", "cuisine_cart_type", "group", "name", "price", "flag", "order") overriding system value values (2, 'radio', 'drinks', 'mineral water', 5, true, 4);
