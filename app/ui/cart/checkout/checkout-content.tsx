@@ -68,7 +68,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
     const [additionalInfo, setAdditionalInfo] = React.useState(getRandomInfo());
 
     const refreshAddress = () => {
-        console.log("dbg refresh")
+        console.log("dbg refresh 1  ", firstName)
         setFirstName(getRandomFirstname());
         setLastName(getRandomLastname());
         setStreetAddress(getRandomStreetAddress());
@@ -79,6 +79,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
         setPhoneNumber(getRandomPhonenumber());
         setEmailAddress(getRandomEmail());
         setAdditionalInfo(getRandomInfo());
+        console.log("dbg refresh 2  ", firstName)
     }
 
     return (<>
@@ -106,7 +107,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>First Name</h6>
                                                     <input type="text" placeholder="First Name" 
                                                         name="firstName"
-                                                        defaultValue={firstName}
+                                                        value={firstName}
+                                                        onChange={(e) => setFirstName(e.target.value)}
                                                         disabled={pending} />
                                                 </div>
                                             </div>
@@ -115,7 +117,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Last Name</h6>
                                                     <input type="text" placeholder="Last Name" 
                                                         name="lastName"
-                                                        defaultValue={lastName}
+                                                        value={lastName}
+                                                        onChange={(e) => setLastName(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -124,7 +127,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Street Address</h6>
                                                     <input type="text" placeholder="Street Address *"
                                                         name="streetAddress"
-                                                        defaultValue={streetAddress}
+                                                        value={streetAddress}
+                                                        onChange={(e) => setStreetAddress(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -133,7 +137,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Second Address</h6>
                                                     <input type="text" placeholder="Apartment, suite, unit, etc. (optional)"
                                                         name="secondAddress"
-                                                        defaultValue={secondAddress}
+                                                        value={secondAddress}
+                                                        onChange={(e) => setSecondAddress(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -142,7 +147,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>City</h6>
                                                     <input type="text" placeholder="Town / City *"
                                                         name="city"
-                                                        defaultValue={city}
+                                                        value={city}
+                                                        onChange={(e) => setCity(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -151,7 +157,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>State</h6>
                                                     <input type="text" placeholder="State *"
                                                         name="state"
-                                                        defaultValue={stateField}
+                                                        value={stateField}
+                                                        onChange={(e) => setState(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -160,7 +167,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Zip Code</h6>
                                                     <input type="text" placeholder="Zip *"
                                                         name="zipCode"
-                                                        defaultValue={zipCode}
+                                                        value={zipCode}
+                                                        onChange={(e) => setZipCode(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -169,7 +177,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Phone Number</h6>
                                                     <input type="text" placeholder="Phone *"
                                                         name="phoneNumber"
-                                                        defaultValue={phoneNumber}
+                                                        value={phoneNumber}
+                                                        onChange={(e) => setPhoneNumber(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -178,7 +187,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h6>Email Address</h6>
                                                     <input type="email" placeholder="Email *"
                                                         name="emailAddress"
-                                                        defaultValue={emailAddress}
+                                                        value={emailAddress}
+                                                        onChange={(e) => setEmailAddress(e.target.value)}
                                                         disabled={pending}/>
                                                 </div>
                                             </div>
@@ -187,7 +197,8 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h5>Additional Information</h5>
                                                     <textarea cols={3} rows={4}
                                                         placeholder="Notes about your order, e.g. special notes for delivery"
-                                                        defaultValue={additionalInfo}
+                                                        value={additionalInfo}
+                                                        onChange={(e) => setAdditionalInfo(e.target.value)}
                                                         disabled={pending}>
                                                     </textarea>
                                                 </div>
