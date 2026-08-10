@@ -183,8 +183,10 @@ export function ModalContent(props: CuisinesContentOptions) {
                                         }
                                     }}
                                     disabled={pending}
+                                    id={d.name}
                                 />
-                                <label className="form-check-label add-to-cart-detail-price">
+                                <label className="form-check-label add-to-cart-detail-price"
+                                    htmlFor={d.name}>
                                     {d.name} <span>+ {formatCurrency(d.price)}</span>
                                 </label>
                             </div>;
