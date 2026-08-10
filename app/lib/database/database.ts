@@ -122,9 +122,12 @@ export async function deleteUserCartByUserAndUserCartId(userId: string, userCart
     }
 }
 
-export async function writeToOrder(flag: OrderDbFlag): Promise<any> {
+export async function writeToOrder(flag: OrderDbFlag, firstName: string, lastName: string, streetAddress: string, secondAddress: string, city: string, state: string, zipCode: string, phoneNumber: string, emailAddress: string, additionalInfo: string): Promise<any> {
     try {
-        const result = await sql`INSERT INTO user_order (flag, created_date) VALUES (${flag}, current_timestamp) returning user_order_id as orderid`;
+        const result = await sql`INSERT INTO 
+            user_order (flag, created_date, first_name, last_name, street_address, second_address, city, state, zip_code, phone_number, email_address, additional_info) 
+            VALUES (${flag}, current_timestamp, ${firstName}, ${lastName}, ${streetAddress}, ${secondAddress}, ${city}, ${state}, ${zipCode}, ${phoneNumber}, ${emailAddress}, ${additionalInfo}) 
+            returning user_order_id as orderid`;
         return (result as any)[0].orderid;
     } catch (error) {
         console.error('Database Error:', error);

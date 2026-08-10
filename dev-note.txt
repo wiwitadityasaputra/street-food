@@ -14,3 +14,14 @@ from user_order uo
     LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id
 where 
     uc.user_id = 'cddcf36d-8f2a-43c2-a85b-e9d6035817c4'
+
+ALTER TABLE "user_order" ADD COLUMN "first_name" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "last_name" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "street_address" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "second_address" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "city" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "state" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "zip_code" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "phone_number" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "email_address" varchar(100);
+ALTER TABLE "user_order" ADD COLUMN "additional_info" varchar(400);

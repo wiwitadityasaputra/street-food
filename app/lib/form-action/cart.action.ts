@@ -34,6 +34,16 @@ export async function deleteCartItemAction(prevState: any, formData: FormData): 
 export async function processCarts(prevState: any, formData: FormData): Promise<ProcessCartActionResponse> {
     try {
         const userId = String(formData.get("userId"));
+        const firstName = String(formData.get("firstName"));
+        const lastName = String(formData.get("lastName"));
+        const streetAddress = String(formData.get("streetAddress"));
+        const secondAddress = String(formData.get("secondAddress"));
+        const city = String(formData.get("city"));
+        const state = String(formData.get("state"));
+        const zipCode = String(formData.get("zipCode"));
+        const phoneNumber = String(formData.get("phoneNumber"));
+        const emailAddress = String(formData.get("emailAddress"));
+        const additionalInfo = String(formData.get("additionalInfo"));
 
         // get all user_cart_id by user & flag=active
         const userCartIds = await fetchUserCartIdByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
@@ -49,7 +59,7 @@ export async function processCarts(prevState: any, formData: FormData): Promise<
         userCartIdsStr += ")";
 
         // create new order
-        const newOrderId = await writeToOrder(OrderDbFlag.CREATED)
+        const newOrderId = await writeToOrder(OrderDbFlag.CREATED, firstName, lastName, streetAddress, secondAddress, city, state, zipCode, phoneNumber, emailAddress, additionalInfo)
 
         // update user_cart_id set flag=cooking and with new order
         const sqlString = `UPDATE user_cart 
