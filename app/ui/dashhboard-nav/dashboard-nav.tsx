@@ -36,7 +36,7 @@ export default function DashboardNav(props: DashboardNavProps) {
 
   const totalCart = useAppSelector((state) => state.app.totalCart);
   let [finalCart, setFinalCart] = React.useState(props.totalCart);
-  let [showCardMenu, setShowCardMenu] = React.useState(false);
+  let [showCardMenu, setShowCardMenu] = React.useState(props.totalCart > 0);
   React.useEffect(() => {
     if (totalCart != DEFAULT_TOTALCART_APPSLICE) {
       setFinalCart(totalCart);
