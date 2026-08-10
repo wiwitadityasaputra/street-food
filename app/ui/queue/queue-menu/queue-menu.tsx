@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import "@/app/ui/queue/queue-menu/queue-menu.css";
 import clsx from "clsx";
-import { QueueMenuProps } from "./queue-menu.definition";
+
+import "@/app/ui/queue/queue-menu/queue-menu.css";
+import { QueueMenuProps } from "@/app/ui/queue/queue-menu/queue-menu.definition";
 
 const MENU_ME_HREF = "/queue/me";
 const MENU = [

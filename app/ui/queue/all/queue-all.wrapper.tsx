@@ -1,7 +1,7 @@
 "use server";
 
 import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
-import { QueueAllContent } from "./queue-all.content";
+import { QueueAllContent } from "@/app/ui/queue/all/queue-all.content";
 import { countUserOrders } from "@/app/lib/database/database";
 
 export async function QueueAllWrapper() {

@@ -1,11 +1,13 @@
 "use client";
 
-import "@/app/ui/queue/me/queue-me.css";
-import { QueueMeContentProps } from "./queue-me.definition";
 import clsx from "clsx";
+
+import "@/app/ui/queue/me/queue-me.css";
+
 import { OrderDbFlag } from "@/app/lib/database/database.definition";
 import { formatDate } from "@/app/lib/util/utils";
-import { QueueMenu } from "../queue-menu/queue-menu";
+import { QueueMeContentProps } from "@/app/ui/queue/me/queue-me.definition";
+import { QueueMenu } from "@/app/ui/queue/queue-menu/queue-menu";
 
 export function QueueMeContent(props: QueueMeContentProps) {
 
