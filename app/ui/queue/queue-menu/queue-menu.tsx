@@ -26,19 +26,23 @@ export function QueueMenu(props: QueueMenuProps) {
     }
 
     return (<>
-        <div className="queue-menu">
-            <div className="menu_filter">
-                {MENU.map(m => {
-                    if (props.userTotalOrder === 0 && m.href === MENU_ME_HREF) {
-                        return;
-                    }
-                    return (<button key={m.href}
-                        className={clsx({"active": pathname === m.href})}
-                        onClick={() => changeMenu(m.href)}>
-                        {m.name}
-                    </button>)
-                })}
+        <section className="cart_view">
+            <div className="queue-menu">
+                <div className="container">
+                    <div className="menu_filter">
+                        {MENU.map(m => {
+                            if (props.userTotalOrder === 0 && m.href === MENU_ME_HREF) {
+                                return;
+                            }
+                            return (<button key={m.href}
+                                className={clsx({"active": pathname === m.href})}
+                                onClick={() => changeMenu(m.href)}>
+                                {m.name}
+                            </button>)
+                        })}
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
     </>);
 }

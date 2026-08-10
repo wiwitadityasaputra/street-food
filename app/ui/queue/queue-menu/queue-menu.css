@@ -6,3 +6,9 @@
     padding-left: 4px;
     padding-bottom: 10px;
 }
+.queue-menu .menu_filter button {
+    margin-left: 0px !important;
+}
+.queue-menu .menu_filter button:nth-child(2) {
+    margin-left: 10px !important;
+}
