@@ -1,10 +1,11 @@
 import postgres from 'postgres';
 
 import {
+    AllOrderAndCartDb,
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
     CuisinesDb,
-    OrderAndCartDb,
+    MyOrderAndCartDb,
     OrderDbFlag,
     UserCartDb,
     UserCartDbFlag,
@@ -159,9 +160,9 @@ export async function countUserOrders(userId: string): Promise<number> {
     }
 }
 
-export async function fetchUserOrders(userId: string): Promise<OrderAndCartDb[]> {
+export async function fetchUserOrders(userId: string): Promise<MyOrderAndCartDb[]> {
     try {
-        const data = await sql<OrderAndCartDb[]>`
+        const data = await sql<MyOrderAndCartDb[]>`
             SELECT 
                 uo.user_order_id,
                 uo.flag as flag_order,
@@ -190,6 +191,35 @@ export async function fetchUserOrders(userId: string): Promise<OrderAndCartDb[]>
                 uc.cuisine_name
             FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id 
             where uc.user_id = ${userId}`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function fetchAllOrders(): Promise<AllOrderAndCartDb[]> {
+    try {
+        const data = await sql<AllOrderAndCartDb[]>`
+            SELECT 
+                uo.user_order_id,
+                uo.flag as flag_order,
+
+                uo.created_date,
+                uo.cooked_date,
+                uo.shipped_date,
+                uo.delivered_date,
+                uo.cancelled_date,
+
+                uo.first_name,
+                uo.last_name,
+                uo.street_address,
+
+                uc.user_cart_id,
+                uc.options,
+                uc.cuisine_id,
+                uc.cuisine_name
+            FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);

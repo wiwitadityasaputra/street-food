@@ -4,28 +4,11 @@ import clsx from "clsx";
 
 import "@/app/ui/queue/me/queue-me.css";
 
-import { OrderDbFlag } from "@/app/lib/database/database.definition";
-import { formatDate } from "@/app/lib/util/utils";
+import { formatDate, orderFlagToStatus } from "@/app/lib/util/utils";
 import { QueueMeContentProps } from "@/app/ui/queue/me/queue-me.definition";
 import { QueueMenu } from "@/app/ui/queue/queue-menu/queue-menu";
 
 export function QueueMeContent(props: QueueMeContentProps) {
-
-    const orderFlagToStatus = (flag: number) => {
-        const flagN = Number(flag);
-        if (flagN === OrderDbFlag.CREATED) {
-            return "Order placed";
-        } else if (flagN === OrderDbFlag.COOKED) {
-            return "Cooked";
-        } else if (flagN === OrderDbFlag.SHIPPED) {
-            return "Shipped";
-        } else if (flagN === OrderDbFlag.RECEIVED) {
-            return "Received";
-        } else if (flagN === OrderDbFlag.CANCELLED) {
-            return "Cancelled";
-        }
-        return "-";
-    }
 
     return (<>
         <div className="queue">
@@ -72,9 +55,6 @@ export function QueueMeContent(props: QueueMeContentProps) {
                                                                 })}
                                                             </div>)  
                                                         })}
-                                                        <div>
-
-                                                        </div>
                                                     </td>
                                                     <td className="pro_img col-cart-status">
                                                         {orderFlagToStatus(o.flagOrder)}

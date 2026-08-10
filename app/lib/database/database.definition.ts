@@ -53,14 +53,16 @@ export enum OrderDbFlag {
     CANCELLED = 5
 }
 
-export interface OrderAndCartDb {
+export interface MyOrderAndCartDb {
     user_order_id: number;
     flag_order: number;
+
     created_date: Date;
     cooked_date: Date;
     shipped_date: Date;
     delivered_date: Date;
     cancelled_date: Date;
+
     first_name: string;
     last_name: string;
     street_address: string;
@@ -79,6 +81,26 @@ export interface OrderAndCartDb {
     final_price: number;
     options: string;
     flag_cart: string;
+    cuisine_id: string;
+    cuisine_name: string;
+}
+
+export interface AllOrderAndCartDb {
+    user_order_id: number;
+    flag_order: number;
+
+    created_date: Date;
+    cooked_date: Date;
+    shipped_date: Date;
+    delivered_date: Date;
+    cancelled_date: Date;
+
+    first_name: string;
+    last_name: string;
+    street_address: string;
+
+    user_cart_id: number;
+    options: string;
     cuisine_id: string;
     cuisine_name: string;
 }

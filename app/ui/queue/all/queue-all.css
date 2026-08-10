@@ -3,3 +3,54 @@
     padding-right: 4vw;
     margin-top: 140px;
 }
+.cart_view.queue-content {
+    margin-top: 0px !important;
+}
+.order-row:nth-child(odd) {
+    background: #d0d4d8 !important;
+}
+.user-name {
+    width: 100%;
+    text-align: left;
+}
+.user-address {
+    width: 100%;
+    text-align: left;
+    margin-top: 15px;
+}
+.col-cart-name {
+    display: block !important;
+}
+.col-cart-item {
+    display: block !important;
+    width: 30% !important;
+    min-width: 205px !important;
+}
+.col-cart-status {
+    display: block !important;
+}
+.col-cart-date {
+    display: block !important;
+    width: 20% !important;
+    min-width: 175px !important;
+}
+.col-cart-date h6 {
+    width: 100%;
+    text-align: left;
+}
+.col-cart-date .not-first {
+    margin-top: 15px !important;
+}
+.cart-item {
+    width: 100%;
+}
+.cuisine-name {
+    font-size: 14px;
+    font-weight: 800;
+}
+.cuisine-name.not-first {
+    margin-top: 15px !important;
+}
+.cuisine-option {
+    padding-left: 15px;
+}

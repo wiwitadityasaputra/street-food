@@ -14,7 +14,7 @@ export type UserCartResponse = {
     options: string[];
 }
 
-export type UserOrderItem = {
+export type MyUserOrderItem = {
     cartId: number;
     
     cuisineId: string;
@@ -26,7 +26,7 @@ export type UserOrderItem = {
     finalPrice: number;
 }
 
-export type UserOrder = {
+export type MyUserOrder = {
     orderId: number;
     flagOrder: number;
 
@@ -47,5 +47,29 @@ export type UserOrder = {
     emailAddress: string;
     additionalInfo: string;
 
-    items: UserOrderItem[];
+    items: MyUserOrderItem[];
+}
+
+export type AllUserOrderItem = {
+    cartId: number;
+
+    cuisineName: string;
+    options: string[];
+}
+
+export type AllUserOrder = {
+    orderId: number;
+    flagOrder: number;
+
+    createdDate: Date;
+    cookedDate: Date;
+    shippedDate: Date;
+    deliveredDate: Date;
+    cancelledDate: Date;
+
+    firstName: string;
+    lastName: string;
+    streetAddress: string;
+
+    items: AllUserOrderItem[];
 }

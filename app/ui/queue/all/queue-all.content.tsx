@@ -1,5 +1,8 @@
+import clsx from "clsx";
+
 import { QueueMenu } from "@/app/ui/queue/queue-menu/queue-menu";
 import { QueueAllContentProps } from "@/app/ui/queue/all/queue-all.definition";
+import { formatDate, orderFlagToStatus } from "@/app/lib/util/utils";
 
 export function QueueAllContent(props: QueueAllContentProps) {
     return (<>
@@ -19,6 +22,48 @@ export function QueueAllContent(props: QueueAllContentProps) {
                                                 <th className="pro_img">Status</th>
                                                 <th className="pro_img col-cart-date">Date</th>
                                             </tr>
+                                            {props.orders.map(o => {
+                                                return (<tr key={o.orderId} className="order-row">
+                                                    <td className="pro_name col-cart-name">
+                                                        <h5 className="user-name">
+                                                            {o.orderId}. {o.firstName} {o.lastName}
+                                                        </h5>
+                                                        <h6 className="user-address">Street Address</h6>
+                                                        <p>{o.streetAddress}</p>
+                                                    </td>
+                                                    <td className="pro_name col-cart-item">
+                                                        {o.items.map((i, index) => {
+                                                            return (<div key={i.cartId} className="cart-item">
+                                                                <p className={clsx("cuisine-name ", {"not-first": index > 0})}>
+                                                                    {index + 1}. {i.cuisineName}
+                                                                </p>
+                                                                {i.options.map(item => {
+                                                                    return (<p className="cuisine-option" key={item}>{item}</p>);
+                                                                })}
+                                                            </div>)  
+                                                        })}
+                                                    </td>
+                                                    <td className="pro_img col-cart-status">
+                                                        {orderFlagToStatus(o.flagOrder)}
+                                                    </td>
+                                                    <td className="pro_img col-cart-date">
+                                                        <h6>Order Created Date</h6>
+                                                        <p>{formatDate(o.createdDate)}</p>
+
+                                                        <h6 className="not-first">Cooking Date</h6>
+                                                        <p>{formatDate(o.cookedDate)}</p>
+
+                                                        <h6 className="not-first">Shipped Date</h6>
+                                                        <p>{formatDate(o.shippedDate)}</p>
+
+                                                        <h6 className="not-first">Delivered Date</h6>
+                                                        <p>{formatDate(o.deliveredDate)}</p>
+
+                                                        <h6 className="not-first">Cancelled Date</h6>
+                                                        <p>{formatDate(o.cancelledDate)}</p>
+                                                    </td>
+                                                </tr>)
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>
