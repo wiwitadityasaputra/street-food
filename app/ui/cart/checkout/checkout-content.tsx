@@ -39,7 +39,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
             dispatch(setTotalCart(0));
             timeId = setTimeout(() => {
                 replace("/queue/me");
-            }, 11000);
+            }, 10000);
 
             t = window.setInterval(() => {
                 setTime(prevTime => prevTime - 1);
