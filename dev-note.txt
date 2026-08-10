@@ -9,3 +9,8 @@ user_cart
     user_cart_id
     order_id
 
+select uo.*, uc.*
+from user_order uo
+    LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id
+where 
+    uc.user_id = 'cddcf36d-8f2a-43c2-a85b-e9d6035817c4'

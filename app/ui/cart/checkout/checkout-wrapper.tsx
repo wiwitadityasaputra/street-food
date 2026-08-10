@@ -6,6 +6,7 @@ import { getUserCarts } from "@/app/lib/service/cart.service";
 import { UserCartResponse } from "@/app/lib/service/service.definition";
 import { cookiesGetUserId } from "@/app/lib/util/cookie-util";
 import CheckoutContent from "@/app/ui/cart/checkout/checkout-content";
+import { getRandomEmail, getRandomPhonenumber } from '@/app/lib/util/fake-input.util';
 
 export async function CheckoutWrapper() {
 
@@ -21,6 +22,8 @@ export async function CheckoutWrapper() {
                 <CheckoutContent
                     userId={userId}
                     carts={carts}
+                    emailAddress={getRandomEmail()}
+                    phoneNumber={getRandomPhonenumber()}
                 />
             </>)
         }

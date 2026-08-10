@@ -63,11 +63,12 @@ export default function CheckoutContent(props: CheckoutContentProps) {
     const [city, setCity] = React.useState(getRandomCity());
     const [stateField, setState] = React.useState(getRandomState());
     const [zipCode, setZipCode] = React.useState(getRandomZipcode());
-    const [phoneNumber, setPhoneNumber] = React.useState(getRandomPhonenumber());
-    const [emailAddress, setEmailAddress] = React.useState(getRandomEmail());
+    const [phoneNumber, setPhoneNumber] = React.useState(props.phoneNumber);
+    const [emailAddress, setEmailAddress] = React.useState(props.emailAddress);
     const [additionalInfo, setAdditionalInfo] = React.useState(getRandomInfo());
 
     const refreshAddress = () => {
+        console.log("dbg refresh ", getRandomFirstname())
         setFirstName(getRandomFirstname());
         setLastName(getRandomLastname());
         setStreetAddress(getRandomStreetAddress());
