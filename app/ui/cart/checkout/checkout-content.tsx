@@ -68,7 +68,6 @@ export default function CheckoutContent(props: CheckoutContentProps) {
     const [additionalInfo, setAdditionalInfo] = React.useState(getRandomInfo());
 
     const refreshAddress = () => {
-        console.log("dbg refresh ", getRandomFirstname())
         setFirstName(getRandomFirstname());
         setLastName(getRandomLastname());
         setStreetAddress(getRandomStreetAddress());
