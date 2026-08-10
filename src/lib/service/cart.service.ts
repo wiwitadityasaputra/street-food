@@ -1,0 +1,25 @@
+import { fetchUserCartByUserAndFlag } from "@/src/lib/database/database";
+import { UserCartDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
+import { USER_CART_OPTIONS_SEPARATOR, UserCartResponse } from "@/src/lib/service/service.definition";
+
+export async function getUserCarts(userId: string): Promise<UserCartResponse[]> {
+    const data: UserCartDb[] = await fetchUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
+    const result: UserCartResponse[] = [];
+    data.forEach(d => {
+        const options: string[] = [];
+        d.options.split(USER_CART_OPTIONS_SEPARATOR).forEach(o => {
+            options.push(o);
+        });
+
+        result.push({
+            cuisineId: d.cuisine_id,
+            cuisineName: d.cuisine_name,
+            userCartId: d.user_cart_id,
+            pricePerItem: d.price_per_item,
+            quantity: d.quantity,
+            finalPrice: d.final_price,
+            options: options
+        });
+    })
+    return result;
+}

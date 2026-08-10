@@ -1,0 +1,237 @@
+"use client";
+
+import React from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+
+import "@/src/ui/menu/modal/modal.css"
+import {
+    CART_OPTION_RADIO_PREFIX,
+    CART_OPTION_CHECKBOX_PREFIX,
+    CART_OPTION_VALUE_SEPARATOR,
+} from "@/src/lib/service/service.definition";
+import CuisineRating from "@/src/ui/menu/cusine-rating/cuisine-rating";
+import { formatCurrency } from '@/src/lib/util/utils';
+import { addToCart as addToCartAction } from '@/src/lib/form-action/menu.action';
+import {
+    CheckboxOptionsState,
+    CuisinesContentOptions,
+    CuisinesOptions,
+    CuisinesOptionsDetail
+} from '@/src/ui/menu/modal/modal.definition';
+import { CuisinesCartDb } from '@/src/lib/database/database.definition';
+import { DEFAULT_SUCCESS_MESSAGE } from '@/src/lib/form-action/form-action.definition';
+import { useAppDispatch } from "@/src/lib/util/redux-provider";
+import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
+
+export function ModalContent(props: CuisinesContentOptions) {
+    const { replace } = useRouter();
+    const dispatch = useAppDispatch();
+    const userId = props.userId;
+
+    const compareCuisineCart = (a: CuisinesCartDb, b: CuisinesCartDb) => {
+        return a.order - b.order;
+    }
+    const cuisineCarts = props.cuisineCarts.sort(compareCuisineCart);
+
+    const checkboxOptions: CheckboxOptionsState[] = [];
+    const options: CuisinesOptions[] = [];
+    cuisineCarts.forEach((c) => {
+        const finded = options.find((o) => {
+            return o.name.toLowerCase() === c.group.toLowerCase();
+        });
+        if (!finded) {
+            options.push({
+                name: c.group,
+                mandatory: c.cartType === "radio",
+                detail: [{
+                    id: c.id,
+                    name: c.name,
+                    price: c.price,
+                    checked: c.price === 0
+                }],
+                latestPriceIncrease: 0
+            });
+        } else {
+            finded.detail.push({
+                id: c.id,
+                name: c.name,
+                price: c.price,
+                checked: false
+            })
+        }
+
+        if (c.cartType === "checkbox") {
+            checkboxOptions.push({
+                name: c.name,
+                price: c.price
+            })
+        }
+    });
+
+    const compareDetail = (a: CuisinesOptionsDetail, b: CuisinesOptionsDetail) => {
+        return a.price - b.price;
+    }
+    options.forEach(o => {
+        o.detail = o.detail.sort(compareDetail);
+    })
+
+    const radioOnChange = (o: CuisinesOptions, d: CuisinesOptionsDetail) => {
+        let minus = 0;
+        radioState.find(opt => {
+            const finded = opt.name === o.name;
+            minus = opt.latestPriceIncrease;
+            return finded;
+        });
+
+        radioState.find((opt) => {
+            const finded = opt.name === o.name;
+            if (finded) {
+                opt.latestPriceIncrease = d.price;
+                const price = pricePerItem + d.price - minus
+                setPricePerItem(price);
+                setFinalPrice(quantity * price);
+            }
+            return finded;
+        });
+        setRadioState(radioState);
+    }
+
+    const checkboxOnChange = (d: CuisinesOptionsDetail) => {
+        checkboxState.find(c => {
+            const finded = c.name === d.name;
+            if (finded) {
+                const price = pricePerItem + c.price;
+                setPricePerItem(price);
+                setFinalPrice(quantity * price);
+                if (c.price > 0) {
+                    c.price = -Math.abs(c.price);
+                } else {
+                    c.price = Math.abs(c.price);
+                }
+            }
+            return finded;
+        })
+        setCheckboxState(checkboxState);
+    }
+
+    const multipleOrder = (order: number) => {
+        const finalQuantity = quantity + order;
+        if (finalQuantity >= 1) {
+            setQuantity(finalQuantity);
+            setFinalPrice(finalQuantity * pricePerItem);
+        }
+    }
+
+    let [pricePerItem, setPricePerItem] = React.useState(props.cuisine.price);
+    let [finalPrice, setFinalPrice] = React.useState(props.cuisine.price);
+    let [quantity, setQuantity] = React.useState(1);
+    let [radioState, setRadioState] = React.useState(options);
+    let [checkboxState, setCheckboxState] = React.useState(checkboxOptions);
+    const [state, formAction, pending] = React.useActionState(addToCartAction, {erroMessage: ''});
+    React.useEffect(() => {
+        if (state.successMessage === DEFAULT_SUCCESS_MESSAGE && state.successObject) {
+            dispatch(setTotalCart(state.successObject.totalCart));
+            replace("/cart");
+        }
+    }, [state]);
+
+    return (<>
+        <div className="cart_popup_img">
+            <Image
+                src={`/images/cuisine/${props.cuisine.id}/1.jpg`}
+                width={344}
+                height={220}
+                alt={"cuisine.name"}
+                unoptimized />
+        </div>
+        <form action={formAction}>
+            <div className="cart_popup_text">
+                <a href="#" className="title">
+                    {props.cuisine.name}
+                </a>
+                <p className="rating">
+                    <CuisineRating rate={props.cuisine.rate} />                               
+                    <span>({props.cuisine.review})</span>
+                </p>
+                <h4 className="price">
+                    Price per item: {formatCurrency(props.cuisine.price)}
+                </h4>
+                {options.map((o) => {
+                    return <div key={o.name} className="details_size">
+                        <h5>{o.name} {!o.mandatory && <span>(optional)</span>}</h5>
+                        {o.detail.map((d) => {
+                            let name = CART_OPTION_CHECKBOX_PREFIX + d.id;
+                            const value: any = d.id + CART_OPTION_VALUE_SEPARATOR + d.price;
+                            if (o.mandatory) {
+                                name = CART_OPTION_RADIO_PREFIX + o.name;
+                            }
+                            return <div key={d.name} className="form-check">
+                                <input 
+                                    type={o.mandatory ? "radio" : "checkbox"}
+                                    className="form-check-input"
+                                    name={name}
+                                    defaultChecked={d.checked}
+                                    value={value}
+                                    onChange={() => {
+                                        if (o.mandatory) {
+                                            radioOnChange(o, d)
+                                        } else {
+                                            checkboxOnChange(d);
+                                        }
+                                    }}
+                                    disabled={pending}
+                                    id={d.name}
+                                />
+                                <label className="form-check-label add-to-cart-detail-price"
+                                    htmlFor={d.name}>
+                                    {d.name} <span>+ {formatCurrency(d.price)}</span>
+                                </label>
+                            </div>;
+                        })}
+                    </div>;
+                })}
+
+                <div className="details_quentity">
+                    <h5>select quanitty</h5>
+                    <div className="quentity_btn_area d-flex flex-wrapa align-items-center">
+                        <div className="quentity_btn">
+                            <button type="button" className="btn btn-danger qty-btn"
+                                disabled={pending}
+                                onClick={() => {multipleOrder(-1)}}>
+                                <FontAwesomeIcon icon={faMinus} size="sm" />
+                            </button>
+                            <input type="text" name="quantity" value={quantity} placeholder={String(quantity)} disabled></input>
+                            <button type="button" className="btn btn-success qty-btn"
+                                disabled={pending}
+                                onClick={() => {multipleOrder(1)}}>
+                                <FontAwesomeIcon icon={faPlus} size="sm" />
+                            </button>
+                        </div>
+                        <h3>{formatCurrency(finalPrice)}</h3>
+                    </div>
+                </div>
+                <ul className="details_button_area d-flex flex-wrap add-to-cart-wrapper">
+                    <li>
+                        <input type="hidden" name="userId" value={userId}></input>
+                        <input type="hidden" name="cuisineId" value={props.cuisine.id}></input>
+                        <input type="hidden" name="cuisineName" value={props.cuisine.name}></input>
+                        <input type="hidden" name="pricePerItem" value={pricePerItem}></input>
+                        <input type="hidden" name="quantity" value={quantity}></input>
+                        <input type="hidden" name="finalPrice" value={finalPrice}></input>
+                        {state.erroMessage && (
+                            <div className="form-action-error">
+                                {state.erroMessage}
+                            </div>
+                        )}
+                        <button className="add-to-cart-btn" type="submit" disabled={pending}>
+                            Add To Cart
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </form>
+    </>);
+}
