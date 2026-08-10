@@ -218,7 +218,8 @@ export async function fetchAllOrders(): Promise<AllOrderAndCartDb[]> {
                 uc.user_cart_id,
                 uc.options,
                 uc.cuisine_id,
-                uc.cuisine_name
+                uc.cuisine_name,
+                uc.quantity
             FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id`;
         return data;
     } catch (error) {

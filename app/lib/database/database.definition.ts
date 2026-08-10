@@ -103,4 +103,5 @@ export interface AllOrderAndCartDb {
     options: string;
     cuisine_id: string;
     cuisine_name: string;
+    quantity: number;
 }

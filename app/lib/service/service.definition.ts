@@ -54,6 +54,7 @@ export type AllUserOrderItem = {
     cartId: number;
 
     cuisineName: string;
+    quantity: number;
     options: string[];
 }
 

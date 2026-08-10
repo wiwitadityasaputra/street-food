@@ -48,7 +48,7 @@ export function QueueMeContent(props: QueueMeContentProps) {
                                                         {o.items.map((i, index) => {
                                                             return (<div key={i.cartId} className="cart-item">
                                                                 <p className={clsx("cuisine-name ", {"not-first": index > 0})}>
-                                                                    {index + 1}. {i.cuisineName}
+                                                                    {index + 1}. {i.cuisineName} ({i.quantity})
                                                                 </p>
                                                                 {i.options.map(item => {
                                                                     return (<p className="cuisine-option" key={item}>{item}</p>);

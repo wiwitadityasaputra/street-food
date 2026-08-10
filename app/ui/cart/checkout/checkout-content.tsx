@@ -212,7 +212,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                         <div>
                                             <h6>total cart ({props.carts.length})</h6>
                                             <p>subtotal: <span>{formatCurrency(subTotal)}</span></p>
-                                            <p>delivery: <span>$00.00</span></p>
+                                            <p>delivery: <span>$0.00</span></p>
                                             <p>discount: <span>$0.00</span></p>
                                             <p className="total"><span>total:</span> <span>{formatCurrency(total)}</span></p>
                                         </div>

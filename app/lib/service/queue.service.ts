@@ -132,6 +132,7 @@ export async function fetchAllOrders(): Promise<AllUserOrder[]> {
                 cartId: f.user_cart_id,
 
                 cuisineName: f.cuisine_name,
+                quantity: f.quantity,
                 options: options
             })
         });
