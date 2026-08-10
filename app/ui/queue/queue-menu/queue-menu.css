@@ -12,3 +12,9 @@
 .queue-menu .menu_filter button:nth-child(2) {
     margin-left: 10px !important;
 }
+.order-status-note {
+    font-size: 12px;
+    float: right;
+    position: relative;
+    top: 30px;
+}

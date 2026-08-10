@@ -40,6 +40,9 @@ export function QueueMenu(props: QueueMenuProps) {
                                 {m.name}
                             </button>)
                         })}
+                        <span className="order-status-note">
+                            Note: order status updated every 30 minute.
+                        </span>
                     </div>
                 </div>
             </div>
