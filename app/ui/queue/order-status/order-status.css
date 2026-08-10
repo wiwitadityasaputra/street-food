@@ -1,0 +1,8 @@
+.collapse-icon {
+    position: relative;
+    top: -1px;
+    font-size: 12px !important;
+}
+.hide {
+    display: none;
+}

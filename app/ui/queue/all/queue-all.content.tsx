@@ -1,9 +1,7 @@
-import clsx from "clsx";
-
 import { QueueMenu } from "@/app/ui/queue/queue-menu/queue-menu";
 import { QueueAllContentProps } from "@/app/ui/queue/all/queue-all.definition";
-import { formatDate, orderFlagToStatus } from "@/app/lib/util/utils";
 import { CuisineItem } from "../cuisine-item/cuisine-item";
+import { OrderStatus } from "../order-status/order-status";
 
 export function QueueAllContent(props: QueueAllContentProps) {
     return (<>
@@ -43,30 +41,14 @@ export function QueueAllContent(props: QueueAllContentProps) {
                                                         })}
                                                     </td>
                                                     <td className="pro_img col-cart-date">
-                                                        <h5 className="order-status">{orderFlagToStatus(o.flagOrder)}</h5>
-
-                                                        <div className="row">
-                                                            <div className="col-lg-6">
-                                                                <h6>Created Date</h6>
-                                                                <p className="date-value">{formatDate(o.createdDate)}</p>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <h6>Cooking Date</h6>
-                                                                <p className="date-value">{formatDate(o.cookedDate)}</p>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <h6>Shipped Date</h6>
-                                                                <p className="date-value">{formatDate(o.shippedDate)}</p>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <h6>Delivered Date</h6>
-                                                                <p className="date-value">{formatDate(o.deliveredDate)}</p>
-                                                            </div>
-                                                            <div className="col-lg-6">
-                                                                <h6>Cancelled Date</h6>
-                                                                <p className="date-value">{formatDate(o.cancelledDate)}</p>
-                                                            </div>
-                                                        </div>
+                                                        <OrderStatus 
+                                                            flagOrder={o.flagOrder}
+                                                            createdDate={o.createdDate}
+                                                            cookedDate={o.cookedDate}
+                                                            shippedDate={o.shippedDate}
+                                                            deliveredDate={o.deliveredDate}
+                                                            cancelledDate={o.cancelledDate}
+                                                        />
                                                     </td>
                                                 </tr>)
                                             })}
