@@ -1,8 +1,8 @@
 "use server";
 
-import "@/app/ui/queue/queue.css";
+import "@/app/ui/queue/me/queue-me.css";
 
-export async function QueueSkeleton() {
+export async function QueueMeSkeleton() {
     return (<>
         <div className="queue">please wait,,,</div>
     </>)

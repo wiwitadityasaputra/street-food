@@ -1,11 +1,11 @@
-import "@/app/queue/queue.css";
+import { QueueAllSkeleton } from "@/app/ui/queue/all/queue-all.skeleton";
+import { QueueAllWrapper } from "@/app/ui/queue/all/queue-all.wrapper";
+import { Suspense } from "react";
 
 export default function QueueAll() {
     return (<>
-        <div className="queue">
-            <div className="uc">
-                queue all - under construction
-            </div>
-        </div>
+        <Suspense fallback={<QueueAllSkeleton />}>
+            <QueueAllWrapper />
+        </Suspense>
     </>);
 }

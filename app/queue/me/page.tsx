@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 
-import "@/app/queue/queue.css";
-import { QueueSkeleton } from "@/app/ui/queue/queue.skeleton";
-import { QueueWrapper } from "@/app/ui/queue/queue.wrapper";
+import { QueueMeSkeleton } from "@/app/ui/queue/me/queue-me.skeleton";
+import { QueueMeWrapper } from "@/app/ui/queue/me/queue-me.wrapper";
 
 export default function QueueMe() {
     return (<>
-        <Suspense fallback={<QueueSkeleton />}>
-            <QueueWrapper />
+        <Suspense fallback={<QueueMeSkeleton />}>
+            <QueueMeWrapper />
         </Suspense>
     </>);
 }

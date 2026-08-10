@@ -3,6 +3,9 @@
     padding-right: 4vw;
     margin-top: 140px;
 }
+.cart_view.queue-content {
+    margin-top: 0px !important;
+}
 .order-row:nth-child(odd) {
     background: #d0d4d8 !important;
 }

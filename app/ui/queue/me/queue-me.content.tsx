@@ -1,12 +1,13 @@
 "use client";
 
-import "@/app/ui/queue/queue.css";
-import { QueueContentProps } from "./queue.definition";
+import "@/app/ui/queue/me/queue-me.css";
+import { QueueContentProps } from "../queue.definition";
 import clsx from "clsx";
 import { OrderDbFlag } from "@/app/lib/database/database.definition";
 import { formatDate } from "@/app/lib/util/utils";
+import { QueueMenu } from "../queue-menu/queue-menu";
 
-export function QueueContent(props: QueueContentProps) {
+export function QueueMeContent(props: QueueContentProps) {
 
     const orderFlagToStatus = (flag: number) => {
         const flagN = Number(flag);
@@ -26,7 +27,8 @@ export function QueueContent(props: QueueContentProps) {
 
     return (<>
         <div className="queue">
-            <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70">
+            <QueueMenu />
+            <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70 queue-content">
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12 wow fadeInUp">

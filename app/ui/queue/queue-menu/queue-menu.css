@@ -1,0 +1,8 @@
+.queue-menu {
+    width: 100%;
+}
+.queue-menu .menu_filter {
+    justify-content: left;
+    padding-left: 22px;
+    padding-bottom: 10px;
+}
