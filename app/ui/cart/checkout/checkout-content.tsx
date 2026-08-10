@@ -68,7 +68,6 @@ export default function CheckoutContent(props: CheckoutContentProps) {
     const [additionalInfo, setAdditionalInfo] = React.useState(getRandomInfo());
 
     const refreshAddress = () => {
-        console.log("dbg refresh 1  ", firstName)
         setFirstName(getRandomFirstname());
         setLastName(getRandomLastname());
         setStreetAddress(getRandomStreetAddress());
@@ -79,7 +78,6 @@ export default function CheckoutContent(props: CheckoutContentProps) {
         setPhoneNumber(getRandomPhonenumber());
         setEmailAddress(getRandomEmail());
         setAdditionalInfo(getRandomInfo());
-        console.log("dbg refresh 2  ", firstName)
     }
 
     return (<>
