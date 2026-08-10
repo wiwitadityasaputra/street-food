@@ -49,6 +49,36 @@ export enum OrderDbFlag {
     CREATED = 1,
     COOKED = 2,
     SHIPPED = 3,
-    DELIVERED = 4,
+    RECEIVED = 4,
     CANCELLED = 5
+}
+
+export interface OrderAndCartDb {
+    user_order_id: number;
+    flag_order: number;
+    created_date: Date;
+    cooked_date: Date;
+    shipped_date: Date;
+    delivered_date: Date;
+    cancelled_date: Date;
+    first_name: string;
+    last_name: string;
+    street_address: string;
+    second_address: string;
+    city: string;
+    state: string;
+    zip_code: string;
+    phone_number: string;
+    email_address: string;
+    additional_info: string;
+
+    user_cart_id: number;
+    user_id: string;
+    price_per_item: number;
+    quantity: number;
+    final_price: number;
+    options: string;
+    flag_cart: string;
+    cuisine_id: string;
+    cuisine_name: string;
 }

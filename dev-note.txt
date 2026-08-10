@@ -4,24 +4,47 @@
 # build
     $ pnpm build
 
-
-user_cart
-    user_cart_id
-    order_id
-
 select uo.*, uc.*
 from user_order uo
     LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id
 where 
     uc.user_id = 'cddcf36d-8f2a-43c2-a85b-e9d6035817c4'
 
-ALTER TABLE "user_order" ADD COLUMN "first_name" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "last_name" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "street_address" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "second_address" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "city" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "state" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "zip_code" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "phone_number" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "email_address" varchar(100);
-ALTER TABLE "user_order" ADD COLUMN "additional_info" varchar(400);
+select count(*)
+from user_order uo
+    LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id
+where uc.user_id = 'cddcf36d-8f2a-43c2-a85b-e9d6035817c4'
+
+select
+    uo.user_order_id,
+    uo.flag as flag_order,
+    uo.created_date,
+    uo.cooked_date,
+    uo.shipped_date,
+    uo.delivered_date,
+    uo.cancelled_date,
+    uo.first_name,
+    uo.last_name,
+    uo.street_address,
+    uo.second_address,
+    uo.city,
+    uo.state,
+    uo.zip_code,
+    uo.phone_number,
+    uo.email_address,
+    uo.additional_info,
+    uc.user_cart_id,
+    uc.price_per_item,
+    uc.quantity,
+    uc.final_price,
+    uc.options,
+    uc.flag as flag_cart,
+    uc.cuisine_id,
+    uc.cuisine_name
+from user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id
+where uc.user_id = 'cddcf36d-8f2a-43c2-a85b-e9d6035817c4'
+
+1 35 fn ln address 
+2 35 items
+3 15 status
+4 15 date

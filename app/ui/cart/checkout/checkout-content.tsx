@@ -195,6 +195,7 @@ export default function CheckoutContent(props: CheckoutContentProps) {
                                                     <h5>Additional Information</h5>
                                                     <textarea cols={3} rows={4}
                                                         placeholder="Notes about your order, e.g. special notes for delivery"
+                                                        name="additionalInfo"
                                                         value={additionalInfo}
                                                         onChange={(e) => setAdditionalInfo(e.target.value)}
                                                         disabled={pending}>

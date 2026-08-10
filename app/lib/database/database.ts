@@ -4,6 +4,7 @@ import {
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
     CuisinesDb,
+    OrderAndCartDb,
     OrderDbFlag,
     UserCartDb,
     UserCartDbFlag,
@@ -138,6 +139,57 @@ export async function writeToOrder(flag: OrderDbFlag, firstName: string, lastNam
 export async function updateUserCartFlagIsCooking(sqlString: string): Promise<any> {
     try {
         const data = await sql.unsafe(sqlString);
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function countUserOrders(userId: string): Promise<number> {
+    try {
+        const [{ total }] = await sql`SELECT count(*)::int AS total 
+            FROM user_order uo 
+                LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id 
+            WHERE uc.user_id = ${userId}`;
+        return total;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function fetchUserOrders(userId: string): Promise<OrderAndCartDb[]> {
+    try {
+        const data = await sql<OrderAndCartDb[]>`
+            SELECT 
+                uo.user_order_id,
+                uo.flag as flag_order,
+                uo.created_date,
+                uo.cooked_date,
+                uo.shipped_date,
+                uo.delivered_date,
+                uo.cancelled_date,
+                uo.first_name,
+                uo.last_name,
+                uo.street_address,
+                uo.second_address,
+                uo.city,
+                uo.state,
+                uo.zip_code,
+                uo.phone_number,
+                uo.email_address,
+                uo.additional_info,
+                uc.user_cart_id,
+                uc.price_per_item,
+                uc.quantity,
+                uc.final_price,
+                uc.options,
+                uc.flag as flag_cart,
+                uc.cuisine_id,
+                uc.cuisine_name
+            FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id 
+            where uc.user_id = ${userId}`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);
