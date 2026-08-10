@@ -1,13 +1,13 @@
 "use client";
 
 import "@/app/ui/queue/me/queue-me.css";
-import { QueueContentProps } from "../queue.definition";
+import { QueueMeContentProps } from "./queue-me.definition";
 import clsx from "clsx";
 import { OrderDbFlag } from "@/app/lib/database/database.definition";
 import { formatDate } from "@/app/lib/util/utils";
 import { QueueMenu } from "../queue-menu/queue-menu";
 
-export function QueueMeContent(props: QueueContentProps) {
+export function QueueMeContent(props: QueueMeContentProps) {
 
     const orderFlagToStatus = (flag: number) => {
         const flagN = Number(flag);
@@ -27,7 +27,7 @@ export function QueueMeContent(props: QueueContentProps) {
 
     return (<>
         <div className="queue">
-            <QueueMenu />
+            <QueueMenu userTotalOrder={props.userOrders.length}/>
             <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70 queue-content">
                 <div className="container">
                     <div className="row">

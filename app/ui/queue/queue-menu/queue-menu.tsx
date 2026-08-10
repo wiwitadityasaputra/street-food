@@ -3,18 +3,20 @@
 import { useRouter, usePathname } from "next/navigation";
 import "@/app/ui/queue/queue-menu/queue-menu.css";
 import clsx from "clsx";
+import { QueueMenuProps } from "./queue-menu.definition";
 
+const MENU_ME_HREF = "/queue/me";
 const MENU = [
     {
         name: "My Orders",
-        href: "/queue/me"
+        href: MENU_ME_HREF
     }, {
         name: "All Orders",
         href: "/queue/all"
     }
 ]
 
-export function QueueMenu() {
+export function QueueMenu(props: QueueMenuProps) {
     const { replace } = useRouter();
     const pathname = usePathname();
 
@@ -26,6 +28,9 @@ export function QueueMenu() {
         <div className="queue-menu">
             <div className="menu_filter">
                 {MENU.map(m => {
+                    if (props.userTotalOrder === 0 && m.href === MENU_ME_HREF) {
+                        return;
+                    }
                     return (<button key={m.href}
                         className={clsx({"active": pathname === m.href})}
                         onClick={() => changeMenu(m.href)}>

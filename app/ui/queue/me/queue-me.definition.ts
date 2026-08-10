@@ -1,5 +1,5 @@
 import { UserOrder } from "@/app/lib/service/service.definition";
 
-export interface QueueContentProps {
+export interface QueueMeContentProps {
     userOrders: UserOrder[];
 }
