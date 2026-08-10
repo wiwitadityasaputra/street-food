@@ -1,0 +1,12 @@
+.collapse-icon {
+    cursor: pointer;
+    position: relative;
+    left: 10px;
+    top: 2px;
+}
+.cuisine-option {
+    display: block;
+}
+.cuisine-option.hide {
+    display: none;
+}

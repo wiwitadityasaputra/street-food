@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { QueueMenu } from "@/app/ui/queue/queue-menu/queue-menu";
 import { QueueAllContentProps } from "@/app/ui/queue/all/queue-all.definition";
 import { formatDate, orderFlagToStatus } from "@/app/lib/util/utils";
+import { CuisineItem } from "../cuisine-item/cuisine-item";
 
 export function QueueAllContent(props: QueueAllContentProps) {
     return (<>
@@ -32,14 +33,13 @@ export function QueueAllContent(props: QueueAllContentProps) {
                                                     </td>
                                                     <td className="pro_name col-cart-item">
                                                         {o.items.map((i, index) => {
-                                                            return (<div key={i.cartId} className="cart-item">
-                                                                <p className={clsx("cuisine-name ", {"not-first": index > 0})}>
-                                                                    {index + 1}. {i.cuisineName} ({i.quantity})
-                                                                </p>
-                                                                {i.options.map(item => {
-                                                                    return (<p className="cuisine-option" key={item}>{item}</p>);
-                                                                })}
-                                                            </div>)  
+                                                            return (<CuisineItem
+                                                                key={i.cartId}
+                                                                index={index + 1}
+                                                                cuisineName={i.cuisineName}
+                                                                quantity={i.quantity}
+                                                                options={i.options}
+                                                            />)
                                                         })}
                                                     </td>
                                                     <td className="pro_img col-cart-date">

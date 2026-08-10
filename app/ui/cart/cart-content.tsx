@@ -51,7 +51,7 @@ export function CartContent(props: CartContentProps) {
             <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70">
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-12 wow fadeInUp" data-wow-duration="1s">
+                        <div className="col-lg-12 wow fadeInUp">
                             <div className="checkout_form">
                                 <h5>Your Order</h5>
                             </div>
