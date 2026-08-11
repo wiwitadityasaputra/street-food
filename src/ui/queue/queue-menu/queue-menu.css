@@ -11,8 +11,8 @@
 .queue-menu .menu_filter button {
     margin: 0px !important;
 }
-.queue-menu .menu_filter .all-button {
-    margin-left: 10px !important;
+.queue-menu .menu_filter .my-button {
+    margin-right: 10px !important;
 }
 .queue-menu .pagination {
     float: right;
