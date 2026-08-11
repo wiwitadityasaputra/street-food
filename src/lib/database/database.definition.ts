@@ -32,6 +32,7 @@ export type UserCartDb = {
     quantity: number;
     final_price: number;
     options: string;
+    user_order_id: number;
 }
 
 export type UserCartDbUserCartId = {
@@ -104,4 +105,23 @@ export interface AllOrderAndCartDb {
     cuisine_id: string;
     cuisine_name: string;
     quantity: number;
+}
+
+export interface OrderIdUserOrderDb {
+    orderid: number;
+}
+
+export interface AllUserOrderDb {
+    user_order_id: number;
+    flag_order: number;
+
+    created_date: Date;
+    cooked_date: Date;
+    shipped_date: Date;
+    delivered_date: Date;
+    cancelled_date: Date;
+
+    first_name: string;
+    last_name: string;
+    street_address: string;
 }

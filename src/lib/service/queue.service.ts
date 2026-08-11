@@ -1,7 +1,11 @@
 import {
     countUserOrders as countUserOrdersDb,
     fetchUserOrders as fetchUserOrdersDb,
-    fetchAllOrders as fetchAllOrdersDb
+    fetchAllOrders as fetchAllOrdersDb,
+    countAllOrdersPage as countAllOrdersPageDb,
+    fetchAllOrdersIdPage,
+    fetchUserOrdesByids,
+    fetchUserCartByids
 } from '@/src/lib/database/database';
 import {
     AllOrderAndCartDb,
@@ -13,6 +17,7 @@ import {
     AllUserOrder
 } from '@/src/lib/service/service.definition';
 import { maskingValue } from '@/src/lib/util/utils';
+import { NUMBER_PER_PAGE } from '@/src/ui/queue/all/queue-all.definition';
 
 export async function countUserOrders(userId: string): Promise<number> {
     return countUserOrdersDb(userId);
@@ -85,6 +90,7 @@ export async function fetchUserOrders(userId: string): Promise<MyUserOrder[]> {
     return userOrders;
 }
 
+// Deprecated
 export async function fetchAllOrders(): Promise<AllUserOrder[]> {
     const allOrdersDb: AllOrderAndCartDb[] = await fetchAllOrdersDb();
 
@@ -141,4 +147,64 @@ export async function fetchAllOrders(): Promise<AllUserOrder[]> {
     });
 
     return allOrders;
+}
+
+export async function countAllOrdersPage(): Promise<number> {
+    return await countAllOrdersPageDb();
+}
+
+export async function fetchAllOrdersPage(page: number): Promise<AllUserOrder[]> {
+    const orderids = await fetchAllOrdersIdPage((page - 1) * NUMBER_PER_PAGE);
+    const ids = orderids.map(o => o.orderid);
+
+    const userOrders = await fetchUserOrdesByids(ids);
+    const carts = await fetchUserCartByids(ids);
+
+    const result: AllUserOrder[] = [];
+    ids.forEach(id => {
+        const userOrder = userOrders.find(uo => uo.user_order_id === id);
+        const userCarts = carts.filter(uc => uc.user_order_id === id);
+
+        if (userOrder && userCarts && userCarts.length) {
+            const newAddress = userOrder.street_address.split(" ").map((a, index) => {
+                return (index === 0 ? maskingValue(a) : a) + " ";
+            }).join('');
+
+            const allUserOrder: AllUserOrder = {
+                orderId: id,
+                flagOrder: Number(userOrder.flag_order),
+
+                createdDate: userOrder.created_date,
+                cookedDate: userOrder.cooked_date,
+                shippedDate: userOrder.shipped_date,
+                deliveredDate: userOrder.delivered_date,
+                cancelledDate: userOrder.cancelled_date,
+
+                firstName: maskingValue(userOrder.first_name),
+                lastName: userOrder.last_name,
+                streetAddress: newAddress,
+                items: []
+            };
+
+            userCarts.forEach(f => {
+
+                const options: string[] = [];
+                f.options.split(USER_CART_OPTIONS_SEPARATOR).forEach(o => {
+                    options.push(o);
+                });
+
+                allUserOrder.items.push({
+                    cartId: Number(f.user_cart_id),
+
+                    cuisineName: f.cuisine_name,
+                    quantity: f.quantity,
+                    options: options
+                })
+            });
+
+            result.push(allUserOrder);
+        }
+    })
+
+    return result;
 }

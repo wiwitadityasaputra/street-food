@@ -6,7 +6,11 @@ import { OrderStatus } from "@/src/ui/queue/order-status/order-status";
 export function QueueAllContent(props: QueueAllContentProps) {
     return (<>
         <div className="queue-all">
-            <QueueMenu userTotalOrder={props.userTotalOrder}/>
+            <QueueMenu
+                userTotalOrder={props.userTotalOrder}
+                page={props.page}
+                maxPage={props.maxPage}
+            />
             <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70 queue-content">
                 <div className="container">
                     <div className="row">

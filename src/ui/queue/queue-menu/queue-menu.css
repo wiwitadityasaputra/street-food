@@ -3,18 +3,34 @@
 }
 .queue-menu .menu_filter {
     justify-content: left;
-    padding-left: 4px;
-    padding-bottom: 10px;
+    padding: 0px;
+    margin: 0px;
 }
 .queue-menu .menu_filter button {
-    margin-left: 0px !important;
+    margin: 0px !important;
 }
 .queue-menu .menu_filter button:nth-child(2) {
     margin-left: 10px !important;
 }
-.order-status-note {
-    font-size: 12px;
+.queue-menu .pagination {
     float: right;
+}
+.queue-menu .pagination.hide {
+    display: none;
+}
+.queue-menu .pagination button {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+.queue-menu .pagination button:disabled {
+    background: gray;
+    border: gray;
+}
+.queue-menu .pagination .current-page {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+    font-size: 14px;
     position: relative;
-    top: 30px;
+    top: 6px;
 }

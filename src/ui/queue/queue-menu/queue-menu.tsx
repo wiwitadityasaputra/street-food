@@ -5,6 +5,8 @@ import clsx from "clsx";
 
 import "@/src/ui/queue/queue-menu/queue-menu.css";
 import { QueueMenuProps } from "@/src/ui/queue/queue-menu/queue-menu.definition";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const MENU_ME_HREF = "/queue/me";
 const MENU = [
@@ -15,7 +17,7 @@ const MENU = [
         name: "All Orders",
         href: "/queue/all"
     }
-]
+];
 
 export function QueueMenu(props: QueueMenuProps) {
     const { replace } = useRouter();
@@ -23,6 +25,19 @@ export function QueueMenu(props: QueueMenuProps) {
 
     const changeMenu = (newPath: string) => {
         replace(newPath)
+    }
+
+    const showPagination = props.maxPage && props.page;
+    const prevPagButtonDisabled = props.page === 1;
+    const nextPagButtunDisabled = !!(props.page && props.maxPage && props.page === props.maxPage);
+
+    const prevPage = () => {
+        const page = Number(props.page) - 1;
+        replace(`/queue/all?page=${page}`)        
+    }
+    const nextPage = () => {
+        const page = Number(props.page) + 1;
+        replace(`/queue/all?page=${page}`)
     }
 
     return (<>
@@ -40,9 +55,19 @@ export function QueueMenu(props: QueueMenuProps) {
                                 {m.name}
                             </button>)
                         })}
-                        <span className="order-status-note">
-                            Note: order status updated every 30 minute.
-                        </span>
+                        <div className={clsx("pagination", {"hide": !showPagination})}>
+                            <button className="active"
+                                disabled={prevPagButtonDisabled}
+                                onClick={prevPage}>
+                                <FontAwesomeIcon icon={faArrowLeft} size="sm"/>
+                            </button>
+                            <span className="current-page">{props.page}</span>
+                            <button className="active"
+                                disabled={nextPagButtunDisabled}
+                                onClick={nextPage}>
+                                <FontAwesomeIcon icon={faArrowRight} size="sm"/>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

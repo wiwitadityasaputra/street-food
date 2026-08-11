@@ -2,11 +2,13 @@ import postgres from 'postgres';
 
 import {
     AllOrderAndCartDb,
+    AllUserOrderDb,
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
     CuisinesDb,
     MyOrderAndCartDb,
     OrderDbFlag,
+    OrderIdUserOrderDb,
     UserCartDb,
     UserCartDbFlag,
     UserCartDbUserCartId
@@ -156,7 +158,7 @@ export async function countUserOrders(userId: string): Promise<number> {
         return total;
     } catch (error) {
         console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
+        throw new Error('Failed to count data.');
     }
 }
 
@@ -198,6 +200,7 @@ export async function fetchUserOrders(userId: string): Promise<MyOrderAndCartDb[
     }
 }
 
+// Deprecated
 export async function fetchAllOrders(): Promise<AllOrderAndCartDb[]> {
     try {
         const data = await sql<AllOrderAndCartDb[]>`
@@ -221,6 +224,65 @@ export async function fetchAllOrders(): Promise<AllOrderAndCartDb[]> {
                 uc.cuisine_name,
                 uc.quantity
             FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function countAllOrdersPage(): Promise<number> {
+    try {
+        const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_order uo`;
+        return total;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to count data.');
+    }
+}
+
+export async function fetchAllOrdersIdPage(offset: number): Promise<OrderIdUserOrderDb[]> {
+    try {
+        const data = await sql<OrderIdUserOrderDb[]>`
+            SELECT user_order_id as orderid
+            FROM user_order 
+            ORDER BY created_date DESC 
+            LIMIT 5 OFFSET ${offset}`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function fetchUserOrdesByids(ids: number[]): Promise<AllUserOrderDb[]> {
+    try {
+        const data = await sql<AllUserOrderDb[]>`
+            SELECT  
+                user_order_id,
+                flag as flag_order,
+
+                created_date,
+                cooked_date,
+                shipped_date,
+                delivered_date,
+                cancelled_date,
+
+                first_name,
+                last_name,
+                street_address
+            FROM user_order 
+            WHERE user_order_id = ANY(${ids})`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function fetchUserCartByids(ids: number[]): Promise<UserCartDb[]> {
+    try {
+        const data = await sql<UserCartDb[]>`select * from user_cart where user_order_id = ANY(${ids})`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);
