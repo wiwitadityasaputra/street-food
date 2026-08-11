@@ -1,8 +1,27 @@
-.collapse-icon {
+.order-status .collapse-icon {
     position: relative;
-    top: -1px;
+    top: -2px;
+    left: 10px;
     font-size: 12px !important;
+    cursor: pointer;
 }
-.hide {
+.order-status-date .hide {
     display: none;
+}
+@media (max-width: 500px) {
+    .order-status {
+        font-size: 12px;
+        text-align: left;
+        font-weight: bold;
+    }
+    .order-status .collapse-icon {
+        display: none;
+    }
+    .order-status-date .col-lg-6 h6,
+    .order-status-date .col-lg-6 p {
+        font-size: 12px;
+        padding: 0px;
+        margin: 0px;
+        text-align: left;
+    }
 }

@@ -1,6 +1,7 @@
 import { QueueAllContentProps } from "@/src/ui/queue/all/queue-all.definition";
 import { CuisineItem } from "@/src/ui/queue/cuisine-item/cuisine-item";
 import { OrderStatus } from "@/src/ui/queue/order-status/order-status";
+import { UserInfo } from "../user-info/user-info";
 
 export function QueueAllContent(props: QueueAllContentProps) {
     return (<>
@@ -14,18 +15,56 @@ export function QueueAllContent(props: QueueAllContentProps) {
                                     <table className="order-table">
                                         <tbody>
                                             <tr>
-                                                <th className="pro_name">Address</th>
+                                                <th className="pro_name col-cart-name">
+                                                    <span className="wide-screen">Address</span>
+                                                    <span className="small-screen">Orders</span>
+                                                </th>
                                                 <th className="pro_name col-cart-item">Items</th>
                                                 <th className="pro_img col-cart-date">Status</th>
                                             </tr>
                                             {props.orders.map(o => {
                                                 return (<tr key={o.orderId} className="order-row">
                                                     <td className="pro_name col-cart-name">
-                                                        <h5 className="user-name">
-                                                            {o.orderId}. {o.firstName} {o.lastName}
-                                                        </h5>
-                                                        <h6 className="user-address">Street Address</h6>
-                                                        <p>{o.streetAddress}</p>
+                                                        <span className="wide-screen">
+                                                            <UserInfo
+                                                                orderId={o.orderId}
+                                                                firstName={o.firstName}
+                                                                lastName={o.lastName}
+                                                                streetAddress={o.streetAddress}
+                                                            />
+                                                        </span>
+
+                                                        <div className="row">
+                                                            <div className="col-6 u-info">
+                                                                <UserInfo
+                                                                    orderId={o.orderId}
+                                                                    firstName={o.firstName}
+                                                                    lastName={o.lastName}
+                                                                    streetAddress={o.streetAddress}
+                                                                />
+                                                            </div>
+                                                            <div className="col-6 order-status-small-screen">
+                                                                <OrderStatus 
+                                                                    flagOrder={o.flagOrder}
+                                                                    createdDate={o.createdDate}
+                                                                    cookedDate={o.cookedDate}
+                                                                    shippedDate={o.shippedDate}
+                                                                    deliveredDate={o.deliveredDate}
+                                                                    cancelledDate={o.cancelledDate}
+                                                                />
+                                                            </div>
+                                                            <div className="col-6 cuisine-item">
+                                                                {o.items.map((i, index) => {
+                                                                    return (<CuisineItem
+                                                                        key={i.cartId}
+                                                                        index={index + 1}
+                                                                        cuisineName={i.cuisineName}
+                                                                        quantity={i.quantity}
+                                                                        options={i.options}
+                                                                    />)
+                                                                })}
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td className="pro_name col-cart-item">
                                                         {o.items.map((i, index) => {

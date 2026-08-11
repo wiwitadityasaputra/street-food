@@ -17,8 +17,8 @@ export function CuisineItem(props: CuisineItemProps) {
     }
 
     return (<>
-        <div className="cart-item">
-            <p>
+        <div className="cart-item cuisine-item">
+            <p className="cuisine-name">
                 {props.index}. {props.cuisineName} ({props.quantity})
                 <FontAwesomeIcon
                     icon={collapse ? faDownLeftAndUpRightToCenter : faUpRightAndDownLeftFromCenter}

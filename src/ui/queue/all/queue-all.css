@@ -1,63 +1,135 @@
 .queue-all {
     padding-left: 4vw;
     padding-right: 4vw;
+    padding-top: 5px;
     display: block;
 }
-.cart_view.queue-content {
+.queue-all .cart_view.queue-content {
     margin-top: 0px !important;
 }
-.order-table {
+.queue-all .order-table {
     overflow: hidden;
 }
-.order-row:nth-child(odd) {
+.queue-all .order-row:nth-child(odd) {
     background: #d0d4d8 !important;
 }
-.user-name {
+.queue-all .user-name {
     width: 100%;
     text-align: left;
 }
-.user-address {
+.queue-all .user-address {
     width: 100%;
     text-align: left;
     margin-top: 15px;
 }
-.col-cart-name {
+.queue-all .col-cart-name {
     display: block !important;
 }
-.col-cart-item {
+.queue-all .col-cart-name .wide-screen {
+    display: block;
+    color: white;
+    font-size: 16px;
+    font-weight: 900;
+}
+.queue-all .col-cart-name .small-screen {
+    display: none;
+}
+.queue-all .col-cart-item {
     display: block !important;
     width: 25% !important;
     min-width: 170px !important;
 }
-.col-cart-date {
+.queue-all .col-cart-date {
     display: block !important;
     width: 40% !important;
     min-width: 348px !important;
 }
-.col-cart-date .order-status {
+.queue-all .col-cart-date .order-status {
     text-align: left;
     margin-bottom: 10px;
 }
-.col-cart-date h6 {
+.queue-all .col-cart-date h6 {
     width: 100%;
     text-align: left;
 }
-.col-cart-date .not-first {
+.queue-all .col-cart-date .not-first {
     margin-top: 15px !important;
 }
-.cart-item {
+.queue-all .cart-item {
     width: 100%;
 }
-.cuisine-name {
+.queue-all .cuisine-name {
     font-size: 14px;
     font-weight: 800;
 }
-.cuisine-name.not-first {
+.queue-all .cuisine-name.not-first {
     margin-top: 15px !important;
 }
-.cuisine-option {
+.queue-all .cuisine-option {
     padding-left: 15px;
 }
-.date-value {
+.queue-all .date-value {
     padding-bottom: 10px;
+}
+
+.queue-all .col-cart-name .cuisine-item {
+    display: none;
+}
+.queue-all .col-cart-name .u-info {
+    display: none;
+}
+
+.queue-all .col-cart-name .order-status-small-screen {
+    display: none;
+}
+
+@media (max-width: 500px) {
+    .queue-all .col-cart-name .wide-screen {
+        display: none;
+    }
+    .queue-all .col-cart-name .small-screen {
+        display: block;
+        color: white;
+        font-size: 16px;
+        font-weight: 900;
+    }
+    .queue-all .col-cart-name .user-name {
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .queue-all .col-cart-name .user-address {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    .queue-all .col-cart-name .user-address-value {
+        font-size: 12px;
+        margin-top: 0px;
+        font-weight: bold;
+    }
+    .queue-all .col-cart-name {
+        width: 100% !important;
+    }
+    .queue-all .col-cart-item {
+        display: none !important;
+    }
+    .queue-all .col-cart-date {
+        display: none !important;
+    }
+    .queue-all .col-cart-name .u-info {
+        display: block;
+        color: #000;
+        font-size: 12px;        
+    }
+    .queue-all .col-cart-name .cuisine-item {
+        margin-top: 5px;
+        display: block;
+        color: #000;
+        font-size: 12px;
+    }
+
+    .queue-all .col-cart-name .order-status-small-screen {
+        display: block;
+        color: #000;
+        font-size: 12px;
+    }
 }

@@ -34,7 +34,7 @@ export function OrderStatus(props: OrderStatusProps) {
                 onClick={toggleCollapse} />
         </h5>
 
-        <div className="row">
+        <div className="row order-status-date">
             <div className={clsx("col-lg-6", {"hide": mustShow(1)})}>
                 <h6>Created Date</h6>
                 <p className="date-value">{formatDate(props.createdDate)}</p>

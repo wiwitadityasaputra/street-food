@@ -1,12 +1,28 @@
-.collapse-icon {
+.cuisine-item .collapse-icon {
     cursor: pointer;
     position: relative;
-    left: 10px;
-    top: 2px;
+    left: 5px;
+    top: 1px;
 }
-.cuisine-option {
+.cuisine-item .cuisine-option {
     display: block;
 }
-.cuisine-option.hide {
+.cuisine-item .cuisine-option.hide {
     display: none;
+}
+
+@media (max-width: 500px) {
+    .cuisine-item .cuisine-name {
+        font-size: 12px;
+        font-weight: normal;
+        padding: 0px;
+        margin: 0px;
+    }
+    .cuisine-item .cuisine-option {
+        font-size: 12px;
+        font-weight: normal;
+    }
+    .cuisine-item .collapse-icon {
+        display: none;
+    }
 }
