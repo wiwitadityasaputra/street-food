@@ -73,7 +73,7 @@
     }
 
     .queue-menu .pagination .dropdown-info {
-        top: 1px;
+        display: none;
     }
 
     .queue-menu .pagination .dropdown-values {
