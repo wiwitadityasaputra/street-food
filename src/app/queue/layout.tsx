@@ -33,7 +33,7 @@ export default async function AppLayout({
 
   const userTotalOrder = await countUserOrders(userId);
   const totalAllOrders = await countAllOrdersPage();
-  const maxPage = Math.ceil(totalAllOrders / NUMBER_PER_PAGE);
+
   return (
     <>
         <section className="topbar">
@@ -71,7 +71,7 @@ export default async function AppLayout({
           <DashboardNav totalCart={totalCartDb} />
           <QueueMenu
             userTotalOrder={userTotalOrder}
-            maxPage={maxPage}
+            totalOrders={totalAllOrders}
           />
           {children}
         </ReduxProvider>

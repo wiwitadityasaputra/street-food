@@ -241,13 +241,13 @@ export async function countAllOrdersPage(): Promise<number> {
     }
 }
 
-export async function fetchAllOrdersIdPage(offset: number): Promise<OrderIdUserOrderDb[]> {
+export async function fetchAllOrdersIdPage(limit: number, offset: number): Promise<OrderIdUserOrderDb[]> {
     try {
         const data = await sql<OrderIdUserOrderDb[]>`
             SELECT user_order_id as orderid
             FROM user_order 
             ORDER BY created_date DESC 
-            LIMIT 5 OFFSET ${offset}`;
+            LIMIT ${limit} OFFSET ${offset}`;
         return data;
     } catch (error) {
         console.error('Database Error:', error);

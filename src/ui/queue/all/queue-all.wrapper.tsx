@@ -8,9 +8,9 @@ import { AllUserOrder } from "@/src/lib/service/service.definition";
 import { QueueAllWrapperProps } from "@/src/ui/queue/all/queue-all.definition";
 
 export async function QueueAllWrapper(props: QueueAllWrapperProps) {
-    const orders = await fetchAllOrdersPage(props.page);
+    const orders = await fetchAllOrdersPage(props.page, props.size);
     if (orders.length === 0) {
-        redirect(`/queue/all?page=1`);
+        redirect(`/queue/all?page=1&size=5`);
     }
 
     const compare = (a: AllUserOrder, b: AllUserOrder) => {

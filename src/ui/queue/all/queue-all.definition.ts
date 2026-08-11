@@ -8,4 +8,5 @@ export interface QueueAllContentProps {
 
 export interface QueueAllWrapperProps {
     page: number;
+    size: number;
 }

@@ -14,7 +14,7 @@ export async function QueueMeWrapper() {
     const totalOrders = await countUserOrders(userId);
 
     if (totalOrders === 0) {
-        redirect(`/queue/all`);
+        redirect(`/queue/all?page=1&size=5`);
     }
 
     const userOrders: MyUserOrder[] = await fetchUserOrders(userId);

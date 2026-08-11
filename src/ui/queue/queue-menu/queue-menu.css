@@ -38,3 +38,13 @@
     position: relative;
     top: 6px;
 }
+.queue-menu .pagination .dropdown-info {
+    padding-left: 20px;
+    position: relative;
+    top: 4px;
+}
+.queue-menu .pagination .dropdown-values {
+    font-size: 14px;
+    position: relative;
+    top: 4px;
+}

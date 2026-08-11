@@ -17,7 +17,6 @@ import {
     AllUserOrder
 } from '@/src/lib/service/service.definition';
 import { maskingValue } from '@/src/lib/util/utils';
-import { NUMBER_PER_PAGE } from '@/src/ui/queue/all/queue-all.definition';
 
 export async function countUserOrders(userId: string): Promise<number> {
     return countUserOrdersDb(userId);
@@ -153,8 +152,8 @@ export async function countAllOrdersPage(): Promise<number> {
     return await countAllOrdersPageDb();
 }
 
-export async function fetchAllOrdersPage(page: number): Promise<AllUserOrder[]> {
-    const orderids = await fetchAllOrdersIdPage((page - 1) * NUMBER_PER_PAGE);
+export async function fetchAllOrdersPage(page: number, size: number): Promise<AllUserOrder[]> {
+    const orderids = await fetchAllOrdersIdPage(size, (page - 1) * size);
     const ids = orderids.map(o => o.orderid);
 
     const userOrders = await fetchUserOrdesByids(ids);
