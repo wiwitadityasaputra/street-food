@@ -1,5 +1,7 @@
 .queue-menu {
-    width: 100%;
+    margin-top: 140px;
+    padding-left: 4vw;
+    padding-right: 4vw;
 }
 .queue-menu .menu_filter {
     justify-content: left;
@@ -9,7 +11,7 @@
 .queue-menu .menu_filter button {
     margin: 0px !important;
 }
-.queue-menu .menu_filter button:nth-child(2) {
+.queue-menu .menu_filter .all-button {
     margin-left: 10px !important;
 }
 .queue-menu .pagination {
@@ -21,6 +23,8 @@
 .queue-menu .pagination button {
     padding-left: 6px;
     padding-right: 6px;
+    margin-left: 1px !important;
+    margin-right: 1px !important;
 }
 .queue-menu .pagination button:disabled {
     background: gray;

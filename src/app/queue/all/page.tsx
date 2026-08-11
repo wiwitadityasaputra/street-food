@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-
 import { redirect } from "next/navigation";
 
 import { QueueAllSkeleton } from "@/src/ui/queue/all/queue-all.skeleton";
@@ -10,7 +9,6 @@ export default async function QueueAll(props: {
     page?: number;
   }>;
 }) {
-    
     const searchParams = await props.searchParams;
     if (searchParams && searchParams.page) {
       const page = Number(searchParams.page);

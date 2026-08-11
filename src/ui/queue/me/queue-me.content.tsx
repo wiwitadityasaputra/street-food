@@ -6,13 +6,11 @@ import "@/src/ui/queue/me/queue-me.css";
 
 import { formatDate, orderFlagToStatus } from "@/src/lib/util/utils";
 import { QueueMeContentProps } from "@/src/ui/queue/me/queue-me.definition";
-import { QueueMenu } from "@/src/ui/queue/queue-menu/queue-menu";
 
 export function QueueMeContent(props: QueueMeContentProps) {
 
     return (<>
         <div className="queue">
-            <QueueMenu userTotalOrder={props.userOrders.length}/>
             <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70 queue-content">
                 <div className="container">
                     <div className="row">
