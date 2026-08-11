@@ -72,19 +72,24 @@ export function QueueMenu(props: QueueMenuProps) {
     }
 
     return (<>
+        <div className="queue-menu-pre"/>
         <div className="queue-menu">
             <div className="container">
                 <div className="menu_filter">
-                    {MENU.map(m => {
-                        if (props.userTotalOrder === 0 && m.href === MENU_ME_HREF) {
-                            return;
-                        }
-                        return (<button key={m.href}
-                            className={clsx(m.className, {"active": pathname === m.href})}
-                            onClick={() => changeMenu(m.href)}>
-                            {m.name}
-                        </button>)
-                    })}
+                    <div className="queue-btns">
+                        {MENU.map(m => {
+                            if (props.userTotalOrder === 0 && m.href === MENU_ME_HREF) {
+                                return;
+                            }
+                            return (
+                                <button key={m.key}
+                                    className={clsx(m.className, {"active": pathname === m.href})}
+                                    onClick={() => changeMenu(m.href)}>
+                                    {m.name}
+                                </button>
+                            )
+                        })}
+                    </div>
                     <div className={clsx("pagination", {"hide": !showPagination})}>
                         <button className="active"
                             disabled={prevPagButtonDisabled}
@@ -107,22 +112,21 @@ export function QueueMenu(props: QueueMenuProps) {
                             onClick={lastPage}>
                             <FontAwesomeIcon icon={faAngleDoubleRight} size="sm"/>
                         </button>
-                            <input type="hidden" name="page" value={page}></input>
-                            <div className="menu_search">
-                                <div className="select_area">
-                                    <span className="dropdown-info">Items: </span>
-                                        <select className="select_js dropdown-values"
-                                            name="items"
-                                            value={size}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="5">5</option>
-                                            <option value="10">10</option>
-                                            <option value="15">15</option>
-                                            <option value="25">25</option>
-                                        </select>
-                                </div>
+                        <div className="menu_search">
+                            <div className="select_area">
+                                <span className="dropdown-info">Items: </span>
+                                    <select className="select_js dropdown-values"
+                                        name="items"
+                                        value={size}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                        <option value="25">25</option>
+                                    </select>
                             </div>
+                        </div>
                     </div>
                 </div>
             </div>

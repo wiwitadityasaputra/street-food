@@ -6,10 +6,13 @@ export interface QueueMenuProps {
 export const MENU_ME_HREF = "/queue/me";
 export const MENU = [
     {
+        key: "1",
         name: "My Orders",
         href: MENU_ME_HREF,
         className: "my-button"
-    }, {
+    },
+    {
+        key: "2",
         name: "All Orders",
         href: "/queue/all",
         className: "all-button"

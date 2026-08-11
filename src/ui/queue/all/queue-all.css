@@ -1,6 +1,7 @@
 .queue-all {
     padding-left: 4vw;
     padding-right: 4vw;
+    display: block;
 }
 .cart_view.queue-content {
     margin-top: 0px !important;

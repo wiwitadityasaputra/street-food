@@ -1,5 +1,7 @@
-.queue-menu {
+.queue-menu-pre {
     margin-top: 140px;
+}
+.queue-menu {
     padding-left: 4vw;
     padding-right: 4vw;
 }
@@ -10,13 +12,23 @@
 }
 .queue-menu .menu_filter button {
     margin: 0px !important;
+    white-space: nowrap;      /* Prevents text from wrapping to a new line */
+    overflow: hidden;         /* Hides the text that goes outside the box */
+    text-overflow: ellipsis; 
 }
 .queue-menu .menu_filter .my-button {
     margin-right: 10px !important;
 }
-.queue-menu .pagination {
-    float: right;
+.queue-menu .menu_filter {
+    display: flex;
+    justify-content: space-between;
 }
+.queue-menu .menu_filter .queue-btns {
+}
+.queue-menu .menu_filter .pagination {
+    /* background: red; */
+}
+
 .queue-menu .pagination.hide {
     display: none;
 }
@@ -39,12 +51,34 @@
     top: 6px;
 }
 .queue-menu .pagination .dropdown-info {
+    font-size: 14px;
     padding-left: 20px;
     position: relative;
-    top: 4px;
+    top: 2px;
 }
 .queue-menu .pagination .dropdown-values {
     font-size: 14px;
     position: relative;
-    top: 4px;
+    top: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+@media (max-width: 500px) {
+    .queue-menu .menu_filter .queue-btns button {
+        width: 50px;
+    }
+    .queue-menu .pagination {
+        /* background: blue; */
+    }
+
+    .queue-menu .pagination .dropdown-info {
+        top: 1px;
+    }
+
+    .queue-menu .pagination .dropdown-values {
+        top: 1px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
 }
