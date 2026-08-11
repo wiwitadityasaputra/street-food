@@ -119,13 +119,6 @@ export default function DashboardNav(props: DashboardNavProps) {
               }
             )}
           </ul>
-          <ul className="menu_icon d-flex flex-wrap">
-              <li key="account">
-                  <a href="dashboard.html">
-                    <FontAwesomeIcon icon={faUser} size="sm" />
-                  </a>
-              </li>
-          </ul>
         </div>
       </div>
     </nav>
