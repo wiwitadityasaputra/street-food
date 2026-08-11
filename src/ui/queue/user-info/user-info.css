@@ -1,0 +1,24 @@
+.user-info.user-name {
+    width: 100%;
+    text-align: left;
+}
+.user-info.user-address {
+    width: 100%;
+    text-align: left;
+    margin-top: 15px;
+}
+@media (max-width: 500px) {
+    .user-info.user-name {
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .user-info.user-address {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    .user-info.user-address-value {
+        font-size: 12px;
+        margin-top: 0px;
+        font-weight: bold;
+    }
+}

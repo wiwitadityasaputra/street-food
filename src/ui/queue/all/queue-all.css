@@ -13,15 +13,6 @@
 .queue-all .order-row:nth-child(odd) {
     background: #d0d4d8 !important;
 }
-.queue-all .user-name {
-    width: 100%;
-    text-align: left;
-}
-.queue-all .user-address {
-    width: 100%;
-    text-align: left;
-    margin-top: 15px;
-}
 .queue-all .col-cart-name {
     display: block !important;
 }
@@ -92,19 +83,6 @@
         color: white;
         font-size: 16px;
         font-weight: 900;
-    }
-    .queue-all .col-cart-name .user-name {
-        font-size: 12px;
-        font-weight: bold;
-    }
-    .queue-all .col-cart-name .user-address {
-        font-size: 12px;
-        margin-top: 2px;
-    }
-    .queue-all .col-cart-name .user-address-value {
-        font-size: 12px;
-        margin-top: 0px;
-        font-weight: bold;
     }
     .queue-all .col-cart-name {
         width: 100% !important;

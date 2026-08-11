@@ -6,11 +6,14 @@ import "@/src/ui/queue/me/queue-me.css";
 
 import { formatDate, orderFlagToStatus } from "@/src/lib/util/utils";
 import { QueueMeContentProps } from "@/src/ui/queue/me/queue-me.definition";
+import { UserInfo } from "../user-info/user-info";
+import { OrderStatus } from "../order-status/order-status";
+import { CuisineItem } from "../cuisine-item/cuisine-item";
 
 export function QueueMeContent(props: QueueMeContentProps) {
 
     return (<>
-        <div className="queue">
+        <div className="queue-me">
             <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70 queue-content">
                 <div className="container">
                     <div className="row">
@@ -20,12 +23,52 @@ export function QueueMeContent(props: QueueMeContentProps) {
                                     <table className="order-table">
                                         <tbody>
                                             <tr>
-                                                <th className="pro_name">Address</th>
+                                                <th className="pro_name col-cart-name small-screen">
+                                                    Orders
+                                                </th>
+
+                                                <th className="pro_name col-cart-name">Address</th>
                                                 <th className="pro_name col-cart-item">Items</th>
                                                 <th className="pro_img col-cart-date">Status</th>
                                             </tr>
                                             {props.userOrders.map(o => {
                                                 return (<tr key={o.orderId} className="order-row">
+
+                                                    <td className="pro_name col-cart-name small-screen">
+                                                        <div className="row">
+                                                            <div className="col-6 u-info">
+                                                                <UserInfo
+                                                                    orderId={o.orderId}
+                                                                    firstName={o.firstName}
+                                                                    lastName={o.lastName}
+                                                                    streetAddress={o.streetAddress}
+                                                                />
+                                                            </div>
+                                                            <div className="col-6 order-status-small-screen">
+                                                                <OrderStatus
+                                                                    flagOrder={o.flagOrder}
+                                                                    createdDate={o.createdDate}
+                                                                    cookedDate={o.cookedDate}
+                                                                    shippedDate={o.shippedDate}
+                                                                    deliveredDate={o.deliveredDate}
+                                                                    cancelledDate={o.cancelledDate}
+                                                                />
+                                                            </div>
+                                                            <div className="col-6 cuisine-item">
+                                                                {o.items.map((i, index) => {
+                                                                    return (<CuisineItem
+                                                                        key={i.cartId}
+                                                                        index={index + 1}
+                                                                        cuisineName={i.cuisineName}
+                                                                        quantity={i.quantity}
+                                                                        options={i.options}
+                                                                    />)
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+
                                                     <td className="pro_name col-cart-name">
                                                         <h5 className="user-name">
                                                             {o.orderId}. {o.firstName} {o.lastName}
