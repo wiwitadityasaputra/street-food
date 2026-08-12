@@ -85,7 +85,8 @@ export function QueueMenu(props: QueueMenuProps) {
                                 <button key={m.key}
                                     className={clsx(m.className, {"active": pathname === m.href})}
                                     onClick={() => changeMenu(m.href)}>
-                                    {m.name}
+                                    <span className="wide-screen">{m.name}</span>
+                                    <span className="small-screen">{m.nameShort}</span>
                                 </button>
                             )
                         })}
