@@ -200,37 +200,6 @@ export async function fetchUserOrders(userId: string): Promise<MyOrderAndCartDb[
     }
 }
 
-// Deprecated
-export async function fetchAllOrders(): Promise<AllOrderAndCartDb[]> {
-    try {
-        const data = await sql<AllOrderAndCartDb[]>`
-            SELECT 
-                uo.user_order_id,
-                uo.flag as flag_order,
-
-                uo.created_date,
-                uo.cooked_date,
-                uo.shipped_date,
-                uo.delivered_date,
-                uo.cancelled_date,
-
-                uo.first_name,
-                uo.last_name,
-                uo.street_address,
-
-                uc.user_cart_id,
-                uc.options,
-                uc.cuisine_id,
-                uc.cuisine_name,
-                uc.quantity
-            FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
-}
-
 export async function countAllOrdersPage(): Promise<number> {
     try {
         const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_order uo`;
@@ -284,6 +253,46 @@ export async function fetchUserCartByids(ids: number[]): Promise<UserCartDb[]> {
     try {
         const data = await sql<UserCartDb[]>`select * from user_cart where user_order_id = ANY(${ids})`;
         return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function fetchUserOrdersIdByFlag(flag: OrderDbFlag): Promise<OrderIdUserOrderDb[]> {
+    try {
+        const data = await sql<OrderIdUserOrderDb[]>`
+            SELECT uo.user_order_id as orderid 
+            FROM user_order uo
+            WHERE uo.flag = ${flag}::text`;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function updateUserOrderCookeddateByIds(ids: number[]): Promise<void> {
+    try {
+        await sql`UPDATE user_order SET cooked_date = current_timestamp, flag = 2 WHERE user_order_id = ANY(${ids})`;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function updateUserOrderShippeddateByIds(ids: number[]): Promise<void> {
+    try {
+        await sql`UPDATE user_order SET shipped_date = current_timestamp, flag = 3 WHERE user_order_id = ANY(${ids})`;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function updateUserOrderDelivereddateByIds(ids: number[]): Promise<void> {
+    try {
+        await sql`UPDATE user_order SET delivered_date = current_timestamp, flag = 4 WHERE user_order_id = ANY(${ids})`;
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch data.');
