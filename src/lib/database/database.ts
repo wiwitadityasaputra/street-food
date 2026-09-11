@@ -14,7 +14,7 @@ import {
     UserCartDbUserCartId
 } from '@/src/lib/database/database.definition';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+export const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 function allowedCuisine(cuisine?: string) {
     if (cuisine) {
