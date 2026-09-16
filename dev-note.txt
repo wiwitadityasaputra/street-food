@@ -6,3 +6,53 @@
 
 # corn job 
     https://crontap.apihustle.com/crontap/
+
+
+imageDetail.json
+printf '{"ImageURI":"%s"}' "574434081764.dkr.ecr.us-east-1.amazonaws.com/street-food-03-0affd57d3e17:$IMAGE_TAG" > imageDetail.json
+{
+  "ImageURI": "574434081764.dkr.ecr.us-east-1.amazonaws.com/street-food-03-0affd57d3e17:prod-6-1a76b9"
+}
+
+taskdef.json
+{
+  "family": "DeployToEcsFargateTaskDefinitionFamily",
+  "containerDefinitions": [
+    {
+      "name": "DeployToEcsFargateContainerName",
+      "image": "IMAGE1_NAME",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ]
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512"
+}
+
+appspec.yml
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "taskdef.json"
+        LoadBalancerInfo:
+          ContainerName: "DeployToEcsFargateContainerName"
+          ContainerPort: 3000
+
+buildspec.yml codebuild
+artifacts:
+    files:
+      - imageDetail.json
+      - appspec.yml
+      - taskdef.json
+
+- s3:PutObject
+arn:aws:s3:::street-food-03-0affd57d3e17/street-food-03-codep/BuildArtif/wbAY9Ho

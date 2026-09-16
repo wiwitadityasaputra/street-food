@@ -1,0 +1,617 @@
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Configuration Parameters
+        Parameters:
+          - ProjectName
+          - ParamCodePipelineName
+          - ParamConnectionArn
+          - ParamFullRepositoryId
+          - ParamBranchName
+          - ParamPostgresUrl
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: street-food-03
+    Description: Resource/Project (prefix) name for needed aws services
+  ParamCodePipelineName:
+    Description: The CodePipeline pipeline name that will build and pusy your docker image from source code.
+    Type: String
+    Default: street-food-03-codepipeline-build-push-docker-image
+  ParamConnectionArn:
+    Description: The CodeConnections ARN for your Docker container source repository.
+    Type: String
+    Default: arn:aws:codeconnections:us-east-1:574434081764:connection/523b1dd7-f924-4b65-80d0-a0fe2241565f
+  ParamFullRepositoryId:
+    Type: String
+    Default: wiwitadityasaputra/street-food
+    Description: The full repository ID to use with your CodeConnections connection.
+  ParamBranchName:
+    Type: String
+    Default: prod
+    Description: The branch name to use with your CodeConnections connection.
+  ParamPostgresUrl:
+    Type: String
+    Default: postgresql://neondb_owner:npg_6WX1QBMNZvef@ep-young-term-awb3tfsg-pooler.c-12.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require&?statement_cache_size=0
+    Description: PostgresUrl, postgresql://...
+
+Resources:
+  # parameter store
+  PsPostgresUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/prod/postgres_url
+      Type: String
+      Value: !Ref ParamPostgresUrl
+  PsDockerIndex:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/prod/docker_image/index
+      Type: String
+      Value: '0'
+  PsDockerLatest:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/prod/docker_image/latest
+      Type: String
+      Value: Prod-0-123456
+
+  # ecr
+  EcrRepository:
+    DependsOn:
+      - PsPostgresUrl
+      - PsDockerIndex
+      - PsDockerLatest
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - '-'
+        - - !Sub ${ProjectName}
+          - !Select
+            - 4
+            - !Split
+              - '-'
+              - !Select
+                - 2
+                - !Split
+                  - /
+                  - !Ref AWS::StackId
+      ImageTagMutability: MUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+
+  # s3
+  CodePipelineArtifactsBucket:
+    DependsOn:
+      - PsPostgresUrl
+      - PsDockerIndex
+      - PsDockerLatest
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join
+        - '-'
+        - - !Sub ${ProjectName}
+          - !Select
+            - 4
+            - !Split
+              - '-'
+              - !Select
+                - 2
+                - !Split
+                  - /
+                  - !Ref AWS::StackId
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  CodePipelineArtifactsBucketPolicy:
+    DependsOn: CodePipelineArtifactsBucket
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CodePipelineArtifactsBucket
+      PolicyDocument:
+        Statement:
+          - Action: s3:*
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+            Effect: Deny
+            Principal:
+              AWS: '*'
+            Resource:
+              - !GetAtt CodePipelineArtifactsBucket.Arn
+              - !Join
+                - /
+                - - !GetAtt CodePipelineArtifactsBucket.Arn
+                  - '*'
+        Version: '2012-10-17'
+
+  # code build
+  CodeBuildRole:
+    DependsOn: CodePipelineArtifactsBucketPolicy
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+        Version: '2012-10-17'
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub
+                    - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${projectName}
+                    - projectName: !Join
+                        - '-'
+                        - - !Sub ${ProjectName}
+                          - !Select
+                            - 4
+                            - !Split
+                              - '-'
+                              - !Select
+                                - 2
+                                - !Split
+                                  - /
+                                  - !Ref AWS::StackId
+                  - !Sub
+                    - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${projectName}:*
+                    - projectName: !Join
+                        - '-'
+                        - - !Sub ${ProjectName}
+                          - !Select
+                            - 4
+                            - !Split
+                              - '-'
+                              - !Select
+                                - 2
+                                - !Split
+                                  - /
+                                  - !Ref AWS::StackId
+              - Action:
+                  - codebuild:BatchPutCodeCoverages
+                  - codebuild:BatchPutTestCases
+                  - codebuild:CreateReport
+                  - codebuild:CreateReportGroup
+                  - codebuild:UpdateReport
+                Effect: Allow
+                Resource: !Sub
+                  - arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:report-group/${projectName}-*
+                  - projectName: !Join
+                      - '-'
+                      - - !Sub ${ProjectName}
+                        - !Select
+                          - 4
+                          - !Split
+                            - '-'
+                            - !Select
+                              - 2
+                              - !Split
+                                - /
+                                - !Ref AWS::StackId
+              - Action:
+                  - s3:GetBucket*
+                  - s3:GetObject*
+                  - s3:List*
+                Effect: Allow
+                Resource:
+                  - !GetAtt CodePipelineArtifactsBucket.Arn
+                  - !Sub
+                    - ${arn}/*
+                    - arn: !GetAtt CodePipelineArtifactsBucket.Arn
+              - Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Effect: Allow
+                Resource: !GetAtt EcrRepository.Arn
+              - Action: ecr:GetAuthorizationToken
+                Effect: Allow
+                Resource: '*'
+              - Action:
+                  - ssm:GetParameters
+                  - ssm:PutParameters
+                Effect: Allow
+                Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ProjectName}/prod/*
+              - Action:
+                  - ecr:InitiateLayerUpload
+                Effect: Allow
+                Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ProjectName}
+            Version: '2012-10-17'
+          PolicyName: CodeBuildProjectRoleDefaultPolicy
+  CodeBuildDefaultPolicy:
+    DependsOn: CodeBuildRole
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              - !Join
+                - ''
+                - - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/
+                  - !Join
+                    - '-'
+                    - - !Sub ${ProjectName}
+                      - !Select
+                        - 4
+                        - !Split
+                          - '-'
+                          - !Select
+                            - 2
+                            - !Split
+                              - /
+                              - !Ref AWS::StackId
+                  - ':*'
+              - !Join
+                - ''
+                - - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/
+                  - !Join
+                    - '-'
+                    - - !Sub ${ProjectName}
+                      - !Select
+                        - 4
+                        - !Split
+                          - '-'
+                          - !Select
+                            - 2
+                            - !Split
+                              - /
+                              - !Ref AWS::StackId
+          - Action:
+              - codebuild:BatchPutCodeCoverages
+              - codebuild:BatchPutTestCases
+              - codebuild:CreateReport
+              - codebuild:CreateReportGroup
+              - codebuild:UpdateReport
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:report-group/
+                - !Join
+                  - '-'
+                  - - !Sub ${ProjectName}
+                    - !Select
+                      - 4
+                      - !Split
+                        - '-'
+                        - !Select
+                          - 2
+                          - !Split
+                            - /
+                            - !Ref AWS::StackId
+                - '-*'
+          - Action:
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+            Effect: Allow
+            Resource:
+              - !GetAtt CodePipelineArtifactsBucket.Arn
+              - !Join
+                - /
+                - - !GetAtt CodePipelineArtifactsBucket.Arn
+                  - '*'
+        Version: '2012-10-17'
+      PolicyName: CodeBuildDefaultPolicy
+      Roles:
+        - !Ref CodeBuildRole
+  CodeBuildProject:
+    DependsOn: CodeBuildDefaultPolicy
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Cache:
+        Type: NO_CACHE
+      Description: Build Docker Image from source code
+      EncryptionKey: alias/aws/s3
+      Environment:
+        EnvironmentVariables:
+          - Name: RepoName
+            Type: PLAINTEXT
+            Value: !Join
+              - '-'
+              - - !Sub ${ProjectName}
+                - !Select
+                  - 4
+                  - !Split
+                    - '-'
+                    - !Select
+                      - 2
+                      - !Split
+                        - /
+                        - !Ref AWS::StackId
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:8.0-26.07.29
+        ImagePullCredentialsType: CODEBUILD
+        PrivilegedMode: false
+        Type: LINUX_CONTAINER
+      Name: !Join
+        - '-'
+        - - !Sub ${ProjectName}
+          - !Select
+            - 4
+            - !Split
+              - '-'
+              - !Select
+                - 2
+                - !Split
+                  - /
+                  - !Ref AWS::StackId
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Source:
+        BuildSpec: !Sub |
+          version: "0.2"
+          env:
+            parameter-store:
+              POSTGRES_URL: "/${ProjectName}/prod/postgres_url"
+              DOCKER_IMAGE_INDEX: "/${ProjectName}/prod/docker_image/index"
+          phases:
+            pre_build:
+              commands:
+                - echo SF-d Logging in to Amazon ECR, `date`
+                - aws ecr get-login-password --region ${AWS::Region} | docker login --username AWS --password-stdin ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com
+            build:
+              commands:
+                - echo SF-d Building the Docker image, `date`
+                - NEW_DOCKER_IMAGE_INDEX=$((DOCKER_IMAGE_INDEX + 1))
+                - echo SF-d commit-id: $COMMIT_ID
+                - SHORT_COMMIT=${COMMIT_ID: -6}
+                - echo SF-d short-commit: $SHORT_COMMIT
+                - NEW_DOCKER_IMAGE_LATEST="$NEW_DOCKER_IMAGE_INDEX-abcd"
+                - echo docker build --build-arg POSTGRES_URL=$POSTGRES_URL -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/$RepoName:$NEW_DOCKER_IMAGE_LATEST .
+            post_build:
+              commands:
+                - echo SF-d Pushing the Docker image, `date`
+                - echo docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/$RepoName:$NEW_DOCKER_IMAGE_LATEST
+                - aws ssm put-parameter --name "/${ProjectName}/prod/docker_image/index" --value "$NEW_DOCKER_IMAGE_INDEX" --type "String" --overwrite
+                - aws ssm put-parameter --name "/${ProjectName}/prod/docker_image/latest" --value "$NEW_DOCKER_IMAGE_LATEST" --type "String" --overwrite
+        Type: NO_SOURCE
+
+  # code build action
+  CodeBuildActionRole:
+    DependsOn: CodeBuildProject
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+        Version: '2012-10-17'
+  CodeBuildActionDefaultPolicy:
+    DependsOn: CodeBuildActionRole
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - codebuild:BatchGetBuilds
+              - codebuild:StartBuild
+              - codebuild:StopBuild
+            Effect: Allow
+            Resource: !GetAtt CodeBuildProject.Arn
+          - Action:
+              - ssm:GetParameters
+            Effect: Allow
+            Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ProjectName}/prod/docker_image/latest
+        Version: '2012-10-17'
+      PolicyName: CodeBuildActionDefaultPolicy
+      Roles:
+        - !Ref CodeBuildActionRole       
+
+  # code connection
+  CodeConnectionsActionRole:
+    DependsOn: CodeBuildActionDefaultPolicy
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:root
+        Version: '2012-10-17'
+  CodeConnectionsActionDefaultPolicy:
+    DependsOn: CodeConnectionsActionRole
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: codestar-connections:UseConnection
+            Effect: Allow
+            Resource: !Ref ParamConnectionArn
+          - Action:
+              - s3:Abort*
+              - s3:DeleteObject*
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+            Effect: Allow
+            Resource:
+              - !GetAtt CodePipelineArtifactsBucket.Arn
+              - !Join
+                - /
+                - - !GetAtt CodePipelineArtifactsBucket.Arn
+                  - '*'
+          - Action:
+              - s3:PutObjectAcl
+              - s3:PutObjectVersionAcl
+            Effect: Allow
+            Resource: !Join
+              - /
+              - - !GetAtt CodePipelineArtifactsBucket.Arn
+                - '*'
+        Version: '2012-10-17'
+      PolicyName: CodeConnectionsActionDefaultPolicy
+      Roles:
+        - !Ref CodeConnectionsActionRole
+
+  # code pipeline
+  CodePipelineRole:
+    DependsOn: CodeBuildActionRole
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+        Version: '2012-10-17'
+  CodePipelineDefaultPolicy:
+    DependsOn: CodePipelineRole
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:Abort*
+              - s3:DeleteObject*
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+            Effect: Allow
+            Resource:
+              - !GetAtt CodePipelineArtifactsBucket.Arn
+              - !Join
+                - /
+                - - !GetAtt CodePipelineArtifactsBucket.Arn
+                  - '*'
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Resource:
+              - !GetAtt CodeBuildActionRole.Arn
+              - !GetAtt CodeConnectionsActionRole.Arn
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              - !Sub
+                - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codepipeline/${pipelineName}
+                - pipelineName: !Ref ParamCodePipelineName
+              - !Sub
+                - arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codepipeline/${pipelineName}:*
+                - pipelineName: !Ref ParamCodePipelineName
+        Version: '2012-10-17'
+      PolicyName: CodePipelineDefaultPolicy
+      Roles:
+        - !Ref CodePipelineRole
+  CodePipeline:
+    DependsOn:
+      - CodePipelineDefaultPolicy
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Location: !Ref CodePipelineArtifactsBucket
+        Type: S3
+      ExecutionMode: QUEUED
+      Name: !Ref ParamCodePipelineName
+      PipelineType: V2
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: code_connection
+              Namespace: SourceVariables
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: '1'
+              Configuration:
+                ConnectionArn: !Ref ParamConnectionArn
+                FullRepositoryId: !Ref ParamFullRepositoryId
+                BranchName: !Ref ParamBranchName
+              OutputArtifacts:
+                - Name: SourceOutput
+              RoleArn: !GetAtt CodeConnectionsActionRole.Arn
+              RunOrder: 1
+          OnFailure:
+            Result: RETRY
+        - Name: build_and_push_docker_image
+          OnFailure:
+            Result: ROLLBACK
+          BeforeEntry:
+            Conditions:
+              - Result: FAIL
+                Rules:
+                  - Name: MyDeploymentWindowRule
+                    RuleTypeId:
+                      Category: Rule
+                      Owner: AWS
+                      Provider: DeploymentWindow
+                      Version: '1'
+                    Configuration:
+                      Cron: '* * * * * ? *'
+                      TimeZone: PST
+          Actions:
+            - Name: build_and_push_docker_image
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName: !Join
+                  - '-'
+                  - - !Sub ${ProjectName}
+                    - !Select
+                      - 4
+                      - !Split
+                        - '-'
+                        - !Select
+                          - 2
+                          - !Split
+                            - /
+                            - !Ref AWS::StackId
+                EnvironmentVariables: !Sub |
+                  [
+                    {"name": "COMMIT_ID", "value": "#{SourceVariables.CommitId}", "type": "PLAINTEXT"}
+                  ]
+              InputArtifacts:
+                - Name: SourceOutput
+              RoleArn: !GetAtt CodeBuildActionRole.Arn
+              RunOrder: 1
+
+Outputs:
+  CodeBuildProjectArn:
+    Value: !GetAtt CodeBuildProject.Arn
+
+

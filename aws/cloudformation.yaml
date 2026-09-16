@@ -1,0 +1,822 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: deploy Street Food project on aws
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Configuration Parameters
+        Parameters:
+          - ParamUsername
+          - ParamUserPassword
+          - ProjectName
+          - ParamPostgresUrl
+
+Parameters:
+  ParamUsername:
+    Type: String
+    Description: Username
+    Default: wsaputra1
+  ParamUserPassword:
+    Type: String
+    Description: Password
+    NoEcho: true
+  ParamPostgresUrl:
+    Type: String
+    Description: PostgresUrl, postgresql://...
+  ProjectName:
+    Type: String
+    Default: street-food-02
+    Description: Resource/Project name for needed aws services
+
+Resources:
+  # parameter store
+  PsPostgresUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/prod/postgres_url
+      Type: String
+      Value: !Ref ParamPostgresUrl
+  PsDockerIndex:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/prod/docker_image/index
+      Type: String
+      Value: '0'
+  PsDockerLatest:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub /${ProjectName}/prod/docker_image/latest
+      Type: String
+      Value: Prod-0-123456
+
+  # code commit
+  GitRepository:
+    DependsOn:
+      - PsPostgresUrl
+      - PsDockerIndex
+      - PsDockerLatest
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: !Ref ProjectName
+
+  # ecr
+  DockerImageRepository:
+    DependsOn:
+      - PsPostgresUrl
+      - PsDockerIndex
+      - PsDockerLatest
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ProjectName
+      ImageTagMutability: MUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+
+  # user & groups
+  UserGroup01:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Sub ${ProjectName}-admin-01
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+        - arn:aws:iam::aws:policy/AWSCodeCommitFullAccess
+        - arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess
+        - arn:aws:iam::aws:policy/AWSXrayFullAccess
+  MyIAMUser:
+    DependsOn:
+      - UserGroup01
+      - GitRepository
+      - DockerImageRepository
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref ParamUsername
+      Groups:
+        - !Ref UserGroup01
+      Path: /
+      LoginProfile:
+        Password: !Ref ParamUserPassword
+
+  # code build
+  CodeBuildServiceRole:
+    DependsOn: MyIAMUser
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-build-docker-image-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSCodeCommitReadOnly
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser
+  CodeBuildProject:
+    DependsOn: CodeBuildServiceRole
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${ProjectName}-build-docker-image
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:8.0-26.07.29
+        EnvironmentVariables:
+          - Name: DOCKER_IMAGE_TAG
+            Type: PARAMETER_STORE
+            Value: !Sub /${ProjectName}/prod/docker_image/latest
+          - Name: POSTGRES_URL
+            Type: PARAMETER_STORE
+            Value: !Sub /${ProjectName}/prod/postgres_url
+      SourceVersion: refs/heads/prod
+      TimeoutInMinutes: 15
+      Source:
+        Type: CODECOMMIT
+        Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${ProjectName}
+        BuildSpec: !Sub |
+          version: 0.2
+          env:
+            parameter-store:
+              POSTGRES_URL: "/${ProjectName}/prod/postgres_url"
+          phases:
+            pre_build:
+              commands:
+                - echo SF-d Logging in to Amazon ECR...
+                - aws ecr get-login-password --region ${AWS::Region} | docker login --username AWS --password-stdin ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com
+            build:
+              commands:
+                - echo SF-d Building the Docker image, `date`
+                - docker build --build-arg POSTGRES_URL=$POSTGRES_URL -t ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}:$DOCKER_IMAGE_TAG .
+            post_build:
+              commands:
+                - echo SF-d Pushing the Docker image, `date`
+                - docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}:$DOCKER_IMAGE_TAG
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+
+  # step functions - build docker image
+  BuildDockerImageStateMachineExecutionRole:
+    DependsOn: CodeBuildProject
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-build-docker-image-steps-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+        - arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess
+        - arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess
+  BuildDockerImageStateMachine:
+    DependsOn: BuildDockerImageStateMachineExecutionRole
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub ${ProjectName}-build-docker-image-steps
+      RoleArn: !GetAtt BuildDockerImageStateMachineExecutionRole.Arn
+      Definition:
+        QueryLanguage: JSONata
+        StartAt: Init
+        States:
+
+          Init:
+            Type: Task
+            Resource: arn:aws:states:::aws-sdk:ssm:getParameter
+            Comment: Extract CodeCommit change details from EventBridge payload
+            Arguments:
+              Name: !Sub /${ProjectName}/prod/docker_image/index
+              WithDecryption: true
+            Output:
+              lastCommitId: '{% $substring($states.input.detail.commitId,
+                $length($states.input.detail.commitId) - 6,
+                $length($states.input.detail.commitId) - 1) %}'
+              lastCommitDate: '{% $states.input.time %}'
+              buildIndex: '{% $string($number($states.result.Parameter.Value) + 1) %}'
+            Next: ProcessInit
+
+          ProcessInit:
+            Type: Pass
+            Output:
+              buildIndex: '{% $states.input.buildIndex %}'
+              dockerImageTag: '{% ''PROD-'' & $states.input.buildIndex & ''-'' &
+                $states.input.lastCommitId %}'
+            Next: BuildProdImage
+
+          BuildProdImage:
+            Type: Task
+            Resource: arn:aws:states:::codebuild:startBuild.sync
+            Arguments:
+              ProjectName: !Sub ${ProjectName}-build-docker-image
+              EnvironmentVariablesOverride:
+                - Name: DOCKER_IMAGE_TAG
+                  Type: PLAINTEXT
+                  Value: '{% $states.input.dockerImageTag %}'
+                
+            Output:
+              buildIndex: '{% $states.input.buildIndex %}'
+              dockerImageTag: '{% $states.input.dockerImageTag %}'
+            Next: UpdateParamterStoreDockerIndex
+
+          UpdateParamterStoreDockerIndex:
+            Type: Task
+            Resource: arn:aws:states:::aws-sdk:ssm:putParameter
+            Arguments:
+              Name: !Sub /${ProjectName}/prod/docker_image/index
+              Value: '{% $states.input.buildIndex %}'
+              Type: String
+              Overwrite: true
+            Output:
+              dockerImageTag: '{% $states.input.dockerImageTag %}'
+            Next: UpdateParamterStoreDockerLatest
+
+          UpdateParamterStoreDockerLatest:
+            Type: Task
+            Resource: arn:aws:states:::aws-sdk:ssm:putParameter
+            Arguments:
+              Name: !Sub /${ProjectName}/prod/docker_image/latest
+              Value: '{% $states.input.dockerImageTag %}'
+              Type: String
+              Overwrite: true
+            Output:
+              dockerImageTag: '{% $states.input.dockerImageTag %}'
+            Next: Succeed
+
+          Succeed:
+            Type: Succeed
+            Comment: docker images should have new :latest version
+            Output:
+              dockerImageTag: '{% $states.input.dockerImageTag %}'
+
+  # event bridge
+  GitRepoChangedExecutionRole:
+    DependsOn: BuildDockerImageStateMachine
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-build-docker-image-trigger-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      MaxSessionDuration: 3600
+  GitRepoChangedPolicy:
+    DependsOn: GitRepoChangedExecutionRole
+    Type: AWS::IAM::RolePolicy
+    Properties:
+      PolicyName: !Sub ${ProjectName}-build-docker-image-trigger-policy
+      RoleName: !Ref GitRepoChangedExecutionRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - states:StartExecution
+            Resource:
+              - !Sub arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${ProjectName}*
+  GitRepoChangedRule:
+    Type: AWS::Events::Rule
+    DependsOn:
+      - GitRepoChangedExecutionRole
+      - GitRepoChangedPolicy
+    Properties:
+      Name: !Sub ${ProjectName}-build-docker-image-trigger-event
+      EventPattern: !Sub |-
+        {
+            "source":["aws.codecommit"],
+            "detail-type":["CodeCommit Repository State Change"],
+            "resources":["arn:${AWS::Partition}:codecommit:${AWS::Region}:${AWS::AccountId}:${ProjectName}"],
+            "detail":{
+                "event":["referenceCreated","referenceUpdated"],
+                "referenceType":["branch"],
+                "referenceName":["prod"]
+            }
+        }
+      State: ENABLED
+      EventBusName: default
+      Targets:
+        - Id: !Sub ${ProjectName}-build-docker-image-steps-target-id
+          Arn: !Sub arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${ProjectName}-build-docker-image-steps
+          RoleArn: !GetAtt GitRepoChangedExecutionRole.Arn
+
+  # ecs
+  TaskDefinitionExecutionRole:
+    DependsOn: GitRepoChangedRule
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-task-definition-role
+      AssumeRolePolicyDocument:
+        Version: '2008-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+  TaskDefinition:
+    DependsOn: TaskDefinitionExecutionRole
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${ProjectName}-task-definition
+      NetworkMode: awsvpc
+      Cpu: '512'
+      Memory: '1024'
+      RequiresCompatibilities:
+        - FARGATE
+      TaskRoleArn: !GetAtt TaskDefinitionExecutionRole.Arn
+      ExecutionRoleArn: !GetAtt TaskDefinitionExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: !Sub ${ProjectName}-main-container
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}:PROD-0-000000
+          Cpu: 0
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3000
+              HostPort: 3000
+              Protocol: tcp
+              Name: !Sub ${ProjectName}-mapping-3000-tcp
+  StreetFoodCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${ProjectName}-cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+
+  # step functions - deploy
+  DeployExecutionRole:
+    DependsOn: StreetFoodCluster
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-deploy-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - states.amazonaws.com
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonECS_FullAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+        - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+  DeployExecutionMachine:
+    DependsOn: DeployExecutionRole
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub ${ProjectName}-deploy
+      StateMachineType: STANDARD
+      RoleArn: !GetAtt DeployExecutionRole.Arn
+      TracingConfiguration:
+        Enabled: false
+      DefinitionString: !Sub |
+        {
+          "StartAt": "DescribeDefaultVpc",
+          "States": {
+            "DescribeDefaultVpc": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:describeVpcs",
+              "Arguments": {
+                "Filters": [
+                  {
+                    "Name": "is-default",
+                    "Values": [
+                      "true"
+                    ]
+                  }
+                ]
+              },
+              "Assign": {
+                "VpcId": "{% $states.result.Vpcs[0].VpcId %}"
+              },
+              "Next": "DescribeSubnets"
+            },
+            "DescribeSubnets": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:describeSubnets",
+              "Arguments": {
+                "Filters": [
+                  {
+                    "Name": "vpc-id",
+                    "Values": [
+                      "{% $VpcId %}"
+                    ]
+                  }
+                ]
+              },
+              "Assign": {
+                "SubnetIds": "{% $states.result.Subnets.SubnetId %}",
+                "LoadBalancerSecurityGroupName": "${ProjectName}-lb-security-group"
+              },
+              "Next": "LoadBalancerDescribeSecurityGroups"
+            },
+            "LoadBalancerDescribeSecurityGroups": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:describeSecurityGroups",
+              "Arguments": {
+                "Filters": [
+                  {
+                    "Name": "group-name",
+                    "Values": [
+                      "{% $LoadBalancerSecurityGroupName %}"
+                    ]
+                  },
+                  {
+                    "Name": "vpc-id",
+                    "Values": [
+                      "{% $VpcId %}"
+                    ]
+                  }
+                ]
+              },
+              "Assign": {
+                "LoadBalancerSecurityGroupId": "{% $states.result.SecurityGroups[0] ? $states.result.SecurityGroups[0].GroupId : null %}"
+              },
+              "Next": "LoadBalancerCheckSecurityGroupExistence"
+            },
+            "LoadBalancerCheckSecurityGroupExistence": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Condition": "{% $LoadBalancerSecurityGroupId = null %}",
+                  "Next": "LoadBalancerCreateSecurityGroup"
+                }
+              ],
+              "Default": "GetParameter"
+            },
+            "LoadBalancerCreateSecurityGroup": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:createSecurityGroup",
+              "Arguments": {
+                "GroupName": "{% $LoadBalancerSecurityGroupName %}",
+                "Description": "security group for lb",
+                "VpcId": "{% $VpcId %}"
+              },
+              "Assign": {
+                "LoadBalancerSecurityGroupId": "{% $states.result.GroupId %}"
+              },
+              "Next": "LoadBalancerAuthorizeInboundTraffic"
+            },
+            "LoadBalancerAuthorizeInboundTraffic": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:authorizeSecurityGroupIngress",
+              "Arguments": {
+                "GroupId": "{% $LoadBalancerSecurityGroupId %}",
+                "IpPermissions": [
+                  {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "IpRanges": [
+                      {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "Allow HTTP from anywhere"
+                      }
+                    ]
+                  },
+                  {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "IpRanges": [
+                      {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "Allow HTTPS from anywhere"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "Next": "GetParameter"
+            },
+            "GetParameter": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ssm:getParameter",
+              "Arguments": {
+                "Name": "/${ProjectName}/prod/docker_image/latest",
+                "WithDecryption": true
+              },
+              "Assign": {
+                "DockerImageTag": "{% $states.result.Parameter.Value %}",
+                "Random4Number": "{% $string($floor($random() * 90000) + 10000) %}"
+              },
+              "Next": "RegisterTaskDefinition"
+            },
+            "RegisterTaskDefinition": {
+              "Type": "Task",
+              "QueryLanguage": "JSONata",
+              "Resource": "arn:aws:states:::aws-sdk:ecs:registerTaskDefinition",
+              "Arguments": {
+                "Family": "${ProjectName}-task-definition",
+                "NetworkMode": "awsvpc",
+                "RequiresCompatibilities": [
+                  "FARGATE"
+                ],
+                "Cpu": "512",
+                "Memory": "1024",
+                "TaskRoleArn": "arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-task-definition-role",
+                "ExecutionRoleArn": "arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-task-definition-role",
+                "ContainerDefinitions": [
+                  {
+                    "Name": "${ProjectName}-main-container",
+                    "Image": "{% '${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProjectName}:' & $DockerImageTag %}",
+                    "Cpu": 0,
+                    "PortMappings": [
+                      {
+                        "ContainerPort": 3000,
+                        "HostPort": 3000,
+                        "Protocol": "tcp",
+                        "Name": "${ProjectName}-mapping-3000-tcp"
+                      }
+                    ],
+                    "Essential": true
+                  }
+                ]
+              },
+              "Assign": {
+                "ServiceName": "{% '${ProjectName}-service-' & $DockerImageTag & '-' & $Random4Number %}",
+                "ResourceId": "{% 'service/${ProjectName}-cluster/${ProjectName}-service-' & $DockerImageTag & '-' & $Random4Number %}",
+                "TaskDefinitionArn": "{% $states.result.TaskDefinition.TaskDefinitionArn %}",
+                "LoadBalancerName": "{% '${ProjectName}-lb-' & $DockerImageTag %}"
+              },
+              "Next": "CreateLoadBalancer"
+            },
+            "CreateLoadBalancer": {
+              "Type": "Task",
+              "Arguments": {
+                "Name": "{% '${ProjectName}-lb-' & $DockerImageTag %}",
+                "Subnets": "{% $SubnetIds %}",
+                "SecurityGroups": "{% [$LoadBalancerSecurityGroupId] %}",
+                "Scheme": "internet-facing",
+                "Type": "application"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:elasticloadbalancingv2:createLoadBalancer",
+              "Assign": {
+                "LoadBalancerArn": "{% $states.result.LoadBalancers[0].LoadBalancerArn %}",
+                "LoadBalancerDnsName": "{% $states.result.LoadBalancers[0].DnsName %}",
+                "LoadBalancerHostedZoneId": "{% $states.result.LoadBalancers[0].CanonicalHostedZoneId %}"
+              },
+              "Next": "LoadBalancerCreateTargetGroup"
+            },
+            "LoadBalancerCreateTargetGroup": {
+              "Type": "Task",
+              "Arguments": {
+                "Name": "{% '${ProjectName}-tg-' & $DockerImageTag %}",
+                "Protocol": "HTTP",
+                "Port": 3000,
+                "VpcId": "{% $VpcId %}",
+                "TargetType": "ip"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:elasticloadbalancingv2:createTargetGroup",
+              "Assign": {
+                "TargetGroupArn": "{% $states.result.TargetGroups[0].TargetGroupArn %}"
+              },
+              "Next": "LoadBalancerCreateHttpListener"
+            },
+            "LoadBalancerCreateHttpListener": {
+              "Type": "Task",
+              "Arguments": {
+                "LoadBalancerArn": "{% $LoadBalancerArn %}",
+                "Protocol": "HTTP",
+                "Port": 80,
+                "DefaultActions": [
+                  {
+                    "Type": "redirect",
+                    "RedirectConfig": {
+                      "Protocol": "HTTPS",
+                      "Port": "443",
+                      "StatusCode": "HTTP_301"
+                    }
+                  }
+                ]
+              },
+              "Resource": "arn:aws:states:::aws-sdk:elasticloadbalancingv2:createListener",
+              "Next": "LoadBalancerCreateHttpsListener"
+            },
+            "LoadBalancerCreateHttpsListener": {
+              "Type": "Task",
+              "Arguments": {
+                "LoadBalancerArn": "{% $LoadBalancerArn %}",
+                "Protocol": "HTTPS",
+                "Port": 443,
+                "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
+                "Certificates": [
+                  {
+                    "CertificateArn": "arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/112a96a3-50c6-4beb-86eb-7fde2303e76a"
+                  }
+                ],
+                "DefaultActions": [
+                  {
+                    "Type": "forward",
+                    "TargetGroupArn": "{% $TargetGroupArn %}"
+                  }
+                ]
+              },
+              "Resource": "arn:aws:states:::aws-sdk:elasticloadbalancingv2:createListener",
+              "Assign": {
+                "TaskDefinitionSecurityGroupName": "${ProjectName}-td-security-group"
+              },
+              "Next": "TaskDefinitionDescribeSecurityGroups"
+            },
+
+            "TaskDefinitionDescribeSecurityGroups": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:describeSecurityGroups",
+              "Arguments": {
+                "Filters": [
+                  {
+                    "Name": "group-name",
+                    "Values": [
+                      "{% $TaskDefinitionSecurityGroupName %}"
+                    ]
+                  },
+                  {
+                    "Name": "vpc-id",
+                    "Values": [
+                      "{% $VpcId %}"
+                    ]
+                  }
+                ]
+              },
+              "Assign": {
+                "TaskDefinitionSecurityGroupId": "{% $states.result.SecurityGroups[0] ? $states.result.SecurityGroups[0].GroupId : null %}"
+              },
+              "Next": "TaskDefinitionCheckSecurityGroupExistence"
+            },
+            "TaskDefinitionCheckSecurityGroupExistence": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Condition": "{% $TaskDefinitionSecurityGroupId = null %}",
+                  "Next": "TaskDefinitionCreateSecurityGroup"
+                }
+              ],
+              "Default": "CreateService"
+            },
+            "TaskDefinitionCreateSecurityGroup": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:createSecurityGroup",
+              "Arguments": {
+                "GroupName": "{% $TaskDefinitionSecurityGroupName %}",
+                "Description": "security group for lb",
+                "VpcId": "{% $VpcId %}"
+              },
+              "Assign": {
+                "TaskDefinitionSecurityGroupId": "{% $states.result.GroupId %}"
+              },
+              "Next": "TaskDefinitionAuthorizeInboundTraffic"
+            },
+            "TaskDefinitionAuthorizeInboundTraffic": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:ec2:authorizeSecurityGroupIngress",
+              "Arguments": {
+                "GroupId": "{% $TaskDefinitionSecurityGroupId %}",
+                "IpPermissions": [
+                  {
+                    "IpProtocol": "tcp",
+                    "FromPort": 3000,
+                    "ToPort": 3000,
+                    "IpRanges": [
+                      {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "Allow HTTP from anywhere"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "Next": "CreateService"
+            },
+
+            "CreateService": {
+              "Type": "Task",
+              "Arguments": {
+                "TaskDefinition": "{% $TaskDefinitionArn %}",
+                "ServiceName": "{% $ServiceName %}",
+                "Cluster": "arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:cluster/${ProjectName}-cluster",
+                "DesiredCount": 1,
+                "LaunchType": "FARGATE",
+                "DeploymentController": {
+                  "Type": "CODE_DEPLOY"
+                },
+                "AvailabilityZoneRebalancing": "ENABLED",
+                "LoadBalancers": [
+                  {
+                    "TargetGroupArn": "{% $TargetGroupArn %}",
+                    "ContainerName": "${ProjectName}-main-container",
+                    "ContainerPort": 3000
+                  }
+                ],
+                "NetworkConfiguration": {
+                  "AwsvpcConfiguration": {
+                    "Subnets": "{% $SubnetIds %}",
+                    "SecurityGroups": "{% [$TaskDefinitionSecurityGroupId] %}",
+                    "AssignPublicIp": "ENABLED"
+                  }
+                }
+              },
+              "Resource": "arn:aws:states:::aws-sdk:ecs:createService",
+              "Next": "RegisterScalableTarget"
+            },
+            "RegisterScalableTarget": {
+              "Type": "Task",
+              "Arguments": {
+                "ServiceNamespace": "ecs",
+                "ResourceId": "{% $ResourceId %}",
+                "ScalableDimension": "ecs:service:DesiredCount",
+                "MinCapacity": 1,
+                "MaxCapacity": 2
+              },
+              "Resource": "arn:aws:states:::aws-sdk:applicationautoscaling:registerScalableTarget",
+              "Next": "PutScalingPolicy"
+            },
+            "PutScalingPolicy": {
+              "Type": "Task",
+              "Arguments": {
+                "PolicyName": "${ProjectName}-app-cpu-scaling-policy",
+                "ServiceNamespace": "ecs",
+                "ResourceId": "{% $ResourceId %}",
+                "ScalableDimension": "ecs:service:DesiredCount",
+                "PolicyType": "TargetTrackingScaling",
+                "TargetTrackingScalingPolicyConfiguration": {
+                  "TargetValue": 70,
+                  "PredefinedMetricSpecification": {
+                    "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+                  },
+                  "DisableScaleIn": true
+                }
+              },
+              "Resource": "arn:aws:states:::aws-sdk:applicationautoscaling:putScalingPolicy",
+              "Next": "UpsertRoute53Record"
+            },
+            "UpsertRoute53Record": {
+              "Type": "Task",
+              "Arguments": {
+                "HostedZoneId": "Z0358711QMOX1SF1J2Q6",
+                "ChangeBatch": {
+                  "Changes": [
+                    {
+                      "Action": "UPSERT",
+                      "ResourceRecordSet": {
+                        "Name": "sf-prod.wiwitadityasaputra.com",
+                        "Type": "A",
+                        "AliasTarget": {
+                          "HostedZoneId": "{% $LoadBalancerHostedZoneId %}",
+                          "DnsName": "{% $LoadBalancerDnsName %}",
+                          "EvaluateTargetHealth": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "Resource": "arn:aws:states:::aws-sdk:route53:changeResourceRecordSets",
+              "Next": "Succeed"
+            },
+            "Succeed": {
+              "Type": "Succeed",
+              "Output": {
+                "VpcId": "{% $VpcId %}",
+                "SubnetIds": "{% $SubnetIds %}",
+                "DockerImageTag": "{% $DockerImageTag %}",
+                "Random4Number": "{% $Random4Number %}",
+                "ServiceName": "{% $ServiceName %}",
+                "ResourceId": "{% $ResourceId %}",
+                "TaskDefinitionArn": "{% $ResourceId %}",
+                "LoadBalancerName": "{% $LoadBalancerName %}",
+                "LoadBalancerArn": "{% $LoadBalancerArn %}",
+                "LoadBalancerDnsName": "{% $LoadBalancerDnsName %}",
+                "LoadBalancerHostedZoneId": "{% $LoadBalancerHostedZoneId %}"
+              }
+            }
+          },
+          "QueryLanguage": "JSONata"
+        }
+
+Outputs:
+  LoginUrl:
+    Value: !Sub https://${AWS::AccountId}.signin.aws.amazon.com/console
+  Region:
+    Value: !Sub ${AWS::Region}
+  Username:
+    Value: !Ref MyIAMUser

@@ -1,0 +1,16 @@
+# Ignore local dependencies
+node_modules/
+vendor/
+.venv/
+env/
+
+# Ignore version control and IDE configs
+.git
+.idea/
+.vscode/
+
+# Ignore local build outputs and logs
+dist/
+build/
+*.log
+.DS_Store
