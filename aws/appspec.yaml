@@ -1,0 +1,9 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: "AWS::ECS::Service"
+      Properties:
+        TaskDefinition: "arn:aws:ecs:us-east-1:574434081764:task-definition/street-food-02-task-definition:66"
+        LoadBalancerInfo:
+          ContainerName: "street-food-02-main-container"
+          ContainerPort: 3000

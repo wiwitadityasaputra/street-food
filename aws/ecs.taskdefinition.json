@@ -1,0 +1,67 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:574434081764:task-definition/street-food-task-definition:9",
+  "containerDefinitions": [
+    {
+      "name": "street-food-main-container",
+      "image": "574434081764.dkr.ecr.us-east-1.amazonaws.com/street-food:PROD-9-464310",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "name": "main-3000-tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "systemControls": []
+    }
+  ],
+  "family": "street-food-task-definition",
+  "taskRoleArn": "arn:aws:iam::574434081764:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::574434081764:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "revision": 9,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE",
+    "MANAGED_INSTANCES"
+  ],
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "registeredAt": "2026-09-16T02:27:04.183Z",
+  "registeredBy": "arn:aws:iam::574434081764:user/wsaputra",
+  "enableFaultInjection": false,
+  "tags": []
+}

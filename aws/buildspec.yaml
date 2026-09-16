@@ -1,0 +1,32 @@
+version: 0.2
+env:
+  parameter-store:
+    POSTGRES_URL: "/street-food-03/prod/postgres_url"
+    DOCKER_IMAGE_INDEX: "/street-food-03/prod/docker_image/index"
+phases:
+  pre_build:
+    commands:
+      - echo SF-d Logging in to Amazon ECR, `date`
+      - echo commit-id $COMMIT_ID
+      - SHORT_COMMIT=$(echo -n "$COMMIT_ID" | tail -c 6)
+      - echo short-commit $SHORT_COMMIT
+      - echo docker-image-index $DOCKER_IMAGE_INDEX
+      - NEW_DOCKER_IMAGE_INDEX=$(($DOCKER_IMAGE_INDEX + 1))
+      - echo new-docker-image-index $NEW_DOCKER_IMAGE_INDEX
+      - NEW_DOCKER_IMAGE_LATEST="prod-$NEW_DOCKER_IMAGE_INDEX-$SHORT_COMMIT"
+      - echo new-docker-image-latest $NEW_DOCKER_IMAGE_LATEST
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 574434081764.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo SF-d Building the Docker image, `date`
+      - echo new-docker-image-latest $NEW_DOCKER_IMAGE_LATEST
+      - echo new-docker-image-index $NEW_DOCKER_IMAGE_INDEX
+      - echo docker build --build-arg POSTGRES_URL=$POSTGRES_URL -t 574434081764.dkr.ecr.us-east-1.amazonaws.com/$RepoName:$NEW_DOCKER_IMAGE_LATEST .
+  post_build:
+    commands:
+      - echo SF-d Pushing the Docker image, `date`
+      - echo new-docker-image-latest $NEW_DOCKER_IMAGE_LATEST
+      - echo new-docker-image-index $NEW_DOCKER_IMAGE_INDEX
+      - echo docker push 574434081764.dkr.ecr.us-east-1.amazonaws.com/$RepoName:$NEW_DOCKER_IMAGE_LATEST
+      - aws ssm put-parameter --name "/street-food-03/prod/docker_image/index" --value "$NEW_DOCKER_IMAGE_INDEX" --type "String" --overwrite
+      - aws ssm put-parameter --name "/street-food-03/prod/docker_image/latest" --value "$NEW_DOCKER_IMAGE_LATEST" --type "String" --overwrite

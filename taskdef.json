@@ -1,0 +1,20 @@
+{
+  "family": "DeployToEcsFargateTaskDefinitionFamily",
+  "containerDefinitions": [
+    {
+      "name": "DeployToEcsFargateContainerName",
+      "image": "IMAGE1_NAME",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ]
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512"
+}

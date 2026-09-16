@@ -1,0 +1,189 @@
+{
+  "StartAt": "paramter store - get",
+  "States": {
+    "paramter store - get": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:ssm:getParameter",
+      "Arguments": {
+        "Name": "/street-food-02/prod/docker_image/latest",
+        "WithDecryption": true
+      },
+      "Assign": {
+        "DockerImageTag": "{% $states.result.Parameter.Value %}"
+      }, 
+      "Next": "service - list"
+    },
+    "service - list": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:ecs:listServices",
+      "Arguments": {
+        "Cluster": "street-food-02-cluster",
+        "MaxResults": 1
+      },
+      "Assign": {
+        "ServiceName": "{% $substringAfter($states.result.ServiceArns[0], '/') %}"
+      },
+      "Next": "loadbalancer - describe"
+    },
+    "loadbalancer - describe": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:elasticloadbalancingv2:describeLoadBalancers",
+      "Arguments": {
+        "Names": [
+          "street-food-02-loadbalancer"
+        ]
+      },
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "ElasticLoadBalancingV2.LoadBalancerNotFoundException"
+          ],
+          "Next": "Succeed"
+        }
+      ],
+      "Assign": {
+        "LoadBalancerArn": "{% $states.result.LoadBalancers[0].LoadBalancerArn %}"
+      },
+      "Next": "loadbalancer - listener - describe"
+    },
+    "loadbalancer - listener - describe": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:elasticloadbalancingv2:describeListeners",
+      "Arguments": {
+        "LoadBalancerArn": "{% $LoadBalancerArn %}"
+      },
+      "Assign": {
+        "ListenerArn": "{% $states.result.Listeners[Protocol = 'HTTPS' ].ListenerArn %}"
+      },
+      "Next": "task definition - register"
+    },
+    "task definition - register": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:ecs:registerTaskDefinition",
+      "Arguments": {
+        "Family": "street-food-02-task-definition",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "Cpu": "512",
+        "Memory": "1024",
+        "TaskRoleArn": "arn:aws:iam::574434081764:role/street-food-02-task-definition-role",
+        "ExecutionRoleArn": "arn:aws:iam::574434081764:role/street-food-02-task-definition-role",
+        "ContainerDefinitions": [
+          {
+            "Name": "street-food-02-main-container",
+            
+            "Image": "{% '574434081764.dkr.ecr.us-east-1.amazonaws.com/street-food-02:' & $DockerImageTag %}",
+            "Cpu": 0,
+            "PortMappings": [
+              {
+                "ContainerPort": 3000,
+                "HostPort": 3000,
+                "Protocol": "tcp",
+                "Name": "street-food-02-mapping-3000-tcp"
+              }
+            ],
+            "Essential": true
+          }
+        ]
+      },
+      "Assign": {
+        "TaskDefinitionArn": "{% $states.result.TaskDefinition.TaskDefinitionArn %}"
+      },
+      "Next": "codedeploy - deployment group - get"
+    },
+    "codedeploy - deployment group - get": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:codedeploy:getDeploymentGroup",
+      "Arguments": {
+        "ApplicationName": "street-food-02-codedeploy",
+        "DeploymentGroupName": "street-food-02-deploymentgroup-bluegreen"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "CodeDeploy.DeploymentGroupDoesNotExistException"
+          ],
+          "Next": "codedeploy - deployment group - create"
+        }
+      ],
+      "Assign": {
+        "DeploymentGroupId": "{% $states.result.DeploymentGroupInfo.DeploymentGroupId %}"
+      },
+      "Next": "codedeploy - createdeployment"
+    },
+    "codedeploy - deployment group - create": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:codedeploy:createDeploymentGroup",
+      "Arguments": {
+        "ApplicationName": "street-food-02-codedeploy",
+        "DeploymentGroupName": "street-food-02-deploymentgroup-bluegreen",
+        "ServiceRoleArn": "arn:aws:iam::574434081764:role/street-food-02-codedeploy-deploymentgroup-role",
+        "DeploymentConfigName": "CodeDeployDefault.ECSAllAtOnce",
+        "DeploymentStyle": {
+          "DeploymentType": "BLUE_GREEN",
+          "DeploymentOption": "WITH_TRAFFIC_CONTROL"
+        },
+        "EcsServices": [
+          {
+            "ClusterName": "street-food-02-cluster",
+            "ServiceName": "{% $ServiceName %}"
+          }
+        ],
+        "LoadBalancerInfo": {
+          "TargetGroupPairInfoList": [
+            {
+              "ProdTrafficRoute": {
+                "ListenerArns": [
+                  "{% $ListenerArn %}"
+                ]
+              },
+              "TargetGroups": [
+                {
+                  "Name": "street-food-02-targetgroup-blue"
+                },
+                {
+                  "Name": "street-food-02-targetgroup-green"
+                }
+              ]
+            }
+          ]
+        },
+        "BlueGreenDeploymentConfiguration": {
+          "DeploymentReadyOption": {
+            "ActionOnTimeout": "CONTINUE_DEPLOYMENT",
+            "WaitTimeInMinutes": 0
+          },
+          "TerminateBlueInstancesOnDeploymentSuccess": {
+            "Action": "TERMINATE",
+            "TerminationWaitTimeInMinutes": 0
+          }
+        }
+      },
+      "Assign": {
+        "DeploymentGroupId": "{% $states.result.DeploymentGroupId %}"
+      },
+      "Next": "codedeploy - createdeployment"
+    },
+    "codedeploy - createdeployment": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:codedeploy:createDeployment",
+      "Arguments": {
+        "ApplicationName": "street-food-02-codedeploy",
+        "DeploymentGroupName": "street-food-02-deploymentgroup-bluegreen",
+        "Revision": {
+          "RevisionType": "AppSpecContent",
+          "AppSpecContent": {
+            "Content": "{% 'version: 0.0\nResources:\n  - TargetService:\n      Type: \"AWS::ECS::Service\"\n      Properties:\n        TaskDefinition: \"' & $TaskDefinitionArn & '\"\n        LoadBalancerInfo:\n          ContainerName: \"street-food-02-main-container\"\n          ContainerPort: 3000'%}"
+          }
+        }
+      },
+      "Next": "Succeed"
+    },
+    "Succeed": {
+      "Type": "Succeed"
+    }
+  },
+  "QueryLanguage": "JSONata"
+}

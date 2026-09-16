@@ -1,0 +1,21 @@
+version: 0.2
+
+env:
+  parameter-store:
+    POSTGRES_URL: "/STREET_FOOD/PROD/POSTGRES_URL"
+
+phases:
+  pre_build:
+    commands:
+      - echo SF-d Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 574434081764.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - echo SF-d Building the Docker image...
+      - echo SF-d Build started on `date`
+      - docker build --build-arg POSTGRES_URL=$POSTGRES_URL -t 574434081764.dkr.ecr.us-east-1.amazonaws.com/street-food:$DOCKER_IMAGE_TAG .
+  post_build:
+    commands:
+      - echo SF-d Build completed on `date`
+      - echo SF-d Pushing the Docker image...
+      - docker push 574434081764.dkr.ecr.us-east-1.amazonaws.com/street-food:$DOCKER_IMAGE_TAG

@@ -1,0 +1,83 @@
+{
+  "QueryLanguage": "JSONata",
+  "StartAt": "01-Init",
+  "States": {
+    "01-Init": {
+      "Arguments": {
+        "Name": "/street-food-02/prod/docker_image/index",
+        "WithDecryption": true
+      },
+      "Comment": "Extract CodeCommit change details from EventBridge payload",
+      "Next": "02-ProcessInit",
+      "Output": {
+        "buildIndex": "{% $string($number($states.result.Parameter.Value) + 1) %}",
+        "lastCommitDate": "{% $states.input.time %}",
+        "lastCommitId": "{% $substring($states.input.detail.commitId, $length($states.input.detail.commitId) - 6, $length($states.input.detail.commitId) - 1) %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:ssm:getParameter",
+      "Type": "Task"
+    },
+    "02-ProcessInit": {
+      "Next": "03-BuildProdImage",
+      "Output": {
+        "buildIndex": "{% $states.input.buildIndex %}",
+        "dockerImageTag": "{% 'PROD-' & $states.input.buildIndex & '-' & $states.input.lastCommitId %}"
+      },
+      "Type": "Pass"
+    },
+    "03-BuildProdImage": {
+      "Arguments": {
+        "EnvironmentVariablesOverride": [
+          {
+            "Name": "DOCKER_IMAGE_TAG",
+            "Type": "PLAINTEXT",
+            "Value": "{% $states.input.dockerImageTag %}"
+          }
+        ],
+        "ProjectName": "street-food-02-build-docker-image"
+      },
+      "Next": "04-UpdateParamterStoreDockerIndex",
+      "Output": {
+        "buildIndex": "{% $states.input.buildIndex %}",
+        "dockerImageTag": "{% $states.input.dockerImageTag %}"
+      },
+      "Resource": "arn:aws:states:::codebuild:startBuild.sync",
+      "Type": "Task"
+    },
+    "04-UpdateParamterStoreDockerIndex": {
+      "Arguments": {
+        "Name": "/street-food-02/prod/docker_image/index",
+        "Overwrite": true,
+        "Type": "String",
+        "Value": "{% $states.input.buildIndex %}"
+      },
+      "Next": "05-UpdateParamterStoreDockerLatest",
+      "Output": {
+        "dockerImageTag": "{% $states.input.dockerImageTag %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:ssm:putParameter",
+      "Type": "Task"
+    },
+    "05-UpdateParamterStoreDockerLatest": {
+      "Arguments": {
+        "Name": "/street-food-02/prod/docker_image/latest",
+        "Overwrite": true,
+        "Type": "String",
+        "Value": "{% $states.input.dockerImageTag %}"
+      },
+      "Next": "06-Succeed",
+      "Output": {
+        "dockerImageTag": "{% $states.input.dockerImageTag %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:ssm:putParameter",
+      "Type": "Task"
+    },
+    "06-Succeed": {
+      "Comment": "docker images should have new :latest version",
+      "Output": {
+        "dockerImageTag": "{% $states.input.dockerImageTag %}"
+      },
+      "Type": "Succeed"
+    }
+  }
+}
