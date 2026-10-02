@@ -125,3 +125,16 @@ export interface AllUserOrderDb {
     last_name: string;
     street_address: string;
 }
+
+export interface UserChatMainDb {
+    user_chat_main_id: number;
+    user_id: string;
+    message: string;
+    role: string;
+    created_date: Date;
+}
+
+export interface UserChatMainFe {
+    message: string;
+    role: string;
+}

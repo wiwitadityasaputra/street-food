@@ -4,6 +4,7 @@ import clsx from "clsx";
 import React from "react";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import ChatPanel from "@/src/ui/menu/chat-panel/chat-panel";
+import { UserChatMainFe } from "@/src/lib/database/database.definition";
 
 export const DEFAULT_CUISINE = "all";
 const cuisines = [
@@ -20,7 +21,11 @@ const cuisines = [
     }, 
 ];
 
-export default function CuisinesMenu() {
+export interface CuisinesMenuProps {
+    messages: UserChatMainFe[];
+}
+
+export default function CuisinesMenu(props: CuisinesMenuProps) {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
@@ -41,7 +46,7 @@ export default function CuisinesMenu() {
 
     return (
         <div className="row">
-            <ChatPanel />
+            <ChatPanel messages={props.messages} />
             <div className="col-xl-6 col-lg-6 wow fadeInUp" data-wow-duration="1s">
                 <div className="section_heading mb_25">
                     <h4>food Menu</h4>

@@ -1,18 +1,28 @@
 "use client";
 
-import { useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useRouter } from 'next/navigation';
 import { faHeadset, faPaperPlane, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "@/src/ui/menu/chat-panel/chat-panel.css";
 import { useAppContext } from "@/src/lib/util/app-contex";
-import { ChatMessage } from "@/src/ui/menu/chat-panel/chat-panel.definition";
+import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
 
-export default function ChatPanel() {
+export default function ChatPanel(props: ChatPanelProps) {
+    const router = useRouter();
     const { isChatPanelOpen, setIsChatPanelOpen } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
     const [isSending, setIsSending] = useState(false);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const messagesContainer = messagesContainerRef.current;
+        if (isChatPanelOpen && messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    }, [isChatPanelOpen, isSending, messages, props.messages]);
 
     async function changeChatOpen(nextOpen: boolean) {
         setIsChatPanelOpen(nextOpen);
@@ -27,6 +37,14 @@ export default function ChatPanel() {
             })
         });
     }
+
+    const chatMessages: ChatMessage[] = [];
+    props.messages.forEach(m => {
+        chatMessages.push({
+            content: m.message,
+            role: m.role as "user" | "assistant"
+        })
+    });
 
     async function sendMessage(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -46,11 +64,20 @@ export default function ChatPanel() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ message }),
+                body: JSON.stringify({
+                    message: message
+                }),
             });
 
             const data = await response.json();
             const reply = data.reply;
+            if (data.action) {
+                if (data.action === "MENU") {
+                    router.push("/menu");
+                } else if (data.action === "CART") {
+                    router.push("/cart");
+                }
+            }
 
             setMessages((currentMessages) => [
                 ...currentMessages,
@@ -75,7 +102,7 @@ export default function ChatPanel() {
                             <FontAwesomeIcon icon={faHeadset} />
                         </div>
                         <div className="start-chat-agent">
-                            <h3>Customer service</h3>
+                            <h3>AI Assistant</h3>
                             <span><span className="start-chat-status" />We usually reply in a few minutes</span>
                         </div>
                         <button
@@ -87,16 +114,28 @@ export default function ChatPanel() {
                             <FontAwesomeIcon icon={faXmark} />
                         </button>
                     </header>
-                    <div className="start-chat-messages" aria-live="polite" aria-busy={isSending}>
+                    <div
+                        ref={messagesContainerRef}
+                        className="start-chat-messages"
+                        aria-live="polite"
+                        aria-busy={isSending}
+                    >
                         <span className="start-chat-time">Today</span>
                         <div className="start-chat-message">
                             Hi there! How can we help you today?
                         </div>
+                        {chatMessages.map((message, index) => (
+                            <div
+                                key={index}
+                                className={`start-chat-message start-chat-message-${message.role}`}>
+                                {message.content}
+                            </div>
+                        ))}
+
                         {messages.map((message, index) => (
                             <div
                                 key={index}
-                                className={`start-chat-message start-chat-message-${message.role}`}
-                            >
+                                className={`start-chat-message start-chat-message-${message.role}`}>
                                 {message.content}
                             </div>
                         ))}

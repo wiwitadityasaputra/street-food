@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 
 import "@/src/app/globals.css";
-import { cookiesGet, cookiesGetUserId } from "@/src/lib/util/cookie-util";
+import { cookiesGet } from "@/src/lib/util/cookie-util";
 import DashboardNav from "@/src/ui/dashhboard-nav/dashboard-nav";
 import { countUserCartByUserAndFlag } from "@/src/lib/database/database";
 import { UserCartDbFlag } from "@/src/lib/database/database.definition";
@@ -30,7 +30,6 @@ export default async function AppLayout({
   const userId = cookieData.userId;
   const isChatPanelOpen = cookieData.isChatPanelOpen;
   const totalCartDb = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
-
   return (
     <html
       lang="en"

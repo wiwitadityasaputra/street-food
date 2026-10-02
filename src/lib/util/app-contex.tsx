@@ -1,11 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
+import { UserChatMainFe } from "@/src/lib/database/database.definition";
 
 export interface AppContextProps {
   userId: string;
   isChatPanelOpen: boolean;
   setIsChatPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
+
+  messages?: UserChatMainFe[];
+  setMessages: React.Dispatch<React.SetStateAction<UserChatMainFe[]>>;
 }
 
 export interface AppProviderProps {
@@ -18,15 +22,23 @@ const defaultAppContext: AppContextProps = {
   userId: "",
   isChatPanelOpen: false,
   setIsChatPanelOpen: () => {},
+
+  messages: [],
+  setMessages: () => {}
 };
 export const AppContext = createContext<AppContextProps>(defaultAppContext);
 
 export function AppProvider(props: AppProviderProps): React.ReactElement {
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(props.isChatPanelOpen ?? false);
+  const [messages, setMessages] = useState([] as UserChatMainFe[]);
+
   const value: AppContextProps = {
     userId: props.userId,
     isChatPanelOpen,
     setIsChatPanelOpen,
+
+    messages,
+    setMessages   
   };
 
   return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;

@@ -10,7 +10,8 @@ import {
     OrderIdUserOrderDb,
     UserCartDb,
     UserCartDbFlag,
-    UserCartDbUserCartId
+    UserCartDbUserCartId,
+    UserChatMainFe
 } from '@/src/lib/database/database.definition';
 
 export const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -292,6 +293,32 @@ export async function updateUserOrderShippeddateByIds(ids: number[]): Promise<vo
 export async function updateUserOrderDelivereddateByIds(ids: number[]): Promise<void> {
     try {
         await sql`UPDATE user_order SET delivered_date = current_timestamp, flag = 4 WHERE user_order_id = ANY(${ids})`;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch data.');
+    }
+}
+
+export async function writeToUserChatMain(userId: string, message: string, role: string): Promise<any> {
+    try {
+        const result = await sql`INSERT INTO 
+            user_chat_main (user_id, message, role, created_date) 
+            VALUES (${userId}, ${message}, ${role}, current_timestamp) 
+            returning user_chat_main_id as userChatMainId`;
+        return (result as any)[0].userChatMainId;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to write data.');
+    }
+}
+
+export async function fetchChatHistories(userId: string): Promise<UserChatMainFe[]> {
+    try {
+        const data = await sql<UserChatMainFe[]>`
+            SELECT uc.message, uc.role
+            FROM user_chat_main uc
+            WHERE uc.user_id = ${userId}`;
+        return data;
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to fetch data.');
