@@ -14,6 +14,7 @@ import { deleteCartItemAction } from "@/src/lib/form-action/cart.action";
 import { DEFAULT_SUCCESS_MESSAGE } from "@/src/lib/form-action/form-action.definition";
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
 import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
+import ChatPanel from "@/src/ui/menu/chat-panel/chat-panel";
 
 export function CartContent(props: CartContentProps) {
     const { replace } = useRouter();
@@ -51,6 +52,7 @@ export function CartContent(props: CartContentProps) {
             <section className="cart_view mt_100 xs_mt_70 mb_100 xs_mb_70">
                 <div className="container">
                     <div className="row">
+                        <ChatPanel />
                         <div className="col-lg-12 wow fadeInUp">
                             <div className="checkout_form">
                                 <h5>Your Order</h5>

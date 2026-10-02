@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import ChatPanel from "@/src/ui/menu/chat-panel/chat-panel";
 
 export const DEFAULT_CUISINE = "all";
 const cuisines = [
@@ -23,12 +24,9 @@ export default function CuisinesMenu() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
-    let [activeMenu, setActiveMenu] = React.useState("all");
+    const [activeMenuState, setActiveMenu] = React.useState("all");
 
-    const initMenu = searchParams.get("cuisine");
-    if (initMenu) {
-        activeMenu = initMenu;
-    }
+    const activeMenu = searchParams.get("cuisine") || activeMenuState;
 
     function changeMenu(menu: string) {
         const params = new URLSearchParams(searchParams);
@@ -43,6 +41,7 @@ export default function CuisinesMenu() {
 
     return (
         <div className="row">
+            <ChatPanel />
             <div className="col-xl-6 col-lg-6 wow fadeInUp" data-wow-duration="1s">
                 <div className="section_heading mb_25">
                     <h4>food Menu</h4>
