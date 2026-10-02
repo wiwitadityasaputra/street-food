@@ -8,10 +8,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 
 import "@/src/app/globals.css";
-import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
+import { cookiesGet, cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import DashboardNav from "@/src/ui/dashhboard-nav/dashboard-nav";
 import { countUserCartByUserAndFlag } from "@/src/lib/database/database";
 import { UserCartDbFlag } from "@/src/lib/database/database.definition";
+import { AppProvider } from "../lib/util/app-contex";
 
 const ReduxProvider = dynamic(() => import("@/src/lib/util/redux-provider/redux-provider"));
 
@@ -25,7 +26,9 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userId = await cookiesGetUserId();
+  const cookieData = await cookiesGet();
+  const userId = cookieData.userId;
+  const isChatPanelOpen = cookieData.isChatPanelOpen;
   const totalCartDb = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
 
   return (
@@ -77,7 +80,9 @@ export default async function AppLayout({
 
         <ReduxProvider>
           <DashboardNav totalCart={totalCartDb} />
-          {children}
+          <AppProvider userId={userId} isChatPanelOpen={isChatPanelOpen}>
+            {children}
+          </AppProvider>
         </ReduxProvider>
       </body>
     </html>
