@@ -1,4 +1,7 @@
-import { fetchUserCartByUserAndFlag } from "@/src/lib/database/database";
+import {
+    fetchUserCartByUserAndFlag,
+    deleteUserCartByUserAndUserCartId
+} from "@/src/lib/database/database";
 import { UserCartDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
 import { USER_CART_OPTIONS_SEPARATOR, UserCartResponse } from "@/src/lib/service/service.definition";
 
@@ -22,4 +25,8 @@ export async function getUserCarts(userId: string): Promise<UserCartResponse[]> 
         });
     })
     return result;
+}
+
+export async function deleteUserCartByUserCartId(userId: string, userCartId: string) {
+    await deleteUserCartByUserAndUserCartId(userId, userCartId);
 }

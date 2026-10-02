@@ -1,7 +1,6 @@
 import postgres from 'postgres';
 
 import {
-    AllOrderAndCartDb,
     AllUserOrderDb,
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
