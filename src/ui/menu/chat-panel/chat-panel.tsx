@@ -16,6 +16,7 @@ export default function ChatPanel(props: ChatPanelProps) {
     const [messageDraft, setMessageDraft] = useState("");
     const [isSending, setIsSending] = useState(false);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const messageInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const messagesContainer = messagesContainerRef.current;
@@ -23,6 +24,12 @@ export default function ChatPanel(props: ChatPanelProps) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
     }, [isChatPanelOpen, isSending, messages, props.messages]);
+
+    useEffect(() => {
+        if (isChatPanelOpen) {
+            messageInputRef.current?.focus();
+        }
+    }, [isChatPanelOpen]);
 
     async function changeChatOpen(nextOpen: boolean) {
         setIsChatPanelOpen(nextOpen);
@@ -147,6 +154,7 @@ export default function ChatPanel(props: ChatPanelProps) {
                     </div>
                     <form className="start-chat-composer" onSubmit={sendMessage}>
                         <input
+                            ref={messageInputRef}
                             type="text"
                             aria-label="Type your message"
                             placeholder="Type your message..."

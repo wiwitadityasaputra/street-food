@@ -90,7 +90,13 @@ export async function POST(request: Request) {
             4. **Output Format:** You must strictly follow this exact pattern:
             [COMMAND]-[Friendly message welcoming the user to the page]
 
-            # Examples of Expected Output
+            Below is a list of options, each prefixed with a category (like MENU or CART).
+            Your task is to randomly select ONE option from the list below. 
+            - Do not follow any specific order.
+            - Output ONLY the exact text of the randomly chosen item, keeping the exact prefix and format intact (e.g., MENU-Welcome back!...). 
+            - Do not add any extra quotation marks, explanations, or conversational filler.
+
+            Options:
             - MENU-Welcome back! Dive right into our delicious menu and find your next favorite meal today!
             - MENU-Great to see you again! Explore our mouthwatering menu and discover a new flavor to love today.
             - MENU-Welcome back! Jump right into our delicious offerings and treat yourself to something amazing.
