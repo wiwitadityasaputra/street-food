@@ -124,7 +124,7 @@ export async function POST(request: Request) {
     });
 
     const finalResponse = await result.text;
-    console.log("dbg finalResponse ", finalResponse)
+    console.log("dbg finalResponsee ", finalResponse)
     if (finalResponse.indexOf("MENU-") === 0) {
         const aiMessage = finalResponse.split("MENU-")[1];
         await writeToUserChatMain(userId, aiMessage, "assistant");
