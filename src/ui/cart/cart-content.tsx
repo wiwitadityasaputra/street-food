@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
@@ -71,7 +71,7 @@ export function CartContent(props: CartContentProps) {
                                                     Action
                                                 </th>
                                             </tr>
-											{cartItems.map(c => {
+											{cartItems.map((c, index) => {
 												return (
 													<tr key={c.userCartId}>
 														<td className="pro_img item-image">
