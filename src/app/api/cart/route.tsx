@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { cookiesGetUserId, cookiesSetUserId } from "@/src/lib/util/cookie-util";
-import { UserCartResponse } from "@/src/lib/service/service.definition";
+import { USER_CART_OPTIONS_SEPARATOR, UserCartResponse } from "@/src/lib/service/service.definition";
 import { getUserCarts } from "@/src/lib/service/cart.service";
-import { countUserCartByUserAndFlag, fetchCuisinesById, writeToUserCart } from "@/src/lib/database/database";
-import { CuisinesDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
+import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, writeToUserCart } from "@/src/lib/database/database";
+import { CuisinesCartDbGroupNamePrice, CuisinesDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
 
 export interface UserCartRouteGetResponse {
     userCartId: string;
@@ -30,9 +30,14 @@ export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
 export interface UserCartRoutePostRequest {
     cuisineId?: number;
     quantity?: number;
+    addOnsIds?: number[];
 }
 
-export async function POST(request: Request): Promise<NextResponse<any>> {
+export interface UserCartRoutePostResponse {
+    totalCart?: number;
+}
+
+export async function POST(request: Request): Promise<NextResponse<UserCartRoutePostResponse>> {
     const userId = await cookiesGetUserId();
     if (!userId) {
         return NextResponse.json({});
@@ -53,11 +58,36 @@ export async function POST(request: Request): Promise<NextResponse<any>> {
     const cuisineName = cuisineDb.name;
     const pricePerItem = cuisineDb.price;
     const finalPrice = pricePerItem * quantity;
-    const userCartOptions = "";
+    let userCartOptions = "";
+
+    const addOnsIds = body.addOnsIds;
+    if (addOnsIds && addOnsIds.length) {
+        let sqlString = 'SELECT "group", name, price FROM cuisine_cart WHERE ';
+        addOnsIds.forEach((o, index) => {
+            if (index > 0) {
+                sqlString += " OR";
+            }
+            sqlString += " (id=" + o + " and cuisine_id=" + cuisineId + ")";
+        });
+
+        // validation, db check cuisine_cart, cart options lenght should match with db results
+        const cuisinesCart: CuisinesCartDbGroupNamePrice[] = await fetchCuisineCartPrices(sqlString);
+        if (cuisinesCart.length != addOnsIds.length) {
+            return NextResponse.json({}, { status: 400 });
+        }
+
+        cuisinesCart.forEach((c, index) => {
+            const option = c.group + ": " + c.name;
+            if (index > 0) {
+                userCartOptions += USER_CART_OPTIONS_SEPARATOR;
+            }
+            userCartOptions += option;
+        });
+    }
 
     await writeToUserCart(String(cuisineId), cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     await cookiesSetUserId(userId);
 
-    return NextResponse.json({});
+    return NextResponse.json({ totalCart });
 }

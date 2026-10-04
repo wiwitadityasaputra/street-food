@@ -8,9 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@/src/ui/menu/chat-panel/chat-panel.css";
 import { useAppContext } from "@/src/lib/util/app-contex";
 import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
+import { useAppDispatch } from "@/src/lib/util/redux-provider";
+import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
 
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
+    const dispatch = useAppDispatch();
     const { isChatPanelOpen, setIsChatPanelOpen } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
@@ -99,6 +102,11 @@ export default function ChatPanel(props: ChatPanelProps) {
                         },
                     ]);
                 }
+            }
+
+            const totalCart = data.totalCart;
+            if (totalCart) {
+                dispatch(setTotalCart(totalCart));
             }
         } catch (error) {
             console.error("Failed to send chat message.", error);

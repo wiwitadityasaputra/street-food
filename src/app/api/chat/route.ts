@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { deepSeek } from '@ai-sdk/deepseek';
-import { generateText } from 'ai';
+import { generateText, isStepCount, tool } from 'ai';
+import { z } from 'zod';
 import { cookies, headers } from "next/headers";
 
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { writeToUserChatMain } from "@/src/lib/database/database";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { UserCartRoutePostRequest } from "../cart/route";
+import { CuisineDetailGetResponse } from "../cuisines/[id]/route";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -33,8 +35,8 @@ export async function POST(request: Request) {
     const cuisines = await getDataFromApi(cuisineApi, cookieStore);
 
     const result = await generateText({
-        model: deepSeek('deepseek-flash'),
-        system: `
+        model: deepSeek('deepseek-v4-pro'),
+        instructions:`
             You are an intelligent assistant for a street-food e-commerce application. 
             The application currently consists of only two pages:
             1. Menu
@@ -42,24 +44,59 @@ export async function POST(request: Request) {
 
             You have some sequential tasks todo
             ### Task No 1: Adding food to cart.
-            You should able to understand that user want to adding new food/cuisine to their cart
-            You need to know the amount of food the user wants
-            If the user does not enter a quantity, assume it is just one
-            Task No 1 final message should be FOOD_INPUT_{cuisineId}_{amount of food}
 
-            for examples:
-            - user want adding 10 Ketoprak (the Ketoprak id is 20)
-              final message will: FOOD_INPUT_20_10_Ketoprak
-            - user want adding Eomuk (Eomuk id is 8)
-              final message will: FOOD_INPUT_8_1_Eomuk
-
+            #### Food/cuisine data
             All foods/cuisines Data: ${JSON.stringify(cuisines)}
 
-            If the user want add other food that is not in our foods/cuisines data
-            then Task No 1 final message wlll be: FOOD_UNKNOWN_{food name / cuisine name}
-            for example: 
+            #### Specification
+            - You should able to understand that user want to adding new food/cuisine to their cart
+              you should know the cuisineId base on the all foods/cuisines data
+            - You need to know the food quantity, if there is no information about food quantity the default value is 1
+            - Determine if the user specified any add-ons or options.
+            - **Handling Add-ons:** 
+              1. If add-ons/parameters exist, you MUST call the 'getCuisineDetail' tool with the 'cuisineId' as input.
+              2. Inspect the tool's returned data to find the matching add-on IDs requested by the user.
+              3. Once you have the IDs, construct the final output array containing those IDs (e.g., [1,2,3]).
+                 If no specific add-on IDs match or can be resolved, use an empty array [].
+
+            #### Possible Results (Pick only one)
+
+            1. user request food not matching with our data
+            just simply return FOOD_UNKNOWN_{food name}
+            for example:
             - user want to add 10 Pizza or user want to add Rujak
-              final message will: FOOD_UNKNOWN_pizza or FOOD_UNKNOWN_rujak
+              Pizza or Rujak are the food name but its not exist in our data
+              so the final message should be: FOOD_UNKNOWN_pizza or FOOD_UNKNOWN_rujak
+
+            2. user request food is matching with our data and *wit* add-ons or other parameters
+            you need to return the cuisineId, quantity and food name with following format
+            FOOD_INPUT_{cuisineId}_{quantity}_{food name}_[comma_separated_addon_ids]
+
+            to get add-ons ids you need to use 'getCuisineDetail' tool with cuisineId as the input
+            for examples:
+            - I want 3 burger with french fries
+              food name is burger
+              cuisineId for burger is 1
+              quantity is 3
+              'getCuisineDetail' with cuisineId=1 is {"cuisineId":1,"addOns":[{"addonId":9,"addonName":"french fries"},{"addonId":10,"addonName":"extra chili sauce sachet"},{"addonId":11,"addonName":"extra tomato sauce sachet"}]}
+              with above 'getCuisineDetail' response, french fries addonId is 9
+              final message should be: FOOD_INPUT_1_3_Burger_[9]
+            - Please add 2 roujiamo with chili sauce & tomato sauce to cart
+              food name is roujiamo
+              cuisineId for roujiamo is 13
+              quantity is 1
+              'getCuisineDetail' with cuisineId=13 is {"cuisineId":13,"addOns":[{"addonId":91,"addonName":"french fries"},{"addonId":92,"addonName":"extra chili sauce sachet"},{"addonId":93,"addonName":"extra tomato sauce sachet"}]}
+              with above 'getCuisineDetail' response, chili sauce addonId is 92, tomato sauce is 93
+              final message should be: FOOD_INPUT_13_1_roujiamo_[92,93]
+
+            3. user request food is matching with our data and *without* add-ons or other parameter
+            you need to return the cuisineId, quantity and food name with following format
+            FOOD_INPUT_{cuisineId}_{quantity}_{food name}_[]
+            for examples:
+            - user want adding 10 Ketoprak (the Ketoprak id is 20)
+              final message should be: FOOD_INPUT_20_10_Ketoprak_[]
+            - user want adding Eomuk (Eomuk id is 8)
+              final message should be: FOOD_INPUT_8_1_Eomuk_[]
             
             If the user input does not fall into the category above or Task No 1,
             then you can continue to Task No 2 below
@@ -122,13 +159,33 @@ export async function POST(request: Request) {
             - Religion, faith, or religious beliefs.
             final message should be AI_RESPONSE_BAD
         `,
+        tools: {
+            getCuisineDetail: tool({
+                inputSchema: z.object({ cuisineId: z.number() }),
+                execute: async ({ cuisineId }): Promise<any> => {
+                    const url = await getCuisineDetailApi(String(cuisineId));
+                    try {
+                        const response = await fetch(url, {
+                            headers: { Cookie: cookieStore.toString() },
+                        });
+                        const result: CuisineDetailGetResponse = await response.json();
+                        return result;
+                    } catch (e) {
+                        console.error(`Failed to fetch ${url}`, e);
+                        return {};
+                    }
+                }
+            })
+        },
+        stopWhen: isStepCount(5),
         prompt: "[current-page='" + lastPath + "']" + message
     });
 
     const finalResponse = await result.text;
-    console.log("dbg finalRespons ", finalResponse)
+    console.log("dbg finalRespons ", finalResponse);
+
     if (finalResponse.indexOf("MENU") === 0) {
-        console.log("dbg step menu")
+        console.log("dbg step menu");
         const responseMsg = menuNavigationResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
         return NextResponse.json({
@@ -149,16 +206,19 @@ export async function POST(request: Request) {
             const responseSplit = finalResponse.split("__");
 
             const deleteUrl = await deleteUserCartApi(responseSplit[1]);
-            await fetch(deleteUrl, {
+            const deleteResponse = await fetch(deleteUrl, {
                 method: 'DELETE',
                 headers: { Cookie: cookieStore.toString() },
             });
+            const bodyResponse = await deleteResponse.json();
+            const totalCart = bodyResponse.totalCart;
 
             const responseMsg = removeCartResponse();
             await writeToUserChatMain(userId, responseMsg, "assistant");
             return NextResponse.json({
                 replies: [responseMsg],
-                action: "CART_FULL_REFRESH"
+                action: "CART",
+                totalCart
             });
         } catch (e) {
             console.error("error ", e)
@@ -215,15 +275,19 @@ export async function POST(request: Request) {
             const foodId = strSplit[0];
             const quantity = strSplit[1];
             const foodName = strSplit[2];
+            const addOnsIds = JSON.parse(strSplit[3]);
+            console.log("dbg addOnsIds ", addOnsIds)
 
             const reply = validFoodResponse(foodName);
             await writeToUserChatMain(userId, reply, "assistant");
 
             const postBody: UserCartRoutePostRequest = {
                 cuisineId: Number(foodId),
-                quantity: Number(quantity)
-            }
+                quantity: Number(quantity),
+                addOnsIds: addOnsIds
+            };
 
+            let totalCart = 0;
             try {
                 const response = await fetch(userCartsApi, {
                     method: 'POST',
@@ -233,12 +297,13 @@ export async function POST(request: Request) {
                     },
                     body: JSON.stringify(postBody)
                 });
-                await response.json();
+                const bodyResponse = await response.json();
+                totalCart = bodyResponse.totalCart;
             } catch (e) {
                 console.error(`Failed to post new cart data `, e);
             }
 
-            return NextResponse.json({ replies: [reply], action: "CART" });
+            return NextResponse.json({ replies: [reply], action: "CART", totalCart });
         } else {
             const badQuestResponse = badQuestionResponse();
             await writeToUserChatMain(userId, badQuestResponse, "assistant");
@@ -277,6 +342,10 @@ const deleteUserCartApi = async function(userCartId: string) {
 
 const getCuisinesApi = async function() {
     return generateApi("cuisines");
+}
+
+const getCuisineDetailApi = async function(cuisineId: string) {
+    return generateApi(`cuisines/${cuisineId}`);
 }
 
 const getDataFromApi = async function(api: string, cookieStore: ReadonlyRequestCookies) {

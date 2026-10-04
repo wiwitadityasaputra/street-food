@@ -17,3 +17,4 @@ CREATE TABLE user_chat_main (
     "created_date" timestamp
 );
 CREATE UNIQUE INDEX "user_chat_main" ON "user_chat_main" ("user_chat_main_id");
+
