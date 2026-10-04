@@ -29,11 +29,18 @@ export async function fetchCuisinesById(cuisineId: string): Promise<CuisineDetai
     };
     if (dbResults && dbResults.length > 0) {
         dbResults.forEach(d => {
-            if (d.cartType === "checkbox") {
+            if (d.cartType === "checkbox" && d.price > 0) {
                 result.addOns.push({
                     addonId: d.id,
                     addonName: d.name
                 })
+            } else if (d.cartType === "radio" && d.price > 0) {
+                const group = d.group;
+                const name = d.name;
+                result.addOns.push({
+                    addonId: d.id,
+                    addonName: `${group} ${name}`
+                });
             }
         });
     }
