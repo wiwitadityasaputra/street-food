@@ -6,6 +6,7 @@ import { cookies, headers } from "next/headers";
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { writeToUserChatMain } from "@/src/lib/database/database";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { UserCartRoutePostRequest } from "../cart/route";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -212,11 +213,30 @@ export async function POST(request: Request) {
         } else if (finalResponse.indexOf("FOOD_") === 0) {
             const strSplit = finalResponse.split("FOOD_INPUT_")[1].split("_");
             const foodId = strSplit[0];
-            const foodNumber = strSplit[1];
+            const quantity = strSplit[1];
             const foodName = strSplit[2];
 
             const reply = validFoodResponse(foodName);
             await writeToUserChatMain(userId, reply, "assistant");
+
+            const postBody: UserCartRoutePostRequest = {
+                cuisineId: Number(foodId),
+                quantity: Number(quantity)
+            }
+
+            try {
+                const response = await fetch(userCartsApi, {
+                    method: 'POST',
+                    headers: {
+                        Cookie: cookieStore.toString(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postBody)
+                });
+                await response.json();
+            } catch (e) {
+                console.error(`Failed to post new cart data `, e);
+            }
 
             return NextResponse.json({ replies: [reply], action: "CART" });
         } else {
