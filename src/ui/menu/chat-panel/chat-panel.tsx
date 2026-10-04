@@ -77,24 +77,29 @@ export default function ChatPanel(props: ChatPanelProps) {
             });
 
             const data = await response.json();
-            const reply = data.reply;
-            if (data.action) {
-                if (data.action === "MENU") {
+            const action = data.action;
+            if (action) {
+                if (action === "MENU") {
                     router.push("/menu");
-                } else if (data.action === "CART") {
+                } else if (action === "CART") {
                     router.push("/cart");
-                } else if (data.action === "CART_FULL_REFRESH") {
+                } else if (action === "CART_FULL_REFRESH") {
                     window.location.href = "/cart";
                 }
             }
 
-            setMessages((currentMessages) => [
-                ...currentMessages,
-                {
-                    role: "assistant",
-                    content: reply
-                },
-            ]);
+            const replies = data.replies;
+            if (replies && replies.length > 0) {
+                for (let i = 0; i < replies.length; i++) {
+                    setMessages((currentMessages) => [
+                        ...currentMessages,
+                        {
+                            role: "assistant",
+                            content: replies[i]
+                        },
+                    ]);
+                }
+            }
         } catch (error) {
             console.error("Failed to send chat message.", error);
         } finally {

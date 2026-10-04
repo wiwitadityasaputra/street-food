@@ -43,8 +43,9 @@ export async function POST(request: Request) {
             2. Cart
 
             You have some sequential tasks todo
-            
-            ### Task No 1: To analyze the user's current page context and their latest input, intent, or action, 
+            ### Task No 1: Adding food to cart.
+
+            ### Task No 2: To analyze the user's current page context and their latest input, intent, or action, 
             and decide where they should navigate next.
 
             You must choose strictly one of the following three options:
@@ -70,41 +71,62 @@ export async function POST(request: Request) {
             Current Page: Menu
             Output: STAY
 
-            Result for Task No 1 is ONLY with one of the two exact navigation commands: MENU or CART
-            from Task No 1 result, if MENU or CART then skip there
+            Result for Task No 2 is ONLY with one of the two exact navigation commands: MENU or CART
+            from Task No 2 result, if MENU or CART then skip there
             no need to continue to next tasks
-            or when you can't decided the Task No 1 result, you can coninue to Task No 2 below
+            or when you can't decided the Task No 2 result, you can continue to Task No 3 below
 
-            ### Task No 2: Cart Deletion
-            If the user wants to remove a specific food, match their requested food name against the user's current cart data provided below.
-
-            - If a matching food is found, output exactly:
-            DELETE_ID__{userCartId}
-
-            If no food is specified for deletion, output exactly:
-            DELETE_NO
+            ### Task No 3: Cart Deletion
+            If the user wants to remove a specific food, match their requested food name 
+            against the user's current cart data provided below.
 
             Current User Cart Data: ${JSON.stringify(cartData)}
+
+            - If a matching food is found, output exactly: DELETE_ID__{userCartId}
+            - If no food matching with User Cart Data you can continue to Task No 4 below
+
+            ### Task No 4: Capability Inquiry AI_TASKS
+            - **Trigger:** If the user asks what you can do, what your features are,
+                how you can help, or requests a list of your capabilities 
+                (e.g., "What can you do?", "How do you work?", "Show me your features"):
+            - **Action:** Immediately return the exact keyword AI_TASKS
+
+            ### Task No 5: Fallback Classifier & Response Handler
+            Trigger this task ONLY when a user message cannot be classified or handled
+            by previous task
+            I want you to just answering user message/question
+            The response must be strictly **under 50 characters
+            final message should be AI_RESPONSE_{response}
+
+            but when the question are falls into the category of
+            - Race, ethnicity, or nationality.
+            - Religion, faith, or religious beliefs.
+            final message should be AI_RESPONSE_BAD
+            
         `,
         prompt: "[current-page='" + lastPath + "']" + message
     });
 
     const finalResponse = await result.text;
+    console.log("dbg finalRespons ", finalResponse)
     if (finalResponse.indexOf("MENU") === 0) {
+        console.log("dbg step menu")
         const responseMsg = menuNavigationResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
         return NextResponse.json({
-            reply: responseMsg,
+            replies: [responseMsg],
             action: "MENU"
         });
     } else if (finalResponse.indexOf("CART") === 0) {
+        console.log("dbg step cart")
         const responseMsg = cartNavigationRsponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
         return NextResponse.json({
-            reply: responseMsg,
+            replies: [responseMsg],
             action: "CART"
         });
     } else if (finalResponse.indexOf("DELETE_ID__") === 0) {
+        console.log("dbg step delete")
         try {
             const responseSplit = finalResponse.split("__");
 
@@ -113,19 +135,65 @@ export async function POST(request: Request) {
                 method: 'DELETE',
                 headers: { Cookie: cookieStore.toString() },
             });
-            const responseMsg = removeCartResponse();
 
+            const responseMsg = removeCartResponse();
             await writeToUserChatMain(userId, responseMsg, "assistant");
             return NextResponse.json({
-                reply: responseMsg,
+                replies: [responseMsg],
                 action: "CART_FULL_REFRESH"
             });
         } catch (e) {
             console.error("error ", e)
-            return NextResponse.json({ reply: "Hi there! How can we help you today?" });
+            const responseMsg = welcomeResponse();
+            return NextResponse.json({ replies: [responseMsg] });
         }
+    } else if (finalResponse.indexOf("AI_RESPONSE_BAD") === 0) {
+        console.log("dbg step ai_response_bad")
+        const badQuestResponse = badQuestionResponse();
+        await writeToUserChatMain(userId, badQuestResponse, "assistant");
+
+        const responseMsg = welcomeResponse();
+        await writeToUserChatMain(userId, responseMsg, "assistant");
+
+        return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
+    } else if (finalResponse.indexOf("AI_RESPONSE_") === 0) {
+        console.log("dbg step ai_response_")
+        const split = finalResponse.split("AI_RESPONSE_");
+        if (split.length > 1) {
+            const aiResponse = split[1];
+            await writeToUserChatMain(userId, aiResponse, "assistant");
+            return NextResponse.json({ replies: [aiResponse] });
+        } else {
+            const badQuestResponse = badQuestionResponse();
+            await writeToUserChatMain(userId, badQuestResponse, "assistant");
+
+            const responseMsg = welcomeResponse();
+            await writeToUserChatMain(userId, responseMsg, "assistant");
+
+            return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
+        }
+    } else if (finalResponse.indexOf("AI_TASKS") === 0) {
+        console.log("dbg ai_tasks")
+        const responses = [
+            "Hi i able to do following task",
+            "1. Move between menu & cart page only.",
+            "2. Delete food from your cart.",
+            "3. Adding food to your cart.",
+            "4. Asking your random questions.",
+        ];
+        responses.forEach(r => {
+            writeToUserChatMain(userId, r, "assistant");
+        })
+        return NextResponse.json({ action: "AI_TASKS", replies: responses });
     } else {
-        return NextResponse.json({ reply: "Hi there! How can we help you today?" });
+        console.log("dbg step else")
+        const badQuestResponse = badQuestionResponse();
+        await writeToUserChatMain(userId, badQuestResponse, "assistant");
+
+        const responseMsg = welcomeResponse();
+        await writeToUserChatMain(userId, responseMsg, "assistant");
+
+        return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
     }
 }
 
@@ -193,6 +261,33 @@ const removeCartResponse = () => {
         "Your cart is updated! The selected item has been successfully removed.",
         "Goodbye, tasty item! It has been removed from your cart successfully.",
         "Done! That item has been cleared from your cart. Enjoy your next bite!",
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+const welcomeResponse = () => {
+    const list = [
+        "Welcome! Craving something delicious today? Let me know how I can help you out.",
+        "Hi! Hungry? Browse our menu and place your order in just a few clicks.",
+        "Welcome! Ready to order? Tell me what you're craving or check out our bestsellers.",
+        "Welcome! What can I get started for your delivery or pickup order today?",
+        "Hi! View our menu, add your favorites to the cart, and checkout instantly right here.",
+        "Welcome to Street-Food! Let's get your food on the way. What would you like to order?",
+        "Food emergency? I've got you covered. Let's find your next favorite meal!",
+        "Hey! Skip the cooking tonight. What can I add to your order?"
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+const badQuestionResponse = () => {
+    const list = [
+        "Sorry, I can't answer that topic.",
+        "I don't have an answer for that.",
+        "I can only help with menu items and orders.",
+        "That's outside what I can help with.",
+        "I'm unable to assist with that request.",
+        "Please ask something related to our menu or ordering.",
+        "I can't help with that question."
     ];
     return list[Math.floor(Math.random() * list.length)];
 }
