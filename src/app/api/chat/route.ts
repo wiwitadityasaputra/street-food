@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { writeToUserChatMain } from "@/src/lib/database/database";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -24,15 +25,11 @@ export async function POST(request: Request) {
     const { message } = await request.json();
     await writeToUserChatMain(userId, message, "user");
 
-    let cartData = [];
-    try {
-        const response = await fetch(await getUserCarts(), {
-            headers: { Cookie: cookieStore.toString() },
-        });
-        cartData = await response.json();
-    } catch (e) {
-        console.error("Failed to fetch cart:", e);
-    }
+    const userCartsApi = await getUserCartsApi();
+    const cartData = await getDataFromApi(userCartsApi, cookieStore);
+
+    const cuisineApi = await getCuisinesApi();
+    const cuisines = await getDataFromApi(cuisineApi, cookieStore);
 
     const result = await generateText({
         model: deepSeek('deepseek-flash'),
@@ -44,8 +41,29 @@ export async function POST(request: Request) {
 
             You have some sequential tasks todo
             ### Task No 1: Adding food to cart.
+            You should able to understand that user want to adding new food/cuisine to their cart
+            You need to know the amount of food the user wants
+            If the user does not enter a quantity, assume it is just one
+            Task No 1 final message should be FOOD_INPUT_{cuisineId}_{amount of food}
 
-            ### Task No 2: To analyze the user's current page context and their latest input, intent, or action, 
+            for examples:
+            - user want adding 10 Ketoprak (the Ketoprak id is 20)
+              final message will: FOOD_INPUT_20_10_Ketoprak
+            - user want adding Eomuk (Eomuk id is 8)
+              final message will: FOOD_INPUT_8_1_Eomuk
+
+            All foods/cuisines Data: ${JSON.stringify(cuisines)}
+
+            If the user want add other food that is not in our foods/cuisines data
+            then Task No 1 final message wlll be: FOOD_UNKNOWN_{food name / cuisine name}
+            for example: 
+            - user want to add 10 Pizza or user want to add Rujak
+              final message will: FOOD_UNKNOWN_pizza or FOOD_UNKNOWN_rujak
+            
+            If the user input does not fall into the category above or Task No 1,
+            then you can continue to Task No 2 below
+
+            ### Task No 2: To analyze the user's current page context and their latest input, intent, or action,
             and decide where they should navigate next.
 
             You must choose strictly one of the following three options:
@@ -102,7 +120,6 @@ export async function POST(request: Request) {
             - Race, ethnicity, or nationality.
             - Religion, faith, or religious beliefs.
             final message should be AI_RESPONSE_BAD
-            
         `,
         prompt: "[current-page='" + lastPath + "']" + message
     });
@@ -130,7 +147,7 @@ export async function POST(request: Request) {
         try {
             const responseSplit = finalResponse.split("__");
 
-            const deleteUrl = await deleteUserCartByUserCartId(responseSplit[1]);
+            const deleteUrl = await deleteUserCartApi(responseSplit[1]);
             await fetch(deleteUrl, {
                 method: 'DELETE',
                 headers: { Cookie: cookieStore.toString() },
@@ -185,6 +202,32 @@ export async function POST(request: Request) {
             writeToUserChatMain(userId, r, "assistant");
         })
         return NextResponse.json({ action: "AI_TASKS", replies: responses });
+    } else if (finalResponse.indexOf("FOOD_") === 0) {
+        console.log("dbg step food_ ", finalResponse)
+
+        if (finalResponse.indexOf("FOOD_UNKNOWN") === 0) {
+            const reply = unknownFoodResponse(finalResponse.split("FOOD_UNKNOWN_")[1]);
+            await writeToUserChatMain(userId, reply, "assistant");
+            return NextResponse.json({ replies: [reply] });
+        } else if (finalResponse.indexOf("FOOD_") === 0) {
+            const strSplit = finalResponse.split("FOOD_INPUT_")[1].split("_");
+            const foodId = strSplit[0];
+            const foodNumber = strSplit[1];
+            const foodName = strSplit[2];
+
+            const reply = validFoodResponse(foodName);
+            await writeToUserChatMain(userId, reply, "assistant");
+
+            return NextResponse.json({ replies: [reply], action: "CART" });
+        } else {
+            const badQuestResponse = badQuestionResponse();
+            await writeToUserChatMain(userId, badQuestResponse, "assistant");
+
+            const responseMsg = welcomeResponse();
+            await writeToUserChatMain(userId, responseMsg, "assistant");
+
+            return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
+        }
     } else {
         console.log("dbg step else")
         const badQuestResponse = badQuestionResponse();
@@ -197,20 +240,35 @@ export async function POST(request: Request) {
     }
 }
 
-const getUserCarts = async function() {
+const generateApi = async function(apiPath: string) {
     const headersList = await headers();
     const host = headersList.get('host');
     const protocol = headersList.get('x-forwarded-proto') || 'http';
-    const cartApi = `${protocol}://${host}/api/cart`;
-    return cartApi;
+    return `${protocol}://${host}/api/${apiPath}`;
 }
 
-const deleteUserCartByUserCartId = async function(userCartId: string) {
-    const headersList = await headers();
-    const host = headersList.get('host');
-    const protocol = headersList.get('x-forwarded-proto') || 'http';
-    const cartApi = `${protocol}://${host}/api/cart/${userCartId}`;
-    return cartApi;
+const getUserCartsApi = async function() {
+    return generateApi("cart");
+}
+
+const deleteUserCartApi = async function(userCartId: string) {
+    return generateApi("cart/" + userCartId);
+}
+
+const getCuisinesApi = async function() {
+    return generateApi("cuisines");
+}
+
+const getDataFromApi = async function(api: string, cookieStore: ReadonlyRequestCookies) {
+    try {
+        const response = await fetch(api, {
+            headers: { Cookie: cookieStore.toString() },
+        });
+        return await response.json();
+    } catch (e) {
+        console.error(`Failed to fetch ${api}`, e);
+        return [];
+    }
 }
 
 const cartNavigationRsponse = () => {
@@ -288,6 +346,32 @@ const badQuestionResponse = () => {
         "I'm unable to assist with that request.",
         "Please ask something related to our menu or ordering.",
         "I can't help with that question."
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+const unknownFoodResponse = (food: string) => {
+    const f = food.charAt(0).toUpperCase() + food.slice(1);
+    const list = [
+        `I apologize, but we are currently out of ${f} at the moment.`,
+        `So sorry, we are completely fresh out of ${f} today!`,
+        `Unfortunately, ${f} is temporarily unavailable on our menu.`,
+        `${f} isn't available today, but our chef can recommend a great alternative if you'd like!`,
+        `We hate to break the news, but ${f} isn't available right now.`,
+        `I am so sorry for the disappointment, but we're unable to serve ${f} right now.`
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+const validFoodResponse = (food: string) => {
+    const f = food.charAt(0).toUpperCase() + food.slice(1);
+    const list = [
+        `Awesome, ${f} is in your cart!`,
+        `You got it, ${f} added to cart!`,
+        `Excellent choice, ${f} is in your cart!`,
+        `Nice! ${f} has been successfully added to your cart.`,
+        `Done! That ${f} is now chilling in your cart.`,
+        `Sweet! Your ${f} has been added to the cart.`
     ];
     return list[Math.floor(Math.random() * list.length)];
 }
