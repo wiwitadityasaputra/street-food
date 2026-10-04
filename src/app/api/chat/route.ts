@@ -182,10 +182,8 @@ export async function POST(request: Request) {
     });
 
     const finalResponse = await result.text;
-    console.log("dbg finalRespons ", finalResponse);
 
     if (finalResponse.indexOf("MENU") === 0) {
-        console.log("dbg step menu");
         const responseMsg = menuNavigationResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
         return NextResponse.json({
@@ -193,7 +191,6 @@ export async function POST(request: Request) {
             action: "MENU"
         });
     } else if (finalResponse.indexOf("CART") === 0) {
-        console.log("dbg step cart")
         const responseMsg = cartNavigationRsponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
         return NextResponse.json({
@@ -201,7 +198,6 @@ export async function POST(request: Request) {
             action: "CART"
         });
     } else if (finalResponse.indexOf("DELETE_ID__") === 0) {
-        console.log("dbg step delete")
         try {
             const responseSplit = finalResponse.split("__");
 
@@ -226,7 +222,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ replies: [responseMsg] });
         }
     } else if (finalResponse.indexOf("AI_RESPONSE_BAD") === 0) {
-        console.log("dbg step ai_response_bad")
         const badQuestResponse = badQuestionResponse();
         await writeToUserChatMain(userId, badQuestResponse, "assistant");
 
@@ -235,7 +230,6 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
     } else if (finalResponse.indexOf("AI_RESPONSE_") === 0) {
-        console.log("dbg step ai_response_")
         const split = finalResponse.split("AI_RESPONSE_");
         if (split.length > 1) {
             const aiResponse = split[1];
@@ -251,7 +245,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
         }
     } else if (finalResponse.indexOf("AI_TASKS") === 0) {
-        console.log("dbg ai_tasks")
         const responses = [
             "Hi i able to do following task",
             "1. Move between menu & cart page only.",
@@ -264,7 +257,6 @@ export async function POST(request: Request) {
         })
         return NextResponse.json({ action: "AI_TASKS", replies: responses });
     } else if (finalResponse.indexOf("FOOD_") === 0) {
-        console.log("dbg step food_ ", finalResponse)
 
         if (finalResponse.indexOf("FOOD_UNKNOWN") === 0) {
             const reply = unknownFoodResponse(finalResponse.split("FOOD_UNKNOWN_")[1]);
@@ -276,7 +268,6 @@ export async function POST(request: Request) {
             const quantity = strSplit[1];
             const foodName = strSplit[2];
             const addOnsIds = JSON.parse(strSplit[3]);
-            console.log("dbg addOnsIds ", addOnsIds)
 
             const reply = validFoodResponse(foodName);
             await writeToUserChatMain(userId, reply, "assistant");
@@ -314,7 +305,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
         }
     } else {
-        console.log("dbg step else")
         const badQuestResponse = badQuestionResponse();
         await writeToUserChatMain(userId, badQuestResponse, "assistant");
 
