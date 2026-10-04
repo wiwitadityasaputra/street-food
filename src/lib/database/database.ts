@@ -11,6 +11,7 @@ import {
     UserCartDb,
     UserCartDbFlag,
     UserCartDbUserCartId,
+    UserChatMainDb,
     UserChatMainFe
 } from '@/src/lib/database/database.definition';
 
@@ -299,23 +300,28 @@ export async function updateUserOrderDelivereddateByIds(ids: number[]): Promise<
     }
 }
 
-export async function writeToUserChatMain(userId: string, message: string, role: string): Promise<any> {
+export async function writeToUserChatMain(userId: string, userInput: string, role: string, aiOutput?: string): Promise<string> {
     try {
-        const result = await sql`INSERT INTO 
-            user_chat_main (user_id, message, role, created_date) 
-            VALUES (${userId}, ${message}, ${role}, current_timestamp) 
-            returning user_chat_main_id as userChatMainId`;
-        return (result as any)[0].userChatMainId;
+        if (!aiOutput) {
+            const result = await sql`INSERT INTO user_chat_main (user_id, user_input, role, created_date) 
+                VALUES (${userId}, ${userInput}, ${role}, current_timestamp) returning user_chat_main_id as userChatMainId`;
+            return (result as any)[0].userChatMainId;
+        } else {
+            const result = await sql`INSERT INTO user_chat_main (user_id, user_input, ai_output, role, created_date) 
+                VALUES (${userId}, ${userInput}, ${aiOutput}, ${role}, current_timestamp) returning user_chat_main_id as userChatMainId`;
+            return (result as any)[0].userChatMainId;
+        }
+
     } catch (error) {
         console.error('Database Error:', error);
         throw new Error('Failed to write data.');
     }
 }
 
-export async function fetchChatHistories(userId: string): Promise<UserChatMainFe[]> {
+export async function fetchChatHistories(userId: string): Promise<UserChatMainDb[]> {
     try {
-        const data = await sql<UserChatMainFe[]>`
-            SELECT uc.message, uc.role
+        const data = await sql<UserChatMainDb[]>`
+            SELECT uc.user_input, uc.role
             FROM user_chat_main uc
             WHERE uc.user_id = ${userId}`;
         return data;

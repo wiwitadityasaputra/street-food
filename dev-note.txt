@@ -6,3 +6,10 @@
 
 # corn job 
     https://crontap.apihustle.com/crontap/
+
+2. RAG — give AI access to your data
+                 ┌── PostgreSQL
+                 ├── Documentation
+User → AI Agent ─┼── PDFs
+                 ├── Slack/messages
+                 └── Internal APIs

@@ -127,11 +127,8 @@ export interface AllUserOrderDb {
 }
 
 export interface UserChatMainDb {
-    user_chat_main_id: number;
-    user_id: string;
-    message: string;
+    user_input: string;
     role: string;
-    created_date: Date;
 }
 
 export interface UserChatMainFe {

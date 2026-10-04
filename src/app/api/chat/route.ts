@@ -185,14 +185,14 @@ export async function POST(request: Request) {
 
     if (finalResponse.indexOf("MENU") === 0) {
         const responseMsg = menuNavigationResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant");
+        await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
         return NextResponse.json({
             replies: [responseMsg],
             action: "MENU"
         });
     } else if (finalResponse.indexOf("CART") === 0) {
         const responseMsg = cartNavigationRsponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant");
+        await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
         return NextResponse.json({
             replies: [responseMsg],
             action: "CART"
@@ -253,14 +253,14 @@ export async function POST(request: Request) {
             "4. Asking your random questions.",
         ];
         responses.forEach(r => {
-            writeToUserChatMain(userId, r, "assistant");
+            writeToUserChatMain(userId, r, "assistant", finalResponse);
         })
         return NextResponse.json({ action: "AI_TASKS", replies: responses });
     } else if (finalResponse.indexOf("FOOD_") === 0) {
 
         if (finalResponse.indexOf("FOOD_UNKNOWN") === 0) {
             const reply = unknownFoodResponse(finalResponse.split("FOOD_UNKNOWN_")[1]);
-            await writeToUserChatMain(userId, reply, "assistant");
+            await writeToUserChatMain(userId, reply, "assistant", finalResponse);
             return NextResponse.json({ replies: [reply] });
         } else if (finalResponse.indexOf("FOOD_") === 0) {
             const strSplit = finalResponse.split("FOOD_INPUT_")[1].split("_");
@@ -270,7 +270,7 @@ export async function POST(request: Request) {
             const addOnsIds = JSON.parse(strSplit[3]);
 
             const reply = validFoodResponse(foodName);
-            await writeToUserChatMain(userId, reply, "assistant");
+            await writeToUserChatMain(userId, reply, "assistant", finalResponse);
 
             const postBody: UserCartRoutePostRequest = {
                 cuisineId: Number(foodId),
