@@ -34,115 +34,133 @@ import {
     handleFoodSuggestion,
     handleNavigation
 } from "@/src/lib/route/chat/handle-bot-response";
+import { ChatRequestStatus } from "@/src/lib/route/chat/chat.definition";
+
+export interface ChatStreamResponse {
+    status: ChatRequestStatus;
+    action?: string;
+    replies?: string[];
+    totalCart?: number;
+}
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
     if (!userId) {
         return NextResponse.json([]);
     }
+
     const cookieStore = await cookies();
     const { message } = await request.json();
-    if (!message || message.length > 200) {
-        const responseMsg = welcomeResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant");
+    const encoder = new TextEncoder();
 
-        return NextResponse.json({
-            replies: [responseMsg]
-        });
-    }
-    await writeToUserChatMain(userId, message, "user");
+    const stream = new ReadableStream({
+        async start(controller) {
+            const send = (data: ChatStreamResponse) => {
+                controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
+                );
+            };
 
-    const userCartsApi = await getUserCartsApi();
-    const cartData = await getDataFromApi(userCartsApi, cookieStore);
-    const cuisineApi = await getCuisinesApi();
-    const cuisines = await getDataFromApi(cuisineApi, cookieStore);
+            // Step 1: Processing
+            send({ status: ChatRequestStatus.REVIEW });
+            await writeToUserChatMain(userId, message, "user");
 
-    /*
-        Input: {
-            "message": *user message*
-        }
-        Output: {
-            "addToCart": {
-                "cuisineName": *cuisineName*,
-                "isValid": true/false
+            // message too long
+            if (!message || message.length > 200) {
+                const responseMsg = welcomeResponse();
+                await writeToUserChatMain(userId, responseMsg, "assistant");
 
-                "cuisineId": *cuisineId*,
-                "quantity": *quantity*
-                "addOns": [1,3,3]
-            },
-            "navigate": {
-                "toPage": "cart" // "menu" | "cart"
-            },
-            "deleteCart": {
-                "userCartId": 31
-            },
-            "chatBotTask": true/false,
-            "answerQuestions": {
-                "isBadQuestion": true/false,
-                "response": *ai response*
+                send({
+                    status: ChatRequestStatus.DONE,
+                    replies: [responseMsg]
+                });
             }
+            await writeToUserChatMain(userId, message, "user");
+
+            const userCartsApi = await getUserCartsApi();
+            const cartData = await getDataFromApi(userCartsApi, cookieStore);
+            const cuisineApi = await getCuisinesApi();
+            const cuisines = await getDataFromApi(cuisineApi, cookieStore);
+
+            const aiInput = JSON.stringify({ message });
+            console.log("dbg aiInput ", aiInput)
+
+            // 1. Call Gemini Embeddings API
+            const embedding = await generateEmbedding(aiInput);
+            // 2. Search PostgreSQL using pgvector
+            const cachedAnswer = await findAioutputOnUserchatmainByEmbedding(embedding);
+
+            let aiOutput = "";
+            if (cachedAnswer && cachedAnswer.similarity >= 0.90) {
+                console.log("dbg cachedAnswer.similarity ", cachedAnswer.similarity)
+                // 3. If a suitable answer exists, reuse it
+                aiOutput = cachedAnswer.aioutput;
+            } else {
+                send({ status: ChatRequestStatus.THINKING });
+
+                console.log("dbg call llm api ")
+                // 4. Otherwise, call your LLM
+                const result = await generateText({
+                    model: deepSeek('deepseek-v4-pro'),
+                    instructions: `
+                        ${getBriefInstructions(cuisines)}
+
+                        ${getAddtocartInstructions(1)}
+
+                        ${getPageNavigationInstructions(2)}
+
+                        ${getCardDeletionInstructions(3, cartData)}
+
+                        ${getAiTasksInstructions(4)}
+
+                        ${getFoodSuggestion(5)}
+
+                        ${getAnswerQuestionInstructions(6)}
+                    `,
+                    tools: {
+                        getCuisineDetail: getCuisineDetail(cookieStore)
+                    },
+                    stopWhen: isStepCount(5),
+                    prompt: aiInput
+                });
+                aiOutput = await result.text;
+            }
+
+            const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
+            console.log("dbg finalResponse ", aiOutput)
+            console.log("dbg jsonResponse ", jsonResponse)
+
+            if (jsonResponse.navigate) {
+                const data = await handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
+                send(data);
+            } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
+                const data = await handleDeleteCart(userId, jsonResponse.deleteCart);
+                send(data);
+            } else if (jsonResponse.chatBotTask === true) {
+                const data = await handleDescribeTask(userId, aiInput, aiOutput);
+                send(data);
+            } else if (jsonResponse.answerQuestion) {
+                const data = await handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
+                send(data);
+            } else if (jsonResponse.addToCart) {
+                const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
+                send(data);
+            } else if (jsonResponse.foodSuggestion) {
+                const data = await handleFoodSuggestion(userId, jsonResponse.foodSuggestion, aiInput, aiOutput);
+                send(data);
+            } else {
+                const data = await handleDefaultAnswer(userId);
+                send(data);
+            }
+
+            controller.close();
         }
-    */
+    });
 
-    const aiInput = JSON.stringify({ message });
-    console.log("dbg aiInput ", aiInput)
-
-    // 1. Call Gemini Embeddings API
-    const embedding = await generateEmbedding(aiInput);
-    // 2. Search PostgreSQL using pgvector
-    const cachedAnswer = await findAioutputOnUserchatmainByEmbedding(embedding);
-
-    let aiOutput = "";
-    if (cachedAnswer && cachedAnswer.similarity >= 0.90) {
-        console.log("dbg cachedAnswer.similarity ", cachedAnswer.similarity)
-        // 3. If a suitable answer exists, reuse it
-        aiOutput = cachedAnswer.aioutput;
-    } else {
-        console.log("dbg call llm api ")
-        // 4. Otherwise, call your LLM
-        const result = await generateText({
-            model: deepSeek('deepseek-v4-pro'),
-            instructions: `
-                ${getBriefInstructions(cuisines)}
-
-                ${getAddtocartInstructions(1)}
-
-                ${getPageNavigationInstructions(2)}
-
-                ${getCardDeletionInstructions(3, cartData)}
-
-                ${getAiTasksInstructions(4)}
-
-                ${getFoodSuggestion(5)}
-
-                ${getAnswerQuestionInstructions(6)}
-            `,
-            tools: {
-                getCuisineDetail: getCuisineDetail(cookieStore)
-            },
-            stopWhen: isStepCount(5),
-            prompt: aiInput
-        });
-        aiOutput = await result.text;
-    }
-
-    console.log("dbg finalResponse ", aiOutput)
-    const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
-    console.log("dbg jsonResponse ", jsonResponse)
-
-    if (jsonResponse.navigate) {
-        return handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
-    } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
-        return handleDeleteCart(userId, jsonResponse.deleteCart);
-    } else if (jsonResponse.chatBotTask === true) {
-        return handleDescribeTask(userId, aiInput, aiOutput);
-    } else if (jsonResponse.answerQuestion) {
-        return handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
-    } else if (jsonResponse.addToCart) {
-        return handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
-    } else if (jsonResponse.foodSuggestion) {
-        return handleFoodSuggestion(userId, jsonResponse.foodSuggestion, aiInput, aiOutput);
-    } else {
-        return handleDefaultAnswer(userId);
-    }
+    return new Response(stream, {
+        headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+        },
+    });
 }

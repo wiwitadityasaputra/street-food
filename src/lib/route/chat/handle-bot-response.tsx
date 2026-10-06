@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { writeToUserChatMain } from "../../database/database";
 import {
     badQuestionResponse,
@@ -13,6 +12,8 @@ import {
 import { deleteUserCartApi, getUserCartsApi } from "./util";
 import { UserCartRoutePostRequest } from "@/src/app/api/cart/route";
 import { cookies } from "next/headers";
+import { ChatStreamResponse } from "@/src/app/api/chat/route";
+import { ChatRequestStatus } from "./chat.definition";
 
 export interface AddToCartResponse {
     cuisineName: string;
@@ -44,27 +45,29 @@ export interface AiChatResponse {
     foodSuggestion?: string[];
 }
 
-export const handleNavigation = async (userId: string, navigate: NavigateResponse, aiInput: string, aiOutput: string) => {
+export const handleNavigation = async (userId: string, navigate: NavigateResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const toPage = navigate.toPage;
 
     if (toPage === "menu") {
         const responseMsg = menuNavigationResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant", aiInput, aiOutput);
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [responseMsg],
             action: "MENU"
-        });
+        };
     } else {
         const responseMsg = cartNavigationRsponse();
         await writeToUserChatMain(userId, responseMsg, "assistant", aiInput, aiOutput);
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [responseMsg],
             action: "CART"
-        });
+        };
     }
 }
 
-export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse) => {
+export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse): Promise<ChatStreamResponse> => {
     const userCartId  = deleteCart.userCartId;
     try {
 
@@ -81,21 +84,23 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
 
         const responseMsg = removeCartResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [responseMsg],
             action: "CART",
             totalCart
-        });
+        };
     } catch (e) {
         console.error("error ", e)
         const responseMsg = welcomeResponse();
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [responseMsg]
-        });
+        };
     }
 }
 
-export const handleDescribeTask = async (userId: string, aiInput: string, aiOutput: string) => {
+export const handleDescribeTask = async (userId: string, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const responses = [
         "Hi i able to do following task",
         "1. Move between menu & cart page only.",
@@ -106,47 +111,51 @@ export const handleDescribeTask = async (userId: string, aiInput: string, aiOutp
     responses.forEach(r => {
         writeToUserChatMain(userId, r, "assistant", aiInput, aiOutput);
     })
-    return NextResponse.json({
+    return {
+        status: ChatRequestStatus.DONE,
         action: "AI_TASKS",
         replies: responses
-    });
+    };
 }
 
-export const handleAnswerQuestion = async (userId: string, answerQuestion: AnswerQuestion, aiInput: string, aiOutput: string) => {
+export const handleAnswerQuestion = async (userId: string, answerQuestion: AnswerQuestion, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const isBad = answerQuestion.isBad;
     const response = answerQuestion.response;
     if (!isBad && response) {
         await writeToUserChatMain(userId, response, "assistant", aiInput, aiOutput);
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [response]
-        });
+        };
     } else {
         return handleDefaultAnswer(userId);
     }
 }
 
-export const handleDefaultAnswer = async (userId: string) => {
+export const handleDefaultAnswer = async (userId: string): Promise<ChatStreamResponse> => {
     const badQuestResponse = badQuestionResponse();
     await writeToUserChatMain(userId, badQuestResponse, "assistant");
 
     const responseMsg = welcomeResponse();
     await writeToUserChatMain(userId, responseMsg, "assistant");
 
-    return NextResponse.json({
+    return {
+        status: ChatRequestStatus.DONE,
         replies: [badQuestResponse, responseMsg]
-    }); 
+    };
 }
 
-export const handleAddtocart = async (userId: string, addToCart: AddToCartResponse, aiInput: string, aiOutput: string) => {
+export const handleAddtocart = async (userId: string, addToCart: AddToCartResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const isValid = addToCart.isValid;
     const cuisineName = addToCart.cuisineName;
 
     if (!isValid) {
         const reply = unknownFoodResponse(cuisineName);
         await writeToUserChatMain(userId, reply, "assistant", aiInput);
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [reply]
-        });
+        };
     } else {
         const cuisineId = addToCart.cuisineId;
         const quantity = addToCart.quantity;
@@ -179,27 +188,30 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
             console.error(`Failed to post new cart data `, e);
         }
 
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [reply],
             action: "CART",
             totalCart
-        });
+        };
     }
 }
 
-export const handleFoodSuggestion = async (userId: string, foodSuggestion: string[], aiInput: string, aiOutput: string) => {
+export const handleFoodSuggestion = async (userId: string, foodSuggestion: string[], aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     if (foodSuggestion.length == 0) {
         const reply = unknownFoodDescriptionResponse();
         await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [reply]
-        });
+        };
     } else {
         const reply = foodSuggestion.join(", ");
         await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
-        return NextResponse.json({
+        return {
+            status: ChatRequestStatus.DONE,
             replies: [reply]
-        });
+        };
     }
 
 }
