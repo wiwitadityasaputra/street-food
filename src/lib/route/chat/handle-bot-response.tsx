@@ -5,6 +5,7 @@ import {
     cartNavigationRsponse,
     menuNavigationResponse,
     removeCartResponse,
+    unknownFoodDescriptionResponse,
     unknownFoodResponse,
     validFoodResponse,
     welcomeResponse
@@ -40,6 +41,7 @@ export interface AiChatResponse {
     deleteCart?: DeleteCartResponse;
     chatBotTask?: boolean;
     answerQuestion?: AnswerQuestion;
+    foodSuggestion?: string[];
 }
 
 export const handleNavigation = async (userId: string, navigate: NavigateResponse, aiInput: string, aiOutput: string) => {
@@ -183,4 +185,21 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
             totalCart
         });
     }
+}
+
+export const handleFoodSuggestion = async (userId: string, foodSuggestion: string[], aiInput: string, aiOutput: string) => {
+    if (foodSuggestion.length == 0) {
+        const reply = unknownFoodDescriptionResponse();
+        await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
+        return NextResponse.json({
+            replies: [reply]
+        });
+    } else {
+        const reply = foodSuggestion.join(", ");
+        await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
+        return NextResponse.json({
+            replies: [reply]
+        });
+    }
+
 }

@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 export interface CuisineGetResponse {
     cuisineId: number;
     cuisineName: string;
-    cuisineType: string;
+
+    country: string;
+    price: number;
+    review: number;
+    rate: number;
 }
 
 export async function GET(): Promise<NextResponse<CuisineGetResponse[]>> {

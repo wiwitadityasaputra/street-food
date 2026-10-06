@@ -14,7 +14,10 @@ export async function fetchAllCusisines(): Promise<CuisineGetResponse[]> {
             result.push({
                 cuisineId: r.id,
                 cuisineName: r.name,
-                cuisineType: r.cuisine
+                country: r.cuisine,
+                price: r.price,
+                review: r.review,
+                rate: r.rate
             })
         })
     }

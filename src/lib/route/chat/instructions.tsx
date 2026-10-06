@@ -1,22 +1,22 @@
-export const getBriefInstructions = (): string => {
+export const getBriefInstructions = (cuisines: any): string => {
     return `
         You are an intelligent assistant for a street-food e-commerce application.
+
+        #### Food/cuisine data
+        All foods/cuisines Data: ${JSON.stringify(cuisines)}
+
         you will receive input with json format like
-        { "message": *user message*, "page": "cart" }
-        page can either "menu" or cart "cart"
+        { "message": *user message* }
 
         base on user input you should able to 
         categorize user input into one of the following categories
     `;
 }
 
-export const getAddtocartInstructions = (taskOrder: number, cuisines: any): string => {
+export const getAddtocartInstructions = (taskOrder: number): string => {
     const taskOrderNext = taskOrder + 1;
     return `
             ### Category No ${taskOrder}: Adding food to cart.
-
-            #### Food/cuisine data
-            All foods/cuisines Data: ${JSON.stringify(cuisines)}
 
             #### Specification
             - You should able to understand that user want to adding new food/cuisine to their cart
@@ -135,7 +135,45 @@ export const getAiTasksInstructions = (taskOrder: number): string => {
         - **Trigger:** If the user asks what you can do, what your features are,
             how you can help, or requests a list of your capabilities 
             (e.g., "What can you do?", "How do you work?", "Show me your features"):
-        - **Action:** Immediately return the exact output {"chatBotTask": true}
+        - **Action:** Immediately return the exact output { "chatBotTask": true }
+
+        if its not fall into Category no ${taskOrder}, you can continue to Category no ${taskOrderNext}
+    `;
+}
+
+export const getFoodSuggestion = (taskOrder: number): string => {
+    const taskOrderNext = taskOrder + 1;
+    return `
+        ### Category No ${taskOrder}: Food Sugestion
+        In this category user is asking about food suggestion
+        our food/cuisine data have information like
+        - food-name
+        - country
+          available values: indonesian, western, korean, chinese
+        - price
+          food price, small number is cheap one, biggest number is the expensive one
+        - rate
+          the value is between 0 to 5, higher is better
+        - review
+          the number of users who have purchased and provided ratings or rate
+
+        Your final response is an array with maximum 3 foods
+        format: { "foodSuggestion": [food1, food2, food2] }
+        or maybe we only one food: {"foodSuggestion": [food1] }
+        or we dont have food that user asking just return empty array: {"foodSuggestion": [] }
+
+        for example:
+        input: "give me the western foods"
+        what you do: just give random 3 western food
+        output: { "foodSuggestion": ["Hotdog", "Burger", "Shawarma & Gyros"] }
+
+        input: "i want indonesian cheap foods"
+        what you do: find 3 cheapes indonesion food
+        output: { "foodSuggestion": ["Nasi Goreng", "Martabak Telur", "Siomay"] }
+
+        input: "what is the popular foods"
+        what you do: find 3 food that have highest rate
+        output: { "foodSuggestion": ["Twigim", "Burger", "Martabak Telur"] }
 
         if its not fall into Category no ${taskOrder}, you can continue to Category no ${taskOrderNext}
     `;

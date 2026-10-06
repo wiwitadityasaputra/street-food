@@ -11,6 +11,7 @@ import {
     getAnswerQuestionInstructions,
     getBriefInstructions,
     getCardDeletionInstructions,
+    getFoodSuggestion,
     getPageNavigationInstructions
 } from "@/src/lib/route/chat/instructions";
 import {
@@ -22,7 +23,7 @@ import {
     getDataFromApi
 } from "@/src/lib/route/chat/util";
 import { getCuisineDetail } from "@/src/lib/route/chat/tools";
-import { AiChatResponse, handleAddtocart, handleAnswerQuestion, handleDefaultAnswer, handleDeleteCart, handleDescribeTask, handleNavigation } from "@/src/lib/route/chat/handle-bot-response";
+import { AiChatResponse, handleAddtocart, handleAnswerQuestion, handleDefaultAnswer, handleDeleteCart, handleDescribeTask, handleFoodSuggestion, handleNavigation } from "@/src/lib/route/chat/handle-bot-response";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -77,9 +78,9 @@ export async function POST(request: Request) {
     const result = await generateText({
         model: deepSeek('deepseek-v4-pro'),
         instructions: `
-            ${getBriefInstructions()}
+            ${getBriefInstructions(cuisines)}
 
-            ${getAddtocartInstructions(1, cuisines)}
+            ${getAddtocartInstructions(1)}
 
             ${getPageNavigationInstructions(2)}
 
@@ -87,7 +88,9 @@ export async function POST(request: Request) {
 
             ${getAiTasksInstructions(4)}
 
-            ${getAnswerQuestionInstructions(5)}
+            ${getFoodSuggestion(5)}
+
+            ${getAnswerQuestionInstructions(6)}
         `,
         tools: {
             getCuisineDetail: getCuisineDetail(cookieStore)
@@ -111,6 +114,8 @@ export async function POST(request: Request) {
         return handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
     } else if (jsonResponse.addToCart) {
         return handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
+    } else if (jsonResponse.foodSuggestion) {
+        return handleFoodSuggestion(userId, jsonResponse.foodSuggestion, aiInput, aiOutput);
     } else {
         return handleDefaultAnswer(userId);
     }

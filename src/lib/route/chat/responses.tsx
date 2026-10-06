@@ -90,6 +90,18 @@ export const unknownFoodResponse = (food: string) => {
     return list[Math.floor(Math.random() * list.length)];
 }
 
+export const unknownFoodDescriptionResponse = () => {
+    const list = [
+        "I'm sorry, we don't have that kind of food",
+        "I'm sorry, we don't carry those items",
+        "I'm sorry, we don't have that kind of food on our menu",
+        "Sorry, that's not on our menu",
+        "Unfortunately, we don't carry that type of food",
+        "We wish we had that!, my apologize"
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
 export const validFoodResponse = (food: string) => {
     const f = food.charAt(0).toUpperCase() + food.slice(1);
     const list = [

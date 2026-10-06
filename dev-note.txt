@@ -7,6 +7,15 @@
 # corn job 
     https://crontap.apihustle.com/crontap/
 
+1. Tool calling / Agentic workflows
+Function/tool calling
+Structured outputs
+Tool selection
+Multi-step execution
+State management
+Error recovery
+Human approval for dangerous actions
+
 2. RAG — give AI access to your data
                  ┌── PostgreSQL
                  ├── Documentation
