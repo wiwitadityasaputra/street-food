@@ -25,18 +25,18 @@ export type CuisinesCartDbGroupNamePrice = {
 }
 
 export type UserCartDb = {
-    cuisine_id: string;
+    cuisine_id: number;
     cuisine_name: string;
-    user_cart_id: string;
+    user_cart_id: number;
     price_per_item: number;
     quantity: number;
     final_price: number;
     options: string;
-    user_order_id: number;
+    user_order_id: number | null;
 }
 
 export type UserCartDbUserCartId = {
-    usercartid: string;
+    usercartid: number;
 }
 
 export enum UserCartDbFlag {

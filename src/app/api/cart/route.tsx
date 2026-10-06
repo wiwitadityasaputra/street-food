@@ -7,7 +7,7 @@ import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, 
 import { CuisinesCartDbGroupNamePrice, CuisinesDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
 
 export interface UserCartRouteGetResponse {
-    userCartId: string;
+    userCartId: number;
     foodName: string;
 }
 

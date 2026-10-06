@@ -1,5 +1,3 @@
-import postgres from 'postgres';
-
 import {
     AllUserOrderDb,
     CuisinesCartDb,
@@ -11,322 +9,372 @@ import {
     UserCartDb,
     UserCartDbFlag,
     UserCartDbUserCartId,
-    UserChatMainDb,
-    UserChatMainFe
+    UserChatMainDb
 } from '@/src/lib/database/database.definition';
+import { prisma } from '@/src/lib/database/prisma';
+import { cuisine_type } from '@/src/generated/prisma/enums';
 
-export const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const ALLOWED_CUISINES: readonly string[] = Object.values(cuisine_type);
 
-function allowedCuisine(cuisine?: string) {
-    if (cuisine) {
-        return ["indonesian", "western", "korean", "chinese"].indexOf(cuisine) >= 0;
-    }
-    return false;
+function allowedCuisine(cuisine?: string): cuisine is cuisine_type {
+    return !!cuisine && ALLOWED_CUISINES.includes(cuisine);
+}
+
+export async function pingDatabase(): Promise<unknown> {
+    return await prisma.$queryRaw`SELECT 1`;
 }
 
 export async function fetchCuisinesByCuisine(cuisine?: string): Promise<CuisinesDb[]> {
-    // await new Promise((resolve) => setTimeout(resolve, 3000));// food-list
-    try {
-        let data;
-        if (cuisine && allowedCuisine(cuisine)) {
-            data = await sql<CuisinesDb[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE cuisine = ${cuisine}::cuisine_type ORDER BY rate DESC`;
-        } else {
-            data = await sql<CuisinesDb[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines ORDER BY rate DESC`;
-        }
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
+    if (cuisine && allowedCuisine(cuisine)) {
+        return await prisma.cuisines.findMany({
+            where: {
+                cuisine: cuisine
+            },
+        });
+    } else {
+        return await prisma.cuisines.findMany({});
     }
 }
 
 export async function fetchCuisinesById(id: string): Promise<CuisinesDb | undefined> {
-    try {
-        // await new Promise((resolve) => setTimeout(resolve, 3000));// addtocart
-        const data = await sql<CuisinesDb[]>`SELECT id,name,cuisine,description,price,rate,review FROM cuisines WHERE id = ${id}`;
-        if (data.length) {
-            return data[0];
+    const cuisine = await prisma.cuisines.findUnique({
+        where: {
+            id: Number(id)
         }
-        return undefined;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    })
+    return cuisine ?? undefined;
 }
 
 export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesCartDb[]> {
-    // await new Promise((resolve) => setTimeout(resolve, 3000));// addtocart
-    try {
-        const data = await sql<CuisinesCartDb[]>`SELECT id,cuisine_cart_type as "cartType","group",name,price,"order" FROM cuisine_cart WHERE cuisine_id = ${cuisineId}`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    const carts = await prisma.cuisine_cart.findMany({
+        where: {
+            cuisine_id: Number(cuisineId)
+        }
+    });
+
+    return carts.map((cart) => ({
+        id: cart.id,
+        cartType: cart.cuisine_cart_type,
+        group: cart.group,
+        name: cart.name,
+        price: cart.price,
+        order: cart.order,
+    }));
 }
 
 export async function fetchCuisineCartPrices(sqlString: string): Promise<CuisinesCartDbGroupNamePrice[]> {
-    try {
-        const data = await sql.unsafe<CuisinesCartDbGroupNamePrice[]>(sqlString);
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    return await prisma.$queryRawUnsafe<CuisinesCartDbGroupNamePrice[]>(sqlString);
 }
 
 export async function writeToUserCart(cuisineId: string, cuisineName: string, userId: string, pricePerItem: number, quantity: number, finalPrice: number, options: string) {
-    try {
-        const data = await sql`
-            INSERT INTO user_cart (cuisine_id, cuisine_name, user_id, price_per_item, quantity, final_price, options, flag)
-                VALUES (${cuisineId}, ${cuisineName}, ${userId}, ${pricePerItem}, ${quantity}, ${finalPrice}, ${options}, ${UserCartDbFlag.ACTIVE});`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to write data.');
-    }
+    return await prisma.user_cart.create({
+        data: {
+            cuisine_id: Number(cuisineId),
+            cuisine_name: cuisineName,
+            user_id: userId,
+            price_per_item: pricePerItem,
+            quantity: quantity,
+            final_price: finalPrice,
+            options: options,
+            flag: String(UserCartDbFlag.ACTIVE)
+        }
+    });
 }
 
 export async function fetchUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<UserCartDb[]> {
-    try {
-        const data = await sql<UserCartDb[]>`SELECT cuisine_id,cuisine_name,user_cart_id,price_per_item,quantity,final_price,options 
-            FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    return await prisma.user_cart.findMany({
+        where: {
+            user_id: userId,
+            flag: String(flag)
+        }
+    });
 }
 
 export async function fetchUserCartIdByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<UserCartDbUserCartId[]> {
-    try {
-        const data = await sql<UserCartDbUserCartId[]>`SELECT user_cart_id as usercartid FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    const carts = await prisma.user_cart.findMany({
+        where: {
+            user_id: userId,
+            flag: String(flag)
+        },
+        select: {
+            user_cart_id: true
+        }
+    });
+
+    return carts.map((cart) => ({
+        usercartid: cart.user_cart_id
+    }));
 }
 
 export async function countUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<number> {
-    try {
-        const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_cart WHERE user_id = ${userId} and flag=${flag}`;
-        return total;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to count data.');
-    }
+    return await prisma.user_cart.count({
+        where: {
+            user_id: userId,
+            flag: String(flag)
+        }
+    });
 }
 
 export async function deleteUserCartByUserAndUserCartId(userId: string, userCartId: string) {
-    try {
-        await sql`UPDATE user_cart SET flag = ${UserCartDbFlag.DELETED} WHERE user_cart_id = ${userCartId} AND user_id = ${userId}`;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to count data.');
-    }
+    return await prisma.user_cart.updateMany({
+        where: {
+            user_cart_id: Number(userCartId),
+            user_id: userId
+        },
+        data: {
+            flag: String(UserCartDbFlag.DELETED)
+        }
+    });
 }
 
 export async function writeToOrder(flag: OrderDbFlag, firstName: string, lastName: string, streetAddress: string, secondAddress: string, city: string, state: string, zipCode: string, phoneNumber: string, emailAddress: string, additionalInfo: string): Promise<any> {
-    try {
-        const result = await sql`INSERT INTO 
-            user_order (flag, created_date, first_name, last_name, street_address, second_address, city, state, zip_code, phone_number, email_address, additional_info) 
-            VALUES (${flag}, current_timestamp, ${firstName}, ${lastName}, ${streetAddress}, ${secondAddress}, ${city}, ${state}, ${zipCode}, ${phoneNumber}, ${emailAddress}, ${additionalInfo}) 
-            returning user_order_id as orderid`;
-        return (result as any)[0].orderid;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to write data.');
-    }
+    const result = await prisma.user_order.create({
+        data: {
+            flag: String(flag),
+            created_date: new Date(),
+            first_name: firstName,
+            last_name: lastName,
+            street_address: streetAddress,
+            second_address: secondAddress,
+            city: city,
+            state: state,
+            zip_code: zipCode,
+            phone_number: phoneNumber,
+            email_address: emailAddress,
+            additional_info: additionalInfo
+        },
+        select: {
+            user_order_id: true
+        }
+    });
+
+    return result.user_order_id;
 }
 
 export async function updateUserCartFlagIsCooking(sqlString: string): Promise<any> {
-    try {
-        const data = await sql.unsafe(sqlString);
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    return await prisma.$executeRawUnsafe(sqlString);
 }
 
 export async function countUserOrders(userId: string): Promise<number> {
-    try {
-        const [{ total }] = await sql`SELECT count(*)::int AS total 
-            FROM user_order uo 
-                LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id 
-            WHERE uc.user_id = ${userId}`;
-        return total;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to count data.');
-    }
+    return await prisma.user_order.count({
+        where: {
+            user_cart: {
+                some: {
+                    user_id: userId
+                }
+            }
+        }
+    });
 }
 
 export async function fetchUserOrders(userId: string): Promise<MyOrderAndCartDb[]> {
-    try {
-        const data = await sql<MyOrderAndCartDb[]>`
-            SELECT 
-                uo.user_order_id,
-                uo.flag as flag_order,
-                uo.created_date,
-                uo.cooked_date,
-                uo.shipped_date,
-                uo.delivered_date,
-                uo.cancelled_date,
-                uo.first_name,
-                uo.last_name,
-                uo.street_address,
-                uo.second_address,
-                uo.city,
-                uo.state,
-                uo.zip_code,
-                uo.phone_number,
-                uo.email_address,
-                uo.additional_info,
-                uc.user_cart_id,
-                uc.price_per_item,
-                uc.quantity,
-                uc.final_price,
-                uc.options,
-                uc.flag as flag_cart,
-                uc.cuisine_id,
-                uc.cuisine_name
-            FROM user_order uo LEFT JOIN user_cart uc on uc.user_order_id = uo.user_order_id 
-            where uc.user_id = ${userId}`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    const orders = await prisma.user_order.findMany({
+        where: {
+            user_cart: {
+                some: {
+                    user_id: userId
+                }
+            }
+        },
+        include: {
+            user_cart: {
+                where: {
+                    user_id: userId
+                }
+            }
+        }
+    });
+
+    const result: MyOrderAndCartDb[] = [];
+    orders.forEach((order) => {
+        order.user_cart.forEach((cart) => {
+            result.push({
+                user_order_id: order.user_order_id,
+                flag_order: Number(order.flag),
+
+                created_date: order.created_date!,
+                cooked_date: order.cooked_date!,
+                shipped_date: order.shipped_date!,
+                delivered_date: order.delivered_date!,
+                cancelled_date: order.cancelled_date!,
+
+                first_name: order.first_name!,
+                last_name: order.last_name!,
+                street_address: order.street_address!,
+                second_address: order.second_address!,
+                city: order.city!,
+                state: order.state!,
+                zip_code: order.zip_code!,
+                phone_number: order.phone_number!,
+                email_address: order.email_address!,
+                additional_info: order.additional_info!,
+
+                user_cart_id: cart.user_cart_id,
+                user_id: cart.user_id,
+                price_per_item: cart.price_per_item,
+                quantity: cart.quantity,
+                final_price: cart.final_price,
+                options: cart.options,
+                flag_cart: cart.flag,
+                cuisine_id: String(cart.cuisine_id),
+                cuisine_name: cart.cuisine_name,
+            });
+        });
+    });
+
+    return result;
 }
 
 export async function countAllOrdersPage(): Promise<number> {
-    try {
-        const [{ total }] = await sql`SELECT count(*)::int AS total FROM user_order uo`;
-        return total;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to count data.');
-    }
+    return await prisma.user_order.count();
 }
 
 export async function fetchAllOrdersIdPage(limit: number, offset: number): Promise<OrderIdUserOrderDb[]> {
-    try {
-        const data = await sql<OrderIdUserOrderDb[]>`
-            SELECT user_order_id as orderid
-            FROM user_order 
-            ORDER BY created_date DESC 
-            LIMIT ${limit} OFFSET ${offset}`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    const orders = await prisma.user_order.findMany({
+        orderBy: {
+            created_date: 'desc'
+        },
+        skip: offset,
+        take: limit,
+        select: {
+            user_order_id: true
+        }
+    });
+
+    return orders.map((order) => ({
+        orderid: order.user_order_id
+    }));
 }
 
 export async function fetchUserOrdesByids(ids: number[]): Promise<AllUserOrderDb[]> {
-    try {
-        const data = await sql<AllUserOrderDb[]>`
-            SELECT  
-                user_order_id,
-                flag as flag_order,
+    const orders = await prisma.user_order.findMany({
+        where: {
+            user_order_id: {
+                in: ids
+            }
+        },
+        select: {
+            user_order_id: true,
+            flag: true,
+            created_date: true,
+            cooked_date: true,
+            shipped_date: true,
+            delivered_date: true,
+            cancelled_date: true,
+            first_name: true,
+            last_name: true,
+            street_address: true
+        }
+    });
 
-                created_date,
-                cooked_date,
-                shipped_date,
-                delivered_date,
-                cancelled_date,
+    return orders.map((order) => ({
+        user_order_id: order.user_order_id,
+        flag_order: Number(order.flag),
 
-                first_name,
-                last_name,
-                street_address
-            FROM user_order 
-            WHERE user_order_id = ANY(${ids})`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+        created_date: order.created_date!,
+        cooked_date: order.cooked_date!,
+        shipped_date: order.shipped_date!,
+        delivered_date: order.delivered_date!,
+        cancelled_date: order.cancelled_date!,
+
+        first_name: order.first_name!,
+        last_name: order.last_name!,
+        street_address: order.street_address!
+    }));
 }
 
 export async function fetchUserCartByids(ids: number[]): Promise<UserCartDb[]> {
-    try {
-        const data = await sql<UserCartDb[]>`select * from user_cart where user_order_id = ANY(${ids})`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    return await prisma.user_cart.findMany({
+        where: {
+            user_order_id: {
+                in: ids
+            }
+        }
+    });
 }
 
 export async function fetchUserOrdersIdByFlag(flag: OrderDbFlag): Promise<OrderIdUserOrderDb[]> {
-    try {
-        const data = await sql<OrderIdUserOrderDb[]>`
-            SELECT uo.user_order_id as orderid 
-            FROM user_order uo
-            WHERE uo.flag = ${flag}::text`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    const orders = await prisma.user_order.findMany({
+        where: {
+            flag: String(flag)
+        },
+        select: {
+            user_order_id: true
+        }
+    });
+
+    return orders.map((order) => ({
+        orderid: order.user_order_id
+    }));
 }
 
 export async function updateUserOrderCookeddateByIds(ids: number[]): Promise<void> {
-    try {
-        await sql`UPDATE user_order SET cooked_date = current_timestamp, flag = 2 WHERE user_order_id = ANY(${ids})`;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    await prisma.user_order.updateMany({
+        where: {
+            user_order_id: {
+                in: ids
+            }
+        },
+        data: {
+            cooked_date: new Date(),
+            flag: String(OrderDbFlag.COOKED)
+        }
+    });
 }
 
 export async function updateUserOrderShippeddateByIds(ids: number[]): Promise<void> {
-    try {
-        await sql`UPDATE user_order SET shipped_date = current_timestamp, flag = 3 WHERE user_order_id = ANY(${ids})`;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    await prisma.user_order.updateMany({
+        where: {
+            user_order_id: {
+                in: ids
+            }
+        },
+        data: {
+            shipped_date: new Date(),
+            flag: String(OrderDbFlag.SHIPPED)
+        }
+    });
 }
 
 export async function updateUserOrderDelivereddateByIds(ids: number[]): Promise<void> {
-    try {
-        await sql`UPDATE user_order SET delivered_date = current_timestamp, flag = 4 WHERE user_order_id = ANY(${ids})`;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    await prisma.user_order.updateMany({
+        where: {
+            user_order_id: {
+                in: ids
+            }
+        },
+        data: {
+            delivered_date: new Date(),
+            flag: String(OrderDbFlag.RECEIVED)
+        }
+    });
 }
 
 export async function writeToUserChatMain(userId: string, userInput: string, role: string, aiOutput?: string): Promise<string> {
-    try {
-        if (!aiOutput) {
-            const result = await sql`INSERT INTO user_chat_main (user_id, user_input, role, created_date) 
-                VALUES (${userId}, ${userInput}, ${role}, current_timestamp) returning user_chat_main_id as userChatMainId`;
-            return (result as any)[0].userChatMainId;
-        } else {
-            const result = await sql`INSERT INTO user_chat_main (user_id, user_input, ai_output, role, created_date) 
-                VALUES (${userId}, ${userInput}, ${aiOutput}, ${role}, current_timestamp) returning user_chat_main_id as userChatMainId`;
-            return (result as any)[0].userChatMainId;
+    const result = await prisma.user_chat_main.create({
+        data: {
+            user_id: userId,
+            user_input: userInput,
+            role: role,
+            created_date: new Date(),
+            ai_output: aiOutput
+        },
+        select: {
+            user_chat_main_id: true
         }
+    });
 
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to write data.');
-    }
+    return String(result.user_chat_main_id);
 }
 
 export async function fetchChatHistories(userId: string): Promise<UserChatMainDb[]> {
-    try {
-        const data = await sql<UserChatMainDb[]>`
-            SELECT uc.user_input, uc.role
-            FROM user_chat_main uc
-            WHERE uc.user_id = ${userId}`;
-        return data;
-    } catch (error) {
-        console.error('Database Error:', error);
-        throw new Error('Failed to fetch data.');
-    }
+    return await prisma.user_chat_main.findMany({
+        where: {
+            user_id: userId
+        },
+        select: {
+            user_input: true,
+            role: true
+        }
+    });
 }

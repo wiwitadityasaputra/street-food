@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model cuisine_cart {
+  id                Int                @id @default(autoincrement())
+  cuisine_id        Int                @db.SmallInt
+  cuisine_cart_type cuisine_cart_types
+  group             String             @db.VarChar(25)
+  name              String             @db.VarChar(50)
+  price             Int                @default(0) @db.SmallInt
+  flag              Boolean            @default(true)
+  order             Int                @db.SmallInt
+  cuisines          cuisines           @relation(fields: [cuisine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cuisine_cart_fk_cuisine_id")
+}
+
+model cuisines {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(100)
+  cuisine      cuisine_type
+  description  String         @db.VarChar(300)
+  price        Int            @db.SmallInt
+  rate         Float          @db.Real
+  review       Int            @default(0) @db.SmallInt
+  cuisine_cart cuisine_cart[]
+  user_cart    user_cart[]
+}
+
+model user_cart {
+  user_cart_id   Int         @id @default(autoincrement())
+  user_id        String      @db.VarChar(40)
+  price_per_item Int
+  quantity       Int
+  final_price    Int
+  options        String      @db.VarChar(200)
+  flag           String
+  cuisine_id     Int         @db.SmallInt
+  cuisine_name   String      @db.VarChar(50)
+  user_order_id  Int?
+  cuisines       cuisines    @relation(fields: [cuisine_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_cart_fk_cuisine_id")
+  user_order     user_order? @relation(fields: [user_order_id], references: [user_order_id], onDelete: NoAction, onUpdate: NoAction, map: "user_cart_fk_user_order_id")
+
+  @@index([flag], map: "user_cart_index_flag")
+}
+
+model user_chat_main {
+  user_chat_main_id Int       @id @default(autoincrement())
+  user_id           String    @db.VarChar(40)
+  user_input        String    @db.VarChar(500)
+  role              String    @db.VarChar(10)
+  created_date      DateTime? @db.Timestamp(6)
+  ai_output         String?   @db.VarChar(500)
+}
+
+model user_order {
+  user_order_id   Int         @id @default(autoincrement())
+  flag            String      @db.VarChar(20)
+  created_date    DateTime?   @db.Timestamp(6)
+  cooked_date     DateTime?   @db.Timestamp(6)
+  shipped_date    DateTime?   @db.Timestamp(6)
+  delivered_date  DateTime?   @db.Timestamp(6)
+  cancelled_date  DateTime?   @db.Timestamp(6)
+  first_name      String?     @db.VarChar(100)
+  last_name       String?     @db.VarChar(100)
+  street_address  String?     @db.VarChar(100)
+  second_address  String?     @db.VarChar(100)
+  city            String?     @db.VarChar(100)
+  state           String?     @db.VarChar(100)
+  zip_code        String?     @db.VarChar(100)
+  phone_number    String?     @db.VarChar(100)
+  email_address   String?     @db.VarChar(100)
+  additional_info String?     @db.VarChar(400)
+  user_cart       user_cart[]
+}
+
+enum cuisine_cart_types {
+  checkbox
+  radio
+}
+
+enum cuisine_type {
+  indonesian
+  western
+  korean
+  chinese
+}

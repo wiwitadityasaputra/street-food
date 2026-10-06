@@ -5,9 +5,9 @@ export const USER_CART_OPTIONS_SEPARATOR = "___";
 
 // Service
 export type UserCartResponse = {
-    cuisineId: string;
+    cuisineId: number;
     cuisineName: string;
-    userCartId: string;
+    userCartId: number;
     pricePerItem: number;
     quantity: number;
     finalPrice: number;
