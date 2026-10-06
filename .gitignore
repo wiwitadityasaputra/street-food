@@ -41,7 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 __dropbox
-/src/generated/prisma
 
 .agents
 .claude
