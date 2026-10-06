@@ -93,7 +93,6 @@ export const getPageNavigationInstructions = (taskOrder: number): string => {
         You must choose strictly one of the following three options:
         - "MENU": Navigate the user to the menu page.
         - "CART": Navigate the user to the cart page.
-        - "STAY": Do not navigate; stay on the current page because the intent is unclear or irrelevant to navigation.
 
         #### Guidelines:
         - If the user expresses a desire to view products, go back, shop, or see the main store, choose "MENU".
@@ -101,17 +100,11 @@ export const getPageNavigationInstructions = (taskOrder: number): string => {
         - If the user's request is ambiguous, unrelated to navigation, or requires staying on the current view, choose "STAY".
 
         #### Examples:
-        User Input: "[current-page='menu']Show me my items"
-        Current Page: Menu
+        User Input: "Show me my items" or "I want checkout"
         Output: CART
 
-        User Input: "[current-page='cart']Take me back to the shop"
-        Current Page: Cart
+        User Input: "Take me back to the shop" or "I want add more foods"
         Output: MENU
-
-        User Input: "[current-page='menu']What's the weather like today?"
-        Current Page: Menu
-        Output: STAY
 
         Result for Category No ${taskOrder} is ONLY with one of the two exact navigation commands: MENU or CART
         if MENU, output is: {"navigate": {"toPage": "menu"}}
