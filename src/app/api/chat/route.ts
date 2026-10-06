@@ -75,7 +75,6 @@ export async function POST(request: Request) {
                     replies: [responseMsg]
                 });
             }
-            await writeToUserChatMain(userId, message, "user");
 
             const userCartsApi = await getUserCartsApi();
             const cartData = await getDataFromApi(userCartsApi, cookieStore);
