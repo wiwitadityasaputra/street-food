@@ -10,12 +10,11 @@ import { useAppContext } from "@/src/lib/util/app-contex";
 import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
 import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
-import { welcomeResponse } from "@/src/lib/route/chat/responses";
 
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { isChatPanelOpen, setIsChatPanelOpen } = useAppContext();
+    const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
     const [isSending, setIsSending] = useState(false);
@@ -115,8 +114,6 @@ export default function ChatPanel(props: ChatPanelProps) {
             setIsSending(false);
         }
     }
-
-    const welcomeMessage = welcomeResponse();
 
     return (
         <div className="start-chat">

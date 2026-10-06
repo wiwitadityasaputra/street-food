@@ -10,17 +10,21 @@ export interface AppContextProps {
 
   messages?: UserChatMainFe[];
   setMessages: React.Dispatch<React.SetStateAction<UserChatMainFe[]>>;
+
+  welcomeMessage: string;
 }
 
 export interface AppProviderProps {
   userId: string;
   isChatPanelOpen?: boolean;
+  welcomeMessage: string;
   children: React.ReactNode;
 }
 
 const defaultAppContext: AppContextProps = {
   userId: "",
   isChatPanelOpen: false,
+  welcomeMessage: "",
   setIsChatPanelOpen: () => {},
 
   messages: [],
@@ -38,7 +42,9 @@ export function AppProvider(props: AppProviderProps): React.ReactElement {
     setIsChatPanelOpen,
 
     messages,
-    setMessages   
+    setMessages,
+
+    welcomeMessage: props.welcomeMessage
   };
 
   return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>;

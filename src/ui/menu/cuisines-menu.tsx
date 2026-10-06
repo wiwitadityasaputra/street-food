@@ -5,6 +5,7 @@ import React from "react";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import ChatPanel from "@/src/ui/menu/chat-panel/chat-panel";
 import { UserChatMainFe } from "@/src/lib/database/database.definition";
+import { welcomeResponse } from "@/src/lib/route/chat/responses";
 
 export const DEFAULT_CUISINE = "all";
 const cuisines = [

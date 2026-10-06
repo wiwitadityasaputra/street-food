@@ -1,11 +1,13 @@
 import { cookies } from 'next/headers';
 import { faker } from '@faker-js/faker';
+import { welcomeResponse } from '../route/chat/responses';
 
 export const COOKIES_KEY = "street-food-cookie";
 
 export interface CookieDataInterface {
     userId: string;
     isChatPanelOpen?: boolean;
+    welcomeMessage: string;
 }
 
 export async function getCookieData(): Promise<CookieDataInterface> {
@@ -16,7 +18,8 @@ export async function getCookieData(): Promise<CookieDataInterface> {
         return cookieData;
     }
     return {
-        userId: faker.string.uuid()
+        userId: faker.string.uuid(),
+        welcomeMessage: welcomeResponse()
     };
 }
 
@@ -31,7 +34,8 @@ export async function cookiesGet(): Promise<CookieDataInterface> {
 
 export async function cookiesSetUserId(userId: string): Promise<void> {
     const cookieData: CookieDataInterface = {
-        userId: userId
+        userId: userId,
+        welcomeMessage: welcomeResponse()
     };
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }
@@ -40,7 +44,8 @@ export async function cookiesSetChatPanel(isChatPanelOpen: boolean): Promise<voi
     const userId = await cookiesGetUserId();
     const cookieData: CookieDataInterface = {
         userId: userId,
-        isChatPanelOpen
+        isChatPanelOpen,
+        welcomeMessage: welcomeResponse()
     };
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }

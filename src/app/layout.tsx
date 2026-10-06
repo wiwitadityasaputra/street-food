@@ -29,6 +29,7 @@ export default async function AppLayout({
   const cookieData = await cookiesGet();
   const userId = cookieData.userId;
   const isChatPanelOpen = cookieData.isChatPanelOpen;
+  const welcomeMessage = cookieData.welcomeMessage;
   const totalCartDb = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
   return (
     <html
@@ -79,7 +80,11 @@ export default async function AppLayout({
 
         <ReduxProvider>
           <DashboardNav totalCart={totalCartDb} />
-          <AppProvider userId={userId} isChatPanelOpen={isChatPanelOpen}>
+          <AppProvider
+            userId={userId}
+            isChatPanelOpen={isChatPanelOpen}
+            welcomeMessage={welcomeMessage}
+          >
             {children}
           </AppProvider>
         </ReduxProvider>
