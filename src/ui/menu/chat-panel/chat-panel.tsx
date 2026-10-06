@@ -163,7 +163,7 @@ export default function ChatPanel(props: ChatPanelProps) {
                         ))}
                         {isSending && (
                             <div className="start-chat-message start-chat-message-assistant" role="status">
-                                Typing...
+                                Processing...
                             </div>
                         )}
                     </div>

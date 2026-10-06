@@ -55,7 +55,8 @@ export const ModelName = {
   cuisines: 'cuisines',
   user_cart: 'user_cart',
   user_chat_main: 'user_chat_main',
-  user_order: 'user_order'
+  user_order: 'user_order',
+  test01: 'test01'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -151,6 +152,15 @@ export const User_orderScalarFieldEnum = {
 } as const
 
 export type User_orderScalarFieldEnum = (typeof User_orderScalarFieldEnum)[keyof typeof User_orderScalarFieldEnum]
+
+
+export const Test01ScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  created_date: 'created_date'
+} as const
+
+export type Test01ScalarFieldEnum = (typeof Test01ScalarFieldEnum)[keyof typeof Test01ScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -42,3 +42,8 @@ export type user_chat_main = Prisma.user_chat_mainModel
  * 
  */
 export type user_order = Prisma.user_orderModel
+/**
+ * Model test01
+ * 
+ */
+export type test01 = Prisma.test01Model

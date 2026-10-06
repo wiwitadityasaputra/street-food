@@ -4,7 +4,7 @@ import { generateText, isStepCount } from 'ai';
 import { cookies } from "next/headers";
 
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
-import { writeToUserChatMain } from "@/src/lib/database/database";
+import { findAioutputOnUserchatmainByEmbedding, writeToUserChatMain } from "@/src/lib/database/database";
 import {
     getAddtocartInstructions,
     getAiTasksInstructions,
@@ -20,10 +20,20 @@ import {
 import {
     getUserCartsApi,
     getCuisinesApi,
-    getDataFromApi
+    getDataFromApi,
+    generateEmbedding
 } from "@/src/lib/route/chat/util";
 import { getCuisineDetail } from "@/src/lib/route/chat/tools";
-import { AiChatResponse, handleAddtocart, handleAnswerQuestion, handleDefaultAnswer, handleDeleteCart, handleDescribeTask, handleFoodSuggestion, handleNavigation } from "@/src/lib/route/chat/handle-bot-response";
+import {
+    AiChatResponse,
+    handleAddtocart,
+    handleAnswerQuestion,
+    handleDefaultAnswer,
+    handleDeleteCart,
+    handleDescribeTask,
+    handleFoodSuggestion,
+    handleNavigation
+} from "@/src/lib/route/chat/handle-bot-response";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -32,7 +42,7 @@ export async function POST(request: Request) {
     }
     const cookieStore = await cookies();
     const { message } = await request.json();
-    if (!message || message.length > 100) {
+    if (!message || message.length > 200) {
         const responseMsg = welcomeResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
 
@@ -75,31 +85,47 @@ export async function POST(request: Request) {
     */
 
     const aiInput = JSON.stringify({ message });
-    const result = await generateText({
-        model: deepSeek('deepseek-v4-pro'),
-        instructions: `
-            ${getBriefInstructions(cuisines)}
+    console.log("dbg aiInput ", aiInput)
 
-            ${getAddtocartInstructions(1)}
+    // 1. Call Gemini Embeddings API
+    const embedding = await generateEmbedding(aiInput);
+    // 2. Search PostgreSQL using pgvector
+    const cachedAnswer = await findAioutputOnUserchatmainByEmbedding(embedding);
 
-            ${getPageNavigationInstructions(2)}
+    let aiOutput = "";
+    if (cachedAnswer && cachedAnswer.similarity >= 0.90) {
+        console.log("dbg cachedAnswer.similarity ", cachedAnswer.similarity)
+        // 3. If a suitable answer exists, reuse it
+        aiOutput = cachedAnswer.aioutput;
+    } else {
+        console.log("dbg call llm api ")
+        // 4. Otherwise, call your LLM
+        const result = await generateText({
+            model: deepSeek('deepseek-v4-pro'),
+            instructions: `
+                ${getBriefInstructions(cuisines)}
 
-            ${getCardDeletionInstructions(3, cartData)}
+                ${getAddtocartInstructions(1)}
 
-            ${getAiTasksInstructions(4)}
+                ${getPageNavigationInstructions(2)}
 
-            ${getFoodSuggestion(5)}
+                ${getCardDeletionInstructions(3, cartData)}
 
-            ${getAnswerQuestionInstructions(6)}
-        `,
-        tools: {
-            getCuisineDetail: getCuisineDetail(cookieStore)
-        },
-        stopWhen: isStepCount(5),
-        prompt: aiInput
-    });
+                ${getAiTasksInstructions(4)}
 
-    const aiOutput = await result.text;
+                ${getFoodSuggestion(5)}
+
+                ${getAnswerQuestionInstructions(6)}
+            `,
+            tools: {
+                getCuisineDetail: getCuisineDetail(cookieStore)
+            },
+            stopWhen: isStepCount(5),
+            prompt: aiInput
+        });
+        aiOutput = await result.text;
+    }
+
     console.log("dbg finalResponse ", aiOutput)
     const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
     console.log("dbg jsonResponse ", jsonResponse)

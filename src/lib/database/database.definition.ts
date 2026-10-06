@@ -135,3 +135,8 @@ export interface UserChatMainFe {
     message: string;
     role: string;
 }
+
+export interface SimilarEmbedding {
+  aioutput: string;
+  similarity: number;
+};

@@ -49,13 +49,14 @@ model user_cart {
 }
 
 model user_chat_main {
-  user_chat_main_id Int       @id @default(autoincrement())
-  user_id           String    @db.VarChar(40)
-  message           String    @db.VarChar(500)
-  role              String    @db.VarChar(10)
-  created_date      DateTime? @db.Timestamp(6)
-  ai_output         String?   @db.VarChar(500)
-  ai_input         String?   @db.VarChar(500)
+  user_chat_main_id  Int                    @id @default(autoincrement())
+  user_id            String                 @db.VarChar(40)
+  message            String                 @db.VarChar(500)
+  role               String                 @db.VarChar(10)
+  created_date       DateTime?              @db.Timestamp(6)
+  ai_output          String?                @db.VarChar(500)
+  ai_input           String?                @db.VarChar(200)
+  ai_input_embedding Unsupported("vector")?
 }
 
 model user_order {
@@ -77,6 +78,12 @@ model user_order {
   email_address   String?     @db.VarChar(100)
   additional_info String?     @db.VarChar(400)
   user_cart       user_cart[]
+}
+
+model test01 {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar
+  created_date DateTime @db.Date
 }
 
 enum cuisine_cart_types {

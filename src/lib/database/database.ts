@@ -6,6 +6,7 @@ import {
     MyOrderAndCartDb,
     OrderDbFlag,
     OrderIdUserOrderDb,
+    SimilarEmbedding,
     UserCartDb,
     UserCartDbFlag,
     UserCartDbUserCartId,
@@ -13,6 +14,7 @@ import {
 } from '@/src/lib/database/database.definition';
 import { prisma } from '@/src/lib/database/prisma';
 import { cuisine_type } from '@/src/generated/prisma/enums';
+import { generateEmbedding } from '@/src/lib/route/chat/util';
 
 const ALLOWED_CUISINES: readonly string[] = Object.values(cuisine_type);
 
@@ -365,7 +367,32 @@ export async function writeToUserChatMain(userId: string, message: string, role:
         }
     });
 
+    // Generate and store the embedding when aiInput is provided.
+    if (aiInput && aiOutput) {
+        const embedding = await generateEmbedding(aiInput);
+        await prisma.$executeRaw`
+            UPDATE user_chat_main
+            SET ai_input_embedding = ${JSON.stringify(embedding)}::vector
+            WHERE user_chat_main_id = ${result.user_chat_main_id}
+        `;
+    }
+
     return String(result.user_chat_main_id);
+}
+
+export async function findAioutputOnUserchatmainByEmbedding(embedding: number[]): Promise<SimilarEmbedding | null> {
+    const vector = `[${embedding.join(",")}]`;
+    const results = await prisma.$queryRaw<SimilarEmbedding[]>`
+        SELECT
+            ai_output as aioutput,
+            1 - ( ai_input_embedding <=> ${vector}::vector ) AS similarity
+        FROM user_chat_main
+        WHERE ai_input_embedding IS NOT NULL
+            AND ai_output IS NOT NULL
+        ORDER BY ai_input_embedding <=> ${vector}::vector
+        LIMIT 1
+    `;
+    return results[0] ?? null;
 }
 
 export async function fetchChatHistories(userId: string): Promise<UserChatMainDb[]> {

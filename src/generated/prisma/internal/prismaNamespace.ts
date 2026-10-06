@@ -401,7 +401,8 @@ export const ModelName = {
   cuisines: 'cuisines',
   user_cart: 'user_cart',
   user_chat_main: 'user_chat_main',
-  user_order: 'user_order'
+  user_order: 'user_order',
+  test01: 'test01'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "cuisine_cart" | "cuisines" | "user_cart" | "user_chat_main" | "user_order"
+    modelProps: "cuisine_cart" | "cuisines" | "user_cart" | "user_chat_main" | "user_order" | "test01"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -791,6 +792,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    test01: {
+      payload: Prisma.$test01Payload<ExtArgs>
+      fields: Prisma.test01FieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.test01FindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.test01FindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>
+        }
+        findFirst: {
+          args: Prisma.test01FindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.test01FindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>
+        }
+        findMany: {
+          args: Prisma.test01FindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>[]
+        }
+        create: {
+          args: Prisma.test01CreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>
+        }
+        createMany: {
+          args: Prisma.test01CreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.test01CreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>[]
+        }
+        delete: {
+          args: Prisma.test01DeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>
+        }
+        update: {
+          args: Prisma.test01UpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>
+        }
+        deleteMany: {
+          args: Prisma.test01DeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.test01UpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.test01UpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>[]
+        }
+        upsert: {
+          args: Prisma.test01UpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$test01Payload>
+        }
+        aggregate: {
+          args: Prisma.Test01AggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTest01>
+        }
+        groupBy: {
+          args: Prisma.test01GroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Test01GroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.test01CountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Test01CountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -907,6 +982,15 @@ export const User_orderScalarFieldEnum = {
 } as const
 
 export type User_orderScalarFieldEnum = (typeof User_orderScalarFieldEnum)[keyof typeof User_orderScalarFieldEnum]
+
+
+export const Test01ScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  created_date: 'created_date'
+} as const
+
+export type Test01ScalarFieldEnum = (typeof Test01ScalarFieldEnum)[keyof typeof Test01ScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1185,6 +1269,7 @@ export type GlobalOmitConfig = {
   user_cart?: Prisma.user_cartOmit
   user_chat_main?: Prisma.user_chat_mainOmit
   user_order?: Prisma.user_orderOmit
+  test01?: Prisma.test01Omit
 }
 
 /* Types for Logging */
