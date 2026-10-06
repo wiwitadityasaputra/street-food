@@ -5,7 +5,7 @@ export async function getChatHistories(userId: string): Promise<UserChatMainFe[]
     const resultFe: UserChatMainFe[] = [];
     const resultsDb =  await fetchChatHistories(userId);
     resultsDb.forEach(d => resultFe.push({
-        message: d.user_input,
+        message: d.message,
         role: d.role
     }));
     return resultFe

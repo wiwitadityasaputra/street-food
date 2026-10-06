@@ -73,6 +73,7 @@ export async function POST(request: Request) {
         }
     */
 
+    const aiInput = JSON.stringify({ message });
     const result = await generateText({
         model: deepSeek('deepseek-v4-pro'),
         instructions: `
@@ -92,24 +93,24 @@ export async function POST(request: Request) {
             getCuisineDetail: getCuisineDetail(cookieStore)
         },
         stopWhen: isStepCount(5),
-        prompt: JSON.stringify({ message })
+        prompt: aiInput
     });
 
-    const finalResponse = await result.text;
-    console.log("dbg finalResponse ", finalResponse)
-    const jsonResponse: AiChatResponse = JSON.parse(finalResponse);
+    const aiOutput = await result.text;
+    console.log("dbg finalResponse ", aiOutput)
+    const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
     console.log("dbg jsonResponse ", jsonResponse)
 
     if (jsonResponse.navigate) {
-        return handleNavigation(userId, finalResponse, jsonResponse.navigate);
+        return handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
     } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
         return handleDeleteCart(userId, jsonResponse.deleteCart);
     } else if (jsonResponse.chatBotTask === true) {
-        return handleDescribeTask(userId, finalResponse);
+        return handleDescribeTask(userId, aiInput, aiOutput);
     } else if (jsonResponse.answerQuestion) {
-        return handleAnswerQuestion(userId, finalResponse, jsonResponse.answerQuestion);
+        return handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
     } else if (jsonResponse.addToCart) {
-        return handleAddtocart(userId, finalResponse, jsonResponse.addToCart);
+        return handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
     } else {
         return handleDefaultAnswer(userId);
     }

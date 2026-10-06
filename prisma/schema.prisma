@@ -51,10 +51,11 @@ model user_cart {
 model user_chat_main {
   user_chat_main_id Int       @id @default(autoincrement())
   user_id           String    @db.VarChar(40)
-  user_input        String    @db.VarChar(500)
+  message           String    @db.VarChar(500)
   role              String    @db.VarChar(10)
   created_date      DateTime? @db.Timestamp(6)
   ai_output         String?   @db.VarChar(500)
+  ai_input         String?   @db.VarChar(500)
 }
 
 model user_order {

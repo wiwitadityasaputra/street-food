@@ -127,7 +127,7 @@ export interface AllUserOrderDb {
 }
 
 export interface UserChatMainDb {
-    user_input: string;
+    message: string;
     role: string;
 }
 

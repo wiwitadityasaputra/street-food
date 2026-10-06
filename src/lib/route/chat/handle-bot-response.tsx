@@ -42,19 +42,19 @@ export interface AiChatResponse {
     answerQuestion?: AnswerQuestion;
 }
 
-export const handleNavigation = async (userId: string, finalResponse: string, navigate: NavigateResponse) => {
+export const handleNavigation = async (userId: string, navigate: NavigateResponse, aiInput: string, aiOutput: string) => {
     const toPage = navigate.toPage;
 
     if (toPage === "menu") {
         const responseMsg = menuNavigationResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
+        await writeToUserChatMain(userId, responseMsg, "assistant", aiInput, aiOutput);
         return NextResponse.json({
             replies: [responseMsg],
             action: "MENU"
         });
     } else {
         const responseMsg = cartNavigationRsponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
+        await writeToUserChatMain(userId, responseMsg, "assistant", aiInput, aiOutput);
         return NextResponse.json({
             replies: [responseMsg],
             action: "CART"
@@ -93,7 +93,7 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
     }
 }
 
-export const handleDescribeTask = async (userId: string, finalResponse: string) => {
+export const handleDescribeTask = async (userId: string, aiInput: string, aiOutput: string) => {
     const responses = [
         "Hi i able to do following task",
         "1. Move between menu & cart page only.",
@@ -102,7 +102,7 @@ export const handleDescribeTask = async (userId: string, finalResponse: string) 
         "4. Asking your random questions.",
     ];
     responses.forEach(r => {
-        writeToUserChatMain(userId, r, "assistant", finalResponse);
+        writeToUserChatMain(userId, r, "assistant", aiInput, aiOutput);
     })
     return NextResponse.json({
         action: "AI_TASKS",
@@ -110,11 +110,11 @@ export const handleDescribeTask = async (userId: string, finalResponse: string) 
     });
 }
 
-export const handleAnswerQuestion = async (userId: string, finalResponse: string, answerQuestion: AnswerQuestion) => {
+export const handleAnswerQuestion = async (userId: string, answerQuestion: AnswerQuestion, aiInput: string, aiOutput: string) => {
     const isBad = answerQuestion.isBad;
     const response = answerQuestion.response;
     if (!isBad && response) {
-        await writeToUserChatMain(userId, response, "assistant", finalResponse);
+        await writeToUserChatMain(userId, response, "assistant", aiInput, aiOutput);
         return NextResponse.json({
             replies: [response]
         });
@@ -135,13 +135,13 @@ export const handleDefaultAnswer = async (userId: string) => {
     }); 
 }
 
-export const handleAddtocart = async (userId: string, finalResponse: string, addToCart: AddToCartResponse) => {
+export const handleAddtocart = async (userId: string, addToCart: AddToCartResponse, aiInput: string, aiOutput: string) => {
     const isValid = addToCart.isValid;
     const cuisineName = addToCart.cuisineName;
 
     if (!isValid) {
         const reply = unknownFoodResponse(cuisineName);
-        await writeToUserChatMain(userId, reply, "assistant", finalResponse);
+        await writeToUserChatMain(userId, reply, "assistant", aiInput);
         return NextResponse.json({
             replies: [reply]
         });
@@ -157,7 +157,7 @@ export const handleAddtocart = async (userId: string, finalResponse: string, add
         };
 
         const reply = validFoodResponse(cuisineName);
-        await writeToUserChatMain(userId, reply, "assistant", finalResponse);
+        await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
         const userCartsApi = await getUserCartsApi();
         const cookieStore = await cookies();
 

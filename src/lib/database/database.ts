@@ -350,13 +350,14 @@ export async function updateUserOrderDelivereddateByIds(ids: number[]): Promise<
     });
 }
 
-export async function writeToUserChatMain(userId: string, userInput: string, role: string, aiOutput?: string): Promise<string> {
+export async function writeToUserChatMain(userId: string, message: string, role: string, aiInput?: string, aiOutput?: string): Promise<string> {
     const result = await prisma.user_chat_main.create({
         data: {
             user_id: userId,
-            user_input: userInput,
+            message: message,
             role: role,
             created_date: new Date(),
+            ai_input: aiInput,
             ai_output: aiOutput
         },
         select: {
@@ -373,7 +374,7 @@ export async function fetchChatHistories(userId: string): Promise<UserChatMainDb
             user_id: userId
         },
         select: {
-            user_input: true,
+            message: true,
             role: true
         }
     });
