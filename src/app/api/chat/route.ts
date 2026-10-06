@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { deepSeek } from '@ai-sdk/deepseek';
 import { generateText, isStepCount, tool } from 'ai';
 import { z } from 'zod';
-import { cookies, headers } from "next/headers";
+import { cookies,headers } from "next/headers";
 
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { writeToUserChatMain } from "@/src/lib/database/database";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { UserCartRoutePostRequest } from "../cart/route";
 import { CuisineDetailGetResponse } from "../cuisines/[id]/route";
+import { getAddtocartInstructions, getAiTasksInstructions, getAnswerQuestionInstructions, getCardDeletionInstructions, getPageNavigationInstructions } from "../../menu/chat/instructions";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -23,9 +24,17 @@ export async function POST(request: Request) {
     }
     const url = new URL(referrer);
     const segments = url.pathname.split('/').filter(Boolean);
-    const lastPath = segments.pop(); 
+    const page = segments.pop();
 
     const { message } = await request.json();
+    if (!message || message.length > 50) {
+        const responseMsg = welcomeResponse();
+        await writeToUserChatMain(userId, responseMsg, "assistant");
+
+        return NextResponse.json({
+            replies: [responseMsg]
+        });
+    }
     await writeToUserChatMain(userId, message, "user");
 
     const userCartsApi = await getUserCartsApi();
@@ -34,139 +43,71 @@ export async function POST(request: Request) {
     const cuisineApi = await getCuisinesApi();
     const cuisines = await getDataFromApi(cuisineApi, cookieStore);
 
+    /*
+        {
+            "input": {
+                "message": *user message*,
+                "page": "cart" // "menu" | "cart"
+            },
+            "output": {
+                "addToCart": {
+                    "cuisineName": *cuisineName*,
+                    "isValid": true/false
+
+                    "cuisineId": *cuisineId*,
+                    "quantity": *quantity*
+                    "addOns": [1,3,3]
+                },
+                "navigate": {
+                    "toPage": "cart" // "menu" | "cart"
+                },
+                "deleteCart": {
+                    "userCartId": 31
+                },
+                "chatBotTask": true/false,
+                "answeringQuestions": {
+                    "isBadQuestion": true/false,
+                    "response": *ai response*
+                }
+            }
+        }
+    */
+
     const result = await generateText({
         model: deepSeek('deepseek-v4-pro'),
-        instructions:`
-            You are an intelligent assistant for a street-food e-commerce application. 
-            The application currently consists of only two pages:
-            1. Menu
-            2. Cart
+        instructions: `
+            You are an intelligent assistant for a street-food e-commerce application.
+            you will receive input with json format like
+            { "message": *user message*, "page": "cart" }
+            page can either "menu" or cart "cart"
 
-            You have some sequential tasks todo
-            ### Task No 1: Adding food to cart.
+            base on user input you should able to 
+            categorize user input into one of the following categories
 
-            #### Food/cuisine data
-            All foods/cuisines Data: ${JSON.stringify(cuisines)}
+            ${getAddtocartInstructions(1, cuisines)}
 
-            #### Specification
-            - You should able to understand that user want to adding new food/cuisine to their cart
-              you should know the cuisineId base on the all foods/cuisines data
-            - You need to know the food quantity, if there is no information about food quantity the default value is 1
-            - Determine if the user specified any add-ons or options.
-            - **Handling Add-ons:** 
-              1. If add-ons/parameters exist, you MUST call the 'getCuisineDetail' tool with the 'cuisineId' as input.
-              2. Inspect the tool's returned data to find the matching add-on IDs requested by the user.
-              3. Once you have the IDs, construct the final output array containing those IDs (e.g., [1,2,3]).
-                 If no specific add-on IDs match or can be resolved, use an empty array [].
+            ${getPageNavigationInstructions(2)}
 
-            #### Possible Results (Pick only one)
+            ${getCardDeletionInstructions(3, cartData)}
 
-            1. user request food not matching with our data
-            just simply return FOOD_UNKNOWN_{food name}
-            for example:
-            - user want to add 10 Pizza or user want to add Rujak
-              Pizza or Rujak are the food name but its not exist in our data
-              so the final message should be: FOOD_UNKNOWN_pizza or FOOD_UNKNOWN_rujak
+            ${getAiTasksInstructions(4)}
 
-            2. user request food is matching with our data and *wit* add-ons or other parameters
-            you need to return the cuisineId, quantity and food name with following format
-            FOOD_INPUT_{cuisineId}_{quantity}_{food name}_[comma_separated_addon_ids]
-
-            to get add-ons ids you need to use 'getCuisineDetail' tool with cuisineId as the input
-            for examples:
-            - I want 3 burger with french fries
-              food name is burger
-              cuisineId for burger is 1
-              quantity is 3
-              'getCuisineDetail' with cuisineId=1 is {"cuisineId":1,"addOns":[{"addonId":9,"addonName":"french fries"},{"addonId":10,"addonName":"extra chili sauce sachet"},{"addonId":11,"addonName":"extra tomato sauce sachet"}]}
-              with above 'getCuisineDetail' response, french fries addonId is 9
-              final message should be: FOOD_INPUT_1_3_Burger_[9]
-            - Please add 2 roujiamo with chili sauce & tomato sauce to cart
-              food name is roujiamo
-              cuisineId for roujiamo is 13
-              quantity is 1
-              'getCuisineDetail' with cuisineId=13 is {"cuisineId":13,"addOns":[{"addonId":91,"addonName":"french fries"},{"addonId":92,"addonName":"extra chili sauce sachet"},{"addonId":93,"addonName":"extra tomato sauce sachet"}]}
-              with above 'getCuisineDetail' response, chili sauce addonId is 92, tomato sauce is 93
-              final message should be: FOOD_INPUT_13_1_roujiamo_[92,93]
-
-            3. user request food is matching with our data and *without* add-ons or other parameter
-            you need to return the cuisineId, quantity and food name with following format
-            FOOD_INPUT_{cuisineId}_{quantity}_{food name}_[]
-            for examples:
-            - user want adding 10 Ketoprak (the Ketoprak id is 20)
-              final message should be: FOOD_INPUT_20_10_Ketoprak_[]
-            - user want adding Eomuk (Eomuk id is 8)
-              final message should be: FOOD_INPUT_8_1_Eomuk_[]
-            
-            If the user input does not fall into the category above or Task No 1,
-            then you can continue to Task No 2 below
-
-            ### Task No 2: To analyze the user's current page context and their latest input, intent, or action,
-            and decide where they should navigate next.
-
-            You must choose strictly one of the following three options:
-            - "MENU": Navigate the user to the menu page.
-            - "CART": Navigate the user to the cart page.
-            - "STAY": Do not navigate; stay on the current page because the intent is unclear or irrelevant to navigation.
-
-            #### Guidelines:
-            - If the user expresses a desire to view products, go back, shop, or see the main store, choose "MENU".
-            - If the user asks about their items, checkout, total price, or viewing selected products, choose "CART".
-            - If the user's request is ambiguous, unrelated to navigation, or requires staying on the current view, choose "STAY".
-
-            #### Examples:
-            User Input: "[current-page='menu']Show me my items"
-            Current Page: Menu
-            Output: CART
-
-            User Input: "[current-page='cart']Take me back to the shop"
-            Current Page: Cart
-            Output: MENU
-
-            User Input: "[current-page='menu']What's the weather like today?"
-            Current Page: Menu
-            Output: STAY
-
-            Result for Task No 2 is ONLY with one of the two exact navigation commands: MENU or CART
-            from Task No 2 result, if MENU or CART then skip there
-            no need to continue to next tasks
-            or when you can't decided the Task No 2 result, you can continue to Task No 3 below
-
-            ### Task No 3: Cart Deletion
-            If the user wants to remove a specific food, match their requested food name 
-            against the user's current cart data provided below.
-
-            Current User Cart Data: ${JSON.stringify(cartData)}
-
-            - If a matching food is found, output exactly: DELETE_ID__{userCartId}
-            - If no food matching with User Cart Data you can continue to Task No 4 below
-
-            ### Task No 4: Capability Inquiry AI_TASKS
-            - **Trigger:** If the user asks what you can do, what your features are,
-                how you can help, or requests a list of your capabilities 
-                (e.g., "What can you do?", "How do you work?", "Show me your features"):
-            - **Action:** Immediately return the exact keyword AI_TASKS
-
-            ### Task No 5: Fallback Classifier & Response Handler
-            Trigger this task ONLY when a user message cannot be classified or handled
-            by previous task
-            I want you to just answering user message/question
-            The response must be strictly **under 50 characters
-            final message should be AI_RESPONSE_{response}
-
-            but when the question are falls into the category of
-            - Race, ethnicity, or nationality.
-            - Religion, faith, or religious beliefs.
-            final message should be AI_RESPONSE_BAD
+            ${getAnswerQuestionInstructions(5)}
         `,
         tools: {
             getCuisineDetail: tool({
-                inputSchema: z.object({ cuisineId: z.number() }),
-                execute: async ({ cuisineId }): Promise<any> => {
+                inputSchema: z.object({
+                    cuisineId: z.number()
+                }),
+                execute: async ({
+                    cuisineId
+                }): Promise < any > => {
                     const url = await getCuisineDetailApi(String(cuisineId));
                     try {
                         const response = await fetch(url, {
-                            headers: { Cookie: cookieStore.toString() },
+                            headers: {
+                                Cookie: cookieStore.toString()
+                            },
                         });
                         const result: CuisineDetailGetResponse = await response.json();
                         return result;
@@ -178,33 +119,42 @@ export async function POST(request: Request) {
             })
         },
         stopWhen: isStepCount(5),
-        prompt: "[current-page='" + lastPath + "']" + message
+        prompt: JSON.stringify({ message, page })
     });
 
     const finalResponse = await result.text;
+    console.log("dbg finalResponse ", finalResponse)
+    const jsonResponse = JSON.parse(finalResponse);
+    console.log("dbg jsonResponse ", jsonResponse)
 
-    if (finalResponse.indexOf("MENU") === 0) {
-        const responseMsg = menuNavigationResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
-        return NextResponse.json({
-            replies: [responseMsg],
-            action: "MENU"
-        });
-    } else if (finalResponse.indexOf("CART") === 0) {
-        const responseMsg = cartNavigationRsponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
-        return NextResponse.json({
-            replies: [responseMsg],
-            action: "CART"
-        });
-    } else if (finalResponse.indexOf("DELETE_ID__") === 0) {
+    if (jsonResponse.navigate) {
+        const toPage = jsonResponse.navigate.toPage;
+
+        if (toPage === "menu") {
+            const responseMsg = menuNavigationResponse();
+            await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
+            return NextResponse.json({
+                replies: [responseMsg],
+                action: "MENU"
+            });
+        } else {
+            const responseMsg = cartNavigationRsponse();
+            await writeToUserChatMain(userId, responseMsg, "assistant", finalResponse);
+            return NextResponse.json({
+                replies: [responseMsg],
+                action: "CART"
+            });
+        }
+    } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
+        const userCartId  = jsonResponse.deleteCart.userCartId;
         try {
-            const responseSplit = finalResponse.split("__");
 
-            const deleteUrl = await deleteUserCartApi(responseSplit[1]);
+            const deleteUrl = await deleteUserCartApi(userCartId);
             const deleteResponse = await fetch(deleteUrl, {
                 method: 'DELETE',
-                headers: { Cookie: cookieStore.toString() },
+                headers: {
+                    Cookie: cookieStore.toString()
+                },
             });
             const bodyResponse = await deleteResponse.json();
             const totalCart = bodyResponse.totalCart;
@@ -219,32 +169,11 @@ export async function POST(request: Request) {
         } catch (e) {
             console.error("error ", e)
             const responseMsg = welcomeResponse();
-            return NextResponse.json({ replies: [responseMsg] });
+            return NextResponse.json({
+                replies: [responseMsg]
+            });
         }
-    } else if (finalResponse.indexOf("AI_RESPONSE_BAD") === 0) {
-        const badQuestResponse = badQuestionResponse();
-        await writeToUserChatMain(userId, badQuestResponse, "assistant");
-
-        const responseMsg = welcomeResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant");
-
-        return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
-    } else if (finalResponse.indexOf("AI_RESPONSE_") === 0) {
-        const split = finalResponse.split("AI_RESPONSE_");
-        if (split.length > 1) {
-            const aiResponse = split[1];
-            await writeToUserChatMain(userId, aiResponse, "assistant");
-            return NextResponse.json({ replies: [aiResponse] });
-        } else {
-            const badQuestResponse = badQuestionResponse();
-            await writeToUserChatMain(userId, badQuestResponse, "assistant");
-
-            const responseMsg = welcomeResponse();
-            await writeToUserChatMain(userId, responseMsg, "assistant");
-
-            return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
-        }
-    } else if (finalResponse.indexOf("AI_TASKS") === 0) {
+    } else if (jsonResponse.chatBotTask === true) {
         const responses = [
             "Hi i able to do following task",
             "1. Move between menu & cart page only.",
@@ -255,28 +184,54 @@ export async function POST(request: Request) {
         responses.forEach(r => {
             writeToUserChatMain(userId, r, "assistant", finalResponse);
         })
-        return NextResponse.json({ action: "AI_TASKS", replies: responses });
-    } else if (finalResponse.indexOf("FOOD_") === 0) {
+        return NextResponse.json({
+            action: "AI_TASKS",
+            replies: responses
+        });
+    } else if (jsonResponse.answerQuestion) {
+        const answerQuestion = jsonResponse.answerQuestion;
+        const isBad = answerQuestion.isBad;
+        const response = answerQuestion.response;
+        if (!isBad && response) {
+            await writeToUserChatMain(userId, response, "assistant");
+            return NextResponse.json({
+                replies: [response]
+            });
+        } else {
+            const badQuestResponse = badQuestionResponse();
+            await writeToUserChatMain(userId, badQuestResponse, "assistant");
 
-        if (finalResponse.indexOf("FOOD_UNKNOWN") === 0) {
-            const reply = unknownFoodResponse(finalResponse.split("FOOD_UNKNOWN_")[1]);
-            await writeToUserChatMain(userId, reply, "assistant", finalResponse);
-            return NextResponse.json({ replies: [reply] });
-        } else if (finalResponse.indexOf("FOOD_") === 0) {
-            const strSplit = finalResponse.split("FOOD_INPUT_")[1].split("_");
-            const foodId = strSplit[0];
-            const quantity = strSplit[1];
-            const foodName = strSplit[2];
-            const addOnsIds = JSON.parse(strSplit[3]);
+            const responseMsg = welcomeResponse();
+            await writeToUserChatMain(userId, responseMsg, "assistant");
 
-            const reply = validFoodResponse(foodName);
+            return NextResponse.json({
+                replies: [badQuestResponse, responseMsg]
+            });
+        }
+    } else if (jsonResponse.addToCart) {
+        const addToCart = jsonResponse.addToCart;
+        const isValid = addToCart.isValid;
+        const cuisineName = addToCart.cuisineName;
+
+        if (!isValid) {
+            const reply = unknownFoodResponse(cuisineName);
             await writeToUserChatMain(userId, reply, "assistant", finalResponse);
+            return NextResponse.json({
+                replies: [reply]
+            });
+        } else {
+            const cuisineId = addToCart.cuisineId;
+            const quantity = addToCart.quantity;
+            const addOnsIds = addToCart.addOnsIds;
 
             const postBody: UserCartRoutePostRequest = {
-                cuisineId: Number(foodId),
-                quantity: Number(quantity),
+                cuisineId: cuisineId,
+                quantity: quantity,
                 addOnsIds: addOnsIds
             };
+
+            const reply = validFoodResponse(cuisineName);
+            await writeToUserChatMain(userId, reply, "assistant", finalResponse);
 
             let totalCart = 0;
             try {
@@ -294,16 +249,13 @@ export async function POST(request: Request) {
                 console.error(`Failed to post new cart data `, e);
             }
 
-            return NextResponse.json({ replies: [reply], action: "CART", totalCart });
-        } else {
-            const badQuestResponse = badQuestionResponse();
-            await writeToUserChatMain(userId, badQuestResponse, "assistant");
-
-            const responseMsg = welcomeResponse();
-            await writeToUserChatMain(userId, responseMsg, "assistant");
-
-            return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
+            return NextResponse.json({
+                replies: [reply],
+                action: "CART",
+                totalCart
+            });
         }
+
     } else {
         const badQuestResponse = badQuestionResponse();
         await writeToUserChatMain(userId, badQuestResponse, "assistant");
@@ -311,7 +263,9 @@ export async function POST(request: Request) {
         const responseMsg = welcomeResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");
 
-        return NextResponse.json({ replies: [badQuestResponse, responseMsg] });
+        return NextResponse.json({
+            replies: [badQuestResponse, responseMsg]
+        });
     }
 }
 
@@ -341,7 +295,9 @@ const getCuisineDetailApi = async function(cuisineId: string) {
 const getDataFromApi = async function(api: string, cookieStore: ReadonlyRequestCookies) {
     try {
         const response = await fetch(api, {
-            headers: { Cookie: cookieStore.toString() },
+            headers: {
+                Cookie: cookieStore.toString()
+            },
         });
         return await response.json();
     } catch (e) {
