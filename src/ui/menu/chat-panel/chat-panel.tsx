@@ -10,6 +10,7 @@ import { useAppContext } from "@/src/lib/util/app-contex";
 import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
 import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
+import { welcomeResponse } from "@/src/lib/route/chat/responses";
 
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
@@ -115,6 +116,8 @@ export default function ChatPanel(props: ChatPanelProps) {
         }
     }
 
+    const welcomeMessage = welcomeResponse();
+
     return (
         <div className="start-chat">
             {isChatPanelOpen && (
@@ -144,7 +147,7 @@ export default function ChatPanel(props: ChatPanelProps) {
                     >
                         <span className="start-chat-time">Today</span>
                         <div className="start-chat-message">
-                            Hi there! How can we help you today?
+                            {welcomeMessage}
                         </div>
                         {chatMessages.map((message, index) => (
                             <div
