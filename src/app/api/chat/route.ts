@@ -22,7 +22,7 @@ import {
     getDataFromApi
 } from "@/src/lib/route/chat/util";
 import { getCuisineDetail } from "@/src/lib/route/chat/tools";
-import { handleAddtocart, handleAnswerQuestion, handleDefaultAnswer, handleDeleteCart, handleDescribeTask, handleNavigation } from "@/src/lib/route/chat/handle-bot-response";
+import { AiChatResponse, handleAddtocart, handleAnswerQuestion, handleDefaultAnswer, handleDeleteCart, handleDescribeTask, handleNavigation } from "@/src/lib/route/chat/handle-bot-response";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -47,31 +47,28 @@ export async function POST(request: Request) {
     const cuisines = await getDataFromApi(cuisineApi, cookieStore);
 
     /*
-        {
-            "input": {
-                "message": *user message*,
-                "page": "cart" // "menu" | "cart"
-            },
-            "output": {
-                "addToCart": {
-                    "cuisineName": *cuisineName*,
-                    "isValid": true/false
+        Input: {
+            "message": *user message*
+        }
+        Output: {
+            "addToCart": {
+                "cuisineName": *cuisineName*,
+                "isValid": true/false
 
-                    "cuisineId": *cuisineId*,
-                    "quantity": *quantity*
-                    "addOns": [1,3,3]
-                },
-                "navigate": {
-                    "toPage": "cart" // "menu" | "cart"
-                },
-                "deleteCart": {
-                    "userCartId": 31
-                },
-                "chatBotTask": true/false,
-                "answeringQuestions": {
-                    "isBadQuestion": true/false,
-                    "response": *ai response*
-                }
+                "cuisineId": *cuisineId*,
+                "quantity": *quantity*
+                "addOns": [1,3,3]
+            },
+            "navigate": {
+                "toPage": "cart" // "menu" | "cart"
+            },
+            "deleteCart": {
+                "userCartId": 31
+            },
+            "chatBotTask": true/false,
+            "answerQuestions": {
+                "isBadQuestion": true/false,
+                "response": *ai response*
             }
         }
     */
@@ -100,13 +97,13 @@ export async function POST(request: Request) {
 
     const finalResponse = await result.text;
     console.log("dbg finalResponse ", finalResponse)
-    const jsonResponse = JSON.parse(finalResponse);
+    const jsonResponse: AiChatResponse = JSON.parse(finalResponse);
     console.log("dbg jsonResponse ", jsonResponse)
 
     if (jsonResponse.navigate) {
         return handleNavigation(userId, finalResponse, jsonResponse.navigate);
     } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
-        return handleDeleteCart(userId, finalResponse, jsonResponse.deleteCart);
+        return handleDeleteCart(userId, jsonResponse.deleteCart);
     } else if (jsonResponse.chatBotTask === true) {
         return handleDescribeTask(userId, finalResponse);
     } else if (jsonResponse.answerQuestion) {

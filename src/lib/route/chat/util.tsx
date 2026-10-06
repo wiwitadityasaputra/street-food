@@ -12,7 +12,7 @@ export const getUserCartsApi = async function() {
     return generateApi("cart");
 }
 
-export const deleteUserCartApi = async function(userCartId: string) {
+export const deleteUserCartApi = async function(userCartId: number) {
     return generateApi("cart/" + userCartId);
 }
 

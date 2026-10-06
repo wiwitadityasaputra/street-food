@@ -13,7 +13,36 @@ import { deleteUserCartApi, getUserCartsApi } from "./util";
 import { UserCartRoutePostRequest } from "@/src/app/api/cart/route";
 import { cookies } from "next/headers";
 
-export const handleNavigation = async (userId: string, finalResponse: string, navigate: any) => {
+export interface AddToCartResponse {
+    cuisineName: string;
+    isValid: boolean;
+    cuisineId?: number;
+    quantity?: number;
+    addOnsIds?: number[];
+}
+
+export interface NavigateResponse {
+    toPage: "cart" | "menu";
+}
+
+export interface DeleteCartResponse {
+    userCartId: number;
+}
+
+export interface AnswerQuestion {
+    isBad: boolean;
+    response?: string;
+}
+
+export interface AiChatResponse {
+    addToCart?: AddToCartResponse;
+    navigate?: NavigateResponse;
+    deleteCart?: DeleteCartResponse;
+    chatBotTask?: boolean;
+    answerQuestion?: AnswerQuestion;
+}
+
+export const handleNavigation = async (userId: string, finalResponse: string, navigate: NavigateResponse) => {
     const toPage = navigate.toPage;
 
     if (toPage === "menu") {
@@ -33,7 +62,7 @@ export const handleNavigation = async (userId: string, finalResponse: string, na
     }
 }
 
-export const handleDeleteCart = async (userId: string, finalResponse: string, deleteCart: any) => {
+export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse) => {
     const userCartId  = deleteCart.userCartId;
     try {
 
@@ -81,11 +110,11 @@ export const handleDescribeTask = async (userId: string, finalResponse: string) 
     });
 }
 
-export const handleAnswerQuestion = async (userId: string, finalResponse: string, answerQuestion: any) => {
+export const handleAnswerQuestion = async (userId: string, finalResponse: string, answerQuestion: AnswerQuestion) => {
     const isBad = answerQuestion.isBad;
     const response = answerQuestion.response;
     if (!isBad && response) {
-        await writeToUserChatMain(userId, response, "assistant");
+        await writeToUserChatMain(userId, response, "assistant", finalResponse);
         return NextResponse.json({
             replies: [response]
         });
@@ -106,7 +135,7 @@ export const handleDefaultAnswer = async (userId: string) => {
     }); 
 }
 
-export const handleAddtocart = async (userId: string, finalResponse: string, addToCart: any) => {
+export const handleAddtocart = async (userId: string, finalResponse: string, addToCart: AddToCartResponse) => {
     const isValid = addToCart.isValid;
     const cuisineName = addToCart.cuisineName;
 
