@@ -1,3 +1,14 @@
+export const getBriefInstructions = (): string => {
+    return `
+        You are an intelligent assistant for a street-food e-commerce application.
+        you will receive input with json format like
+        { "message": *user message*, "page": "cart" }
+        page can either "menu" or cart "cart"
+
+        base on user input you should able to 
+        categorize user input into one of the following categories
+    `;
+}
 
 export const getAddtocartInstructions = (taskOrder: number, cuisines: any): string => {
     const taskOrderNext = taskOrder + 1;
