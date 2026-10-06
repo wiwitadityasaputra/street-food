@@ -24,4 +24,3 @@ Human approval for dangerous actions
 User → AI Agent ─┼── PDFs
                  ├── Slack/messages
                  └── Internal APIs
-
