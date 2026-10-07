@@ -3,7 +3,6 @@ import {
     badQuestionResponse,
     cartNavigationRsponse,
     editCartResponse,
-    emptyCartResponse,
     menuNavigationResponse,
     removeCartResponse,
     unknownFoodDescriptionResponse,
@@ -30,7 +29,7 @@ export interface NavigateResponse {
 }
 
 export interface DeleteCartResponse {
-    userCartId: number;
+    cuisineId: number;
 }
 
 export interface AnswerQuestion {
@@ -39,7 +38,7 @@ export interface AnswerQuestion {
 }
 
 export interface EditCartResponse {
-    userCartId: number;
+    cuisineId: number;
     quantity: number;
 }
 
@@ -55,8 +54,8 @@ export interface AiChatResponse {
 
 export const handleEditCart = async (userId: string, editCart: EditCartResponse): Promise<ChatStreamResponse> => {
     try {
-        const userCartId = editCart.userCartId
-        const editUrl = await deleteUserCartApi(userCartId);
+        const cuisineId = editCart.cuisineId
+        const editUrl = await deleteUserCartApi(cuisineId);
         const cookieStore = await cookies();
         const editResponse = await fetch(editUrl, {
             method: 'PUT',
@@ -136,9 +135,9 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
 }
 
 export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse): Promise<ChatStreamResponse> => {
-    const userCartId  = deleteCart.userCartId;
+    const cuisineId  = deleteCart.cuisineId;
     try {
-        const deleteUrl = await deleteUserCartApi(userCartId);
+        const deleteUrl = await deleteUserCartApi(cuisineId);
         const cookieStore = await cookies();
         const deleteResponse = await fetch(deleteUrl, {
             method: 'DELETE',

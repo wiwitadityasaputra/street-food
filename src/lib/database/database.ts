@@ -129,10 +129,22 @@ export async function deleteUserCartByUserAndUserCartId(userId: string, userCart
     });
 }
 
-export async function editUserCartByUserAndUserCartId(userId: string, userCartId: string, quantity: number) {
+export async function deleteUserCartByUserAndCuisineid(userId: string, cuisineId: number) {
+    return await prisma.user_cart.updateMany({
+        where: {
+            cuisine_id: cuisineId,
+            user_id: userId
+        },
+        data: {
+            flag: String(UserCartDbFlag.DELETED)
+        }
+    });
+}
+
+export async function editUserCartByUserAndUserCartId(userId: string, cuisineId: number, quantity: number) {
     const cart = await prisma.user_cart.findFirst({
         where: {
-            user_cart_id: Number(userCartId),
+            cuisine_id: cuisineId,
             user_id: userId
         }
     });
@@ -145,7 +157,7 @@ export async function editUserCartByUserAndUserCartId(userId: string, userCartId
 
     return await prisma.user_cart.updateMany({
         where: {
-            user_cart_id: Number(userCartId),
+            cuisine_id: Number(cuisineId),
             user_id: userId
         },
         data: {

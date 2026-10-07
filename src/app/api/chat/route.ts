@@ -78,11 +78,6 @@ export async function POST(request: Request) {
                 });
             }
 
-            // const userCartsApi = await getUserCartsApi();
-            // const cartData = await getDataFromApi(userCartsApi, cookieStore);
-            // const cuisineApi = await getCuisinesApi();
-            // const cuisines = await getDataFromApi(cuisineApi, cookieStore);
-
             const aiInput = JSON.stringify({ message });
             console.log("dbg aiInput ", aiInput)
 
@@ -105,7 +100,7 @@ export async function POST(request: Request) {
                     model: deepSeek('deepseek-v4-pro'),
                     instructions: `
                         ${getBriefInstructions()}
-                        
+
                         ${getEditCartInstructions(1)}
                         ${getAddtocartInstructions(2)}
                         ${getCardDeletionInstructions(3)}
@@ -136,7 +131,7 @@ export async function POST(request: Request) {
             } else if (jsonResponse.addToCart) {
                 const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
                 send(data);
-            } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
+            } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.cuisineId) {
                 const data = await handleDeleteCart(userId, jsonResponse.deleteCart);
                 send(data);
             } else if (jsonResponse.navigate) {

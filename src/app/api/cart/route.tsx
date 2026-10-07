@@ -7,8 +7,8 @@ import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, 
 import { CuisinesCartDbGroupNamePrice, CuisinesDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
 
 export interface UserCartRouteGetResponse {
-    userCartId: number;
-    foodName: string;
+    cuisineName: string;
+    cuisineId: number;
 }
 
 export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
@@ -20,8 +20,8 @@ export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
     const result: UserCartRouteGetResponse[] = [];
     carts.forEach(c => {
         result.push({
-            userCartId: c.userCartId,
-            foodName: c.cuisineName
+            cuisineName: c.cuisineName,
+            cuisineId: c.cuisineId,
         })
     })
     return NextResponse.json(result);

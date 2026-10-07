@@ -16,12 +16,12 @@ export const getEditCartInstructions = (taskOrder: number): string => {
     ### Category No ${taskOrder}: modify cart.
 
     ### Format Response
-    { "editCart": { "userCartId": *userCartId*, "quantity": *quantity* }}
+    { "editCart": { "cuisineId": *cuisineId*, "quantity": *quantity* }}
 
     #### Specification
-    - User want to modify their cart by given food name
+    - User want to modify their cart by given food/cuisine name
     - You should call 'getUserCart' tool to get the user cart data
-    - You should able to find the userCartId when food name is matching in User cart list/data above
+    - You should able to find the cuisineId when food/cuisine name is matching in User cart list/data above
       final edit cart response should: 
 
     #### Examples
@@ -31,9 +31,9 @@ export const getEditCartInstructions = (taskOrder: number): string => {
       - edit burger to 3
       - modify my burger to 3
       process:
-        base on User cart list/data we can find userCartId is 331
+        base on User cart list/data we can find cuisineId is 4
       output:
-        { "editCart": { "userCartId": 331, "quantity": 3 }}
+        { "editCart": { "cuisineId": 4, "quantity": 3 }}
 
     #### Exception
     you understand that user want to modify their carts but their given food name / input not mathcing with 
@@ -116,21 +116,21 @@ export const getCardDeletionInstructions = (taskOrder: number): string => {
     ### Category No ${taskOrder}: Cart Deletion
 
     #### Format Response
-    { "deleteCart": { "userCartId": *userCartId* } }
+    { "deleteCart": { "cuisineId": *cuisineId* } }
 
     #### Specification
-    If the user wants to remove a specific food
+    If the user wants to remove a specific food/cuisine
     you should call 'getUserCart' tool first
-    find user food from user cart data
-    If a matching food is found, output exactly: { "deleteCart": { "userCartId": *userCartId* } }
+    find user food/cuisine from user cart data
+    If a matching food/cuisine is found, output exactly: { "deleteCart": { "cuisineId": *cuisineId* } }
 
     #### Examples:
     input: "i dont like burger" "remove burger" "delete burger"
-    process: 'getUserCart' has a burger and the userCartId is 334
-    output: { "deleteCart": { "userCartId": 334 } }
+    process: 'getUserCart' has a burger and the cuisineId is 13
+    output: { "deleteCart": { "cuisineId": 13 } }
 
     #### Exception
-    - If no food matching with User Cart Data you can continue to Category No ${taskOrderNext} below
+    - If no food/cuisine matching with User Cart Data you can continue to Category No ${taskOrderNext} below
   `;
 }
 

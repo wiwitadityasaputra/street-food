@@ -1,7 +1,7 @@
 import {
     fetchUserCartByUserAndFlag,
-    deleteUserCartByUserAndUserCartId,
-    editUserCartByUserAndUserCartId
+    editUserCartByUserAndUserCartId,
+    deleteUserCartByUserAndCuisineid
 } from "@/src/lib/database/database";
 import { UserCartDb, UserCartDbFlag } from "@/src/lib/database/database.definition";
 import { USER_CART_OPTIONS_SEPARATOR, UserCartResponse } from "@/src/lib/service/service.definition";
@@ -28,12 +28,12 @@ export async function getUserCarts(userId: string): Promise<UserCartResponse[]> 
     return result;
 }
 
-export async function deleteUserCartByUserCartId(userId: string, userCartId: string) {
-    await deleteUserCartByUserAndUserCartId(userId, userCartId);
+export async function deleteUserCartByCuisineId(userId: string, cuisineId: number) {
+    await deleteUserCartByUserAndCuisineid(userId, cuisineId);
 }
 
-export async function editUserCartByUserCartId(userId: string, userCartId: string, quantity?: number) {
+export async function editUserCartByUserCartId(userId: string, cuisineId: number, quantity?: number) {
     if (quantity) {
-        await editUserCartByUserAndUserCartId(userId, userCartId, quantity);
+        await editUserCartByUserAndUserCartId(userId, cuisineId, quantity);
     }
 }

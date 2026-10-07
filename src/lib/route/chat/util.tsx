@@ -37,8 +37,8 @@ export const getUserCartsApi = async function() {
     return generateApi("cart");
 }
 
-export const deleteUserCartApi = async function(userCartId: number) {
-    return generateApi("cart/" + userCartId);
+export const deleteUserCartApi = async function(cuisineId: number) {
+    return generateApi("cart/" + cuisineId);
 }
 
 export const getCuisinesApi = async function() {
