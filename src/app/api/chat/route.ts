@@ -24,7 +24,7 @@ import {
     getDataFromApi,
     generateEmbedding
 } from "@/src/lib/route/chat/util";
-import { getCuisineDetail } from "@/src/lib/route/chat/tools";
+import { getCuisineDetail, getCuisines, getUserCart } from "@/src/lib/route/chat/tools";
 import {
     AiChatResponse,
     handleAddtocart,
@@ -78,10 +78,10 @@ export async function POST(request: Request) {
                 });
             }
 
-            const userCartsApi = await getUserCartsApi();
-            const cartData = await getDataFromApi(userCartsApi, cookieStore);
-            const cuisineApi = await getCuisinesApi();
-            const cuisines = await getDataFromApi(cuisineApi, cookieStore);
+            // const userCartsApi = await getUserCartsApi();
+            // const cartData = await getDataFromApi(userCartsApi, cookieStore);
+            // const cuisineApi = await getCuisinesApi();
+            // const cuisines = await getDataFromApi(cuisineApi, cookieStore);
 
             const aiInput = JSON.stringify({ message });
             console.log("dbg aiInput ", aiInput)
@@ -104,24 +104,21 @@ export async function POST(request: Request) {
                 const result = await generateText({
                     model: deepSeek('deepseek-v4-pro'),
                     instructions: `
-                        ${getBriefInstructions(cuisines, cartData)}
-
+                        ${getBriefInstructions()}
+                        
                         ${getEditCartInstructions(1)}
-
                         ${getAddtocartInstructions(2)}
-
                         ${getCardDeletionInstructions(3)}
 
                         ${getPageNavigationInstructions(4)}
-
                         ${getAiTasksInstructions(5)}
-
                         ${getFoodSuggestion(6)}
-
                         ${getAnswerQuestionInstructions(7)}
                     `,
                     tools: {
-                        getCuisineDetail: getCuisineDetail(cookieStore)
+                        getCuisineDetail: getCuisineDetail(cookieStore),
+                        getUserCart: getUserCart(cookieStore),
+                        getCuisines: getCuisines(cookieStore)
                     },
                     stopWhen: isStepCount(5),
                     prompt: aiInput

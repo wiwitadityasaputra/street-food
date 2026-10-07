@@ -41,6 +41,17 @@ export const menuNavigationResponse = () => {
     return list[Math.floor(Math.random() * list.length)];
 }
 
+export const emptyCartResponse = () => {
+    const list = [
+        "Your cart is empty, please add food first!",
+        "Your cart is looking a little lonely! Add some delicious food to get started.",
+        "No items in your cart yet. Add some food to proceed!",
+        "Your food cart is empty! Let's fill it up with something tasty.",
+        "Cart is empty. Please add items to continue."
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
 export const removeCartResponse = () => {
     const list = [
         "Successfully removed the selected item from your cart! Enjoy your next delicious pick!",

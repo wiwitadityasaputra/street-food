@@ -3,6 +3,7 @@ import {
     badQuestionResponse,
     cartNavigationRsponse,
     editCartResponse,
+    emptyCartResponse,
     menuNavigationResponse,
     removeCartResponse,
     unknownFoodDescriptionResponse,
@@ -25,7 +26,7 @@ export interface AddToCartResponse {
 }
 
 export interface NavigateResponse {
-    toPage: "cart" | "menu";
+    toPage: "cart" | "menu" ;
 }
 
 export interface DeleteCartResponse {
@@ -147,6 +148,8 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
         });
         const bodyResponse = await deleteResponse.json();
         const totalCart = bodyResponse.totalCart;
+
+        console.log("dbg totalCart ", totalCart)
 
         const responseMsg = removeCartResponse();
         await writeToUserChatMain(userId, responseMsg, "assistant");

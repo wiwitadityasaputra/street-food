@@ -113,19 +113,6 @@ export default function ChatPanel(props: ChatPanelProps) {
                             setIsSending(false);
                         }
 
-                        const action = payload.action;
-                        if (action) {
-                            if (action === "MENU") {
-                                router.push("/menu");
-                                router.refresh();
-                            } else if (action === "CART") {
-                                router.push("/cart");
-                                router.refresh();
-                            } else if (action === "CART_FULL_REFRESH") {
-                                window.location.href = "/cart";
-                            }
-                        }
-
                         const replies = payload.replies;
                         if (replies && replies.length > 0) {
                             for (let i = 0; i < replies.length; i++) {
@@ -140,8 +127,21 @@ export default function ChatPanel(props: ChatPanelProps) {
                         }
 
                         const totalCart = payload.totalCart;
-                        if (totalCart) {
+                        if (totalCart || totalCart === 0) {
                             dispatch(setTotalCart(totalCart));
+                        }
+
+                        const action = payload.action;
+                        if (action) {
+                            if (action === "MENU") {
+                                router.push("/menu");
+                                router.refresh();
+                            } else if (action === "CART") {
+                                router.push("/cart");
+                                router.refresh();
+                            } else if (action === "CART_FULL_REFRESH") {
+                                window.location.href = "/cart";
+                            }
                         }
                     }
                 }
