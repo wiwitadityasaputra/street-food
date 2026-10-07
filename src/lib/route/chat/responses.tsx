@@ -1,3 +1,15 @@
+export const editCartResponse = () => {
+    const list = [
+        "All set! Your order changes are saved.",
+        "Got it! Your cart has been updated.",
+        "Cart updated! Ready whenever you are.",
+        "Sweet! Your cart is looking good to go.",
+        "Changes saved! Your cart has been updated.",
+        "Done! We've updated your delicious selections."
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
 export const cartNavigationRsponse = () => {
     const list = [
         "Almost ready to feast? Review your items in the cart and breeze through checkout when you are set!",

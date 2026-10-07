@@ -129,6 +129,32 @@ export async function deleteUserCartByUserAndUserCartId(userId: string, userCart
     });
 }
 
+export async function editUserCartByUserAndUserCartId(userId: string, userCartId: string, quantity: number) {
+    const cart = await prisma.user_cart.findFirst({
+        where: {
+            user_cart_id: Number(userCartId),
+            user_id: userId
+        }
+    });
+
+    if (!cart) {
+        return;
+    }
+
+    const finalPrice = quantity * cart.price_per_item;
+
+    return await prisma.user_cart.updateMany({
+        where: {
+            user_cart_id: Number(userCartId),
+            user_id: userId
+        },
+        data: {
+            quantity: quantity,
+            final_price: finalPrice
+        }
+    });
+}
+
 export async function writeToOrder(flag: OrderDbFlag, firstName: string, lastName: string, streetAddress: string, secondAddress: string, city: string, state: string, zipCode: string, phoneNumber: string, emailAddress: string, additionalInfo: string): Promise<any> {
     const result = await prisma.user_order.create({
         data: {
@@ -369,12 +395,12 @@ export async function writeToUserChatMain(userId: string, message: string, role:
 
     // Generate and store the embedding when aiInput is provided.
     if (aiInput && aiOutput) {
-        const embedding = await generateEmbedding(aiInput);
-        await prisma.$executeRaw`
-            UPDATE user_chat_main
-            SET ai_input_embedding = ${JSON.stringify(embedding)}::vector
-            WHERE user_chat_main_id = ${result.user_chat_main_id}
-        `;
+        // const embedding = await generateEmbedding(aiInput);
+        // await prisma.$executeRaw`
+        //     UPDATE user_chat_main
+        //     SET ai_input_embedding = ${JSON.stringify(embedding)}::vector
+        //     WHERE user_chat_main_id = ${result.user_chat_main_id}
+        // `;
     }
 
     return String(result.user_chat_main_id);

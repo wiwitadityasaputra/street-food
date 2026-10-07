@@ -117,8 +117,10 @@ export default function ChatPanel(props: ChatPanelProps) {
                         if (action) {
                             if (action === "MENU") {
                                 router.push("/menu");
+                                router.refresh();
                             } else if (action === "CART") {
                                 router.push("/cart");
+                                router.refresh();
                             } else if (action === "CART_FULL_REFRESH") {
                                 window.location.href = "/cart";
                             }

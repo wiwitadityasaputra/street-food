@@ -11,6 +11,7 @@ import {
     getAnswerQuestionInstructions,
     getBriefInstructions,
     getCardDeletionInstructions,
+    getEditCartInstructions,
     getFoodSuggestion,
     getPageNavigationInstructions
 } from "@/src/lib/route/chat/instructions";
@@ -31,6 +32,7 @@ import {
     handleDefaultAnswer,
     handleDeleteCart,
     handleDescribeTask,
+    handleEditCart,
     handleFoodSuggestion,
     handleNavigation
 } from "@/src/lib/route/chat/handle-bot-response";
@@ -102,19 +104,21 @@ export async function POST(request: Request) {
                 const result = await generateText({
                     model: deepSeek('deepseek-v4-pro'),
                     instructions: `
-                        ${getBriefInstructions(cuisines)}
+                        ${getBriefInstructions(cuisines, cartData)}
 
-                        ${getAddtocartInstructions(1)}
+                        ${getEditCartInstructions(1)}
 
-                        ${getPageNavigationInstructions(2)}
+                        ${getAddtocartInstructions(2)}
 
-                        ${getCardDeletionInstructions(3, cartData)}
+                        ${getCardDeletionInstructions(3)}
 
-                        ${getAiTasksInstructions(4)}
+                        ${getPageNavigationInstructions(4)}
 
-                        ${getFoodSuggestion(5)}
+                        ${getAiTasksInstructions(5)}
 
-                        ${getAnswerQuestionInstructions(6)}
+                        ${getFoodSuggestion(6)}
+
+                        ${getAnswerQuestionInstructions(7)}
                     `,
                     tools: {
                         getCuisineDetail: getCuisineDetail(cookieStore)
@@ -129,20 +133,23 @@ export async function POST(request: Request) {
             console.log("dbg finalResponse ", aiOutput)
             console.log("dbg jsonResponse ", jsonResponse)
 
-            if (jsonResponse.navigate) {
-                const data = await handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
+            if (jsonResponse.editCart) {
+                const data = await handleEditCart(userId, jsonResponse.editCart);
+                send(data);
+            } else if (jsonResponse.addToCart) {
+                const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.userCartId) {
                 const data = await handleDeleteCart(userId, jsonResponse.deleteCart);
+                send(data);
+            } else if (jsonResponse.navigate) {
+                const data = await handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.chatBotTask === true) {
                 const data = await handleDescribeTask(userId, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.answerQuestion) {
                 const data = await handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
-                send(data);
-            } else if (jsonResponse.addToCart) {
-                const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.foodSuggestion) {
                 const data = await handleFoodSuggestion(userId, jsonResponse.foodSuggestion, aiInput, aiOutput);
