@@ -19,9 +19,6 @@ import {
     welcomeResponse
 } from "@/src/lib/route/chat/responses";
 import {
-    getUserCartsApi,
-    getCuisinesApi,
-    getDataFromApi,
     generateEmbedding
 } from "@/src/lib/route/chat/util";
 import { getCuisineDetail, getCuisines, getUserCart } from "@/src/lib/route/chat/tools";
@@ -125,8 +122,7 @@ export async function POST(request: Request) {
 
 
             const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
-            console.log("dbg finalResponse ", aiOutput)
-            console.log("dbg jsonResponse ", jsonResponse)
+            console.log("dbg aiOutput ", aiOutput)
 
             if (jsonResponse.editCart) {
                 const data = await handleEditCart(userId, jsonResponse.editCart);

@@ -208,12 +208,10 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
                 value: `Remove from cart: ${message}`
             })
             replies.push(message);
-            // await writeToUserChatMain(userId, "assistant", "standard", message);
         }
         writeToLlmresults(aiInput, aiOutput);
         return {
             status: ChatRequestStatus.DONE,
-            // replies: replies,
             action: "CART",
             option: {
                 message: m,

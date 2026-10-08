@@ -51,5 +51,5 @@ export const cartOptionsToReadable = (index: number, cuisineName: string, finalP
   if (options) {
     opts = `- ${options.split(USER_CART_OPTIONS_SEPARATOR).join(", ")}`;
   }
-  return `${index}. ${cuisineName} - ${formatCurrency(finalPrice)} ${opts}`;
+  return `${index}. ${cuisineName} - ${formatCurrency(finalPrice)} ${opts ? opts : ''}`;
 }
