@@ -1,9 +1,9 @@
 CREATE TABLE "user_chat_main" (
 	"user_chat_main_id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "user_chat_main_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"user_id" varchar(40) NOT NULL,
-	"user_input" varchar(500) NOT NULL,
+	"message" varchar(500) NOT NULL,
 	"role" varchar(10) NOT NULL,
 	"created_date" timestamp,
-	"ai_output" varchar(500)
+	"message_type" varchar(200)
 );
 CREATE UNIQUE INDEX "user_chat_main_pkey" ON "user_chat_main" ("user_chat_main_id");
