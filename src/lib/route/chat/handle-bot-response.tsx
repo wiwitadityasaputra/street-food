@@ -19,11 +19,9 @@ import {
 import { deleteUserCartApi, getUserCartsApi } from "./util";
 import { UserCartRoutePostRequest } from "@/src/app/api/cart/route";
 import { cookies } from "next/headers";
-import { ChatStreamResponse } from "@/src/app/api/chat/route";
-import { ChatRequestStatus } from "./chat.definition";
+import { ChatRequestStatus, ChatStreamOption, ChatStreamOptionList, ChatStreamResponse } from "./chat.definition";
 import { CuisinesDbIdName } from "../../database/database.definition";
-import { cartOptionsToReadable, formatCurrency } from "../../util/utils";
-import { USER_CART_OPTIONS_SEPARATOR } from "../../service/service.definition";
+import { cartOptionsToReadable } from "../../util/utils";
 
 export interface AddToCartResponse {
     cuisineName: string;
@@ -183,7 +181,6 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
 
             const responseMsg = removeCartResponse();
             await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
-            writeToLlmresults(aiInput, aiOutput);
             return {
                 status: ChatRequestStatus.DONE,
                 replies: [responseMsg],
@@ -202,18 +199,26 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
         const m = multipleItemsToBeDeletedResponse(deleteCart.cuisineName);
         await writeToUserChatMain(userId, "assistant", "standard", m);
 
+        const options: ChatStreamOptionList[] = [];
         const replies = [ m ];
         for (const [index, c] of carts.entries()) {
             const message = cartOptionsToReadable(index + 1, deleteCart.cuisineName, c.finalPrice, c.options);
+            options.push({
+                label: message,
+                value: `Remove from cart: ${message}`
+            })
             replies.push(message);
-            await writeToUserChatMain(userId, "assistant", "standard", message);
+            // await writeToUserChatMain(userId, "assistant", "standard", message);
         }
         writeToLlmresults(aiInput, aiOutput);
         return {
             status: ChatRequestStatus.DONE,
-            replies: replies,
+            // replies: replies,
             action: "CART",
-            messages: replies
+            option: {
+                message: m,
+                options: options
+            }
         };
     } else {
         return handleDefaultAnswer(userId);

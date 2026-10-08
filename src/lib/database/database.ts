@@ -87,8 +87,6 @@ export async function fetchCuisineByFoodsuggestion(suggestion: FoodSuggestion): 
         LIMIT 3
     `;
 
-    console.log("dbg query ", query)
-
     return await prisma.$queryRawUnsafe<CuisinesDbIdName[]>(query);
 }
 
@@ -476,7 +474,7 @@ export async function writeToUserChatMain(userId: string, role: string, messageT
 }
 
 export async function writeToLlmresults(input: string, output: string) {
-    if (process.env.SF_EMBEDDING_WRITE === "true") {
+    if (process.env.SF_EMBEDDING_WRITE) {
         const embedding = await generateEmbedding(input);
         await prisma.$executeRaw`
             INSERT INTO llm_results ("llm_input", "llm_output", "llm_input_embedding", "created_date")

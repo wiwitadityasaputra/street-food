@@ -35,6 +35,7 @@
 
 .start-chat-trigger:focus-visible,
 .start-chat-close:focus-visible,
+.start-chat-option-button:focus-visible,
 .start-chat-composer button:focus-visible {
     outline: 3px solid #2c2118;
     outline-offset: 3px;
@@ -176,6 +177,48 @@
 
 .start-chat-message-assistant {
     align-self: flex-start;
+}
+
+.start-chat-option {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.start-chat-option .start-chat-message {
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.start-chat-option-button {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    margin-left: auto;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--colorPrimary, #ff7c08);
+    box-shadow: 0 6px 16px rgb(30 24 18 / 18%);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.start-chat-option-button:hover:not(:disabled) {
+    background: #e56707;
+}
+
+.start-chat-option-button:active:not(:disabled) {
+    background: #d15c00;
+}
+
+.start-chat-option-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
 .start-chat-composer {

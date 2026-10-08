@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { useRouter } from 'next/navigation';
-import { faHeadset, faPaperPlane, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faHeadset, faPaperPlane, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "@/src/ui/menu/chat-panel/chat-panel.css";
@@ -10,8 +10,7 @@ import { useAppContext } from "@/src/lib/util/app-contex";
 import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
 import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
-import { ChatStreamResponse } from "@/src/app/api/chat/route";
-import { ChatRequestStatus } from "@/src/lib/route/chat/chat.definition";
+import { ChatRequestStatus, ChatStreamOptionList, ChatStreamResponse } from "@/src/lib/route/chat/chat.definition";
 
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
@@ -19,8 +18,11 @@ export default function ChatPanel(props: ChatPanelProps) {
     const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
-    const [isSending, setIsSending] = useState(false);
-    const [sendingStatus, setSendingStatus] = useState("Review...");
+    const [inputTextDisabled, setInputTextDisabled] = useState(false);
+    const [chatInProgress, setChatInProgress] = useState(false);
+    const [chatStreamOptions, setChatStreamOptions] = useState<undefined | ChatStreamOptionList[]>(undefined);
+
+    const [sendingStatus, setSendingStatus] = useState<string | undefined>(undefined);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageInputRef = useRef<HTMLInputElement>(null);
 
@@ -29,7 +31,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         if (isChatPanelOpen && messagesContainer) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-    }, [isChatPanelOpen, isSending, messages, props.messages]);
+    }, [isChatPanelOpen, messages, props.messages, inputTextDisabled, chatInProgress]);
 
     useEffect(() => {
         if (isChatPanelOpen) {
@@ -62,13 +64,28 @@ export default function ChatPanel(props: ChatPanelProps) {
     async function sendMessage(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const message = messageDraft.trim();
-        if (!message || isSending) {
+        if (!message || chatInProgress) {
+            return;
+        }
+
+        setMessageDraft("");
+        await sendChatMessage(message);
+    }
+
+    async function chooseChatStreamOption(option: ChatStreamOptionList) {
+        setChatStreamOptions(undefined);
+        await sendChatMessage(option.value);
+    }
+
+    async function sendChatMessage(message: string) {
+        if (!message || chatInProgress) {
             return;
         }
 
         setMessages((currentMessages) => [...currentMessages, { role: "user", content: message }]);
-        setMessageDraft("");
-        setIsSending(true);
+        setChatStreamOptions(undefined);
+        setInputTextDisabled(true);
+        setChatInProgress(true);
 
         try {
             const response = await fetch("/api/chat", {
@@ -103,6 +120,11 @@ export default function ChatPanel(props: ChatPanelProps) {
   
                         if (!data) continue;
                         const payload: ChatStreamResponse = JSON.parse(data);
+                        const replies = payload.replies;
+                        const action = payload.action;
+                        const totalCart = payload.totalCart;
+                        const option = payload.option;
+
                         if (payload.status === ChatRequestStatus.REVIEW) {
                             setSendingStatus("Review...");
                         }
@@ -110,11 +132,22 @@ export default function ChatPanel(props: ChatPanelProps) {
                             setSendingStatus("Thinking...");
                         }
                         if (payload.status === ChatRequestStatus.DONE) {
-                            setIsSending(false);
+                            setSendingStatus(undefined);
+                            setInputTextDisabled(false);
+                            setChatInProgress(false);
                         }
 
-                        const replies = payload.replies;
-                        if (replies && replies.length > 0) {
+                        if (option && option.options.length > 0) {
+                            setInputTextDisabled(true);
+                            setMessages((currentMessages) => [
+                                ...currentMessages,
+                                {
+                                    role: "assistant",
+                                    content: option.message
+                                },
+                            ]);
+                            setChatStreamOptions(option.options);
+                        } else if (replies && replies.length > 0) {
                             for (let i = 0; i < replies.length; i++) {
                                 setMessages((currentMessages) => [
                                     ...currentMessages,
@@ -126,12 +159,10 @@ export default function ChatPanel(props: ChatPanelProps) {
                             }
                         }
 
-                        const totalCart = payload.totalCart;
                         if (totalCart || totalCart === 0) {
                             dispatch(setTotalCart(totalCart));
                         }
 
-                        const action = payload.action;
                         if (action) {
                             if (action === "MENU") {
                                 router.push("/menu");
@@ -145,17 +176,9 @@ export default function ChatPanel(props: ChatPanelProps) {
                         }
                     }
                 }
-                if (buffer.trim()) {
-                    const dataLine = buffer.split("\n").find((line) => line.startsWith("data: "));
-                    if (dataLine) {
-                        const payload = JSON.parse(dataLine.slice(6));
-                    }
-                }
             }
         } catch (error) {
             console.error("Failed to send chat message.", error);
-        } finally {
-            setIsSending(false);
         }
     }
 
@@ -184,7 +207,7 @@ export default function ChatPanel(props: ChatPanelProps) {
                         ref={messagesContainerRef}
                         className="start-chat-messages"
                         aria-live="polite"
-                        aria-busy={isSending}
+                        aria-busy={chatInProgress}
                     >
                         <span className="start-chat-time">Today</span>
                         <div className="start-chat-message">
@@ -205,11 +228,28 @@ export default function ChatPanel(props: ChatPanelProps) {
                                 {message.content}
                             </div>
                         ))}
-                        {isSending && (
+                        {chatInProgress && (
                             <div className="start-chat-message start-chat-message-assistant" role="status">
                                 {sendingStatus}
                             </div>
                         )}
+                        {chatStreamOptions && chatStreamOptions.map((option, index) => (
+                            <div key={index} className="start-chat-option">
+                                <div className="start-chat-message start-chat-message-assistant" role="status">
+                                    {option.label}
+                                </div>
+                                <button
+                                    type="button"
+                                    className="start-chat-option-button"
+                                    aria-label={option.value}
+                                    title={option.value}
+                                    disabled={chatInProgress}
+                                    onClick={() => void chooseChatStreamOption(option)}
+                                >
+                                    <FontAwesomeIcon icon={faCheck} />
+                                </button>
+                            </div>
+                        ))}
                     </div>
                     <form className="start-chat-composer" onSubmit={sendMessage}>
                         <input
@@ -219,12 +259,12 @@ export default function ChatPanel(props: ChatPanelProps) {
                             placeholder="Type your message..."
                             value={messageDraft}
                             onChange={(event) => setMessageDraft(event.target.value)}
-                            disabled={isSending}
+                            disabled={inputTextDisabled}
                         />
                         <button
                             type="submit"
                             aria-label="Send message"
-                            disabled={isSending || messageDraft.trim().length === 0}
+                            disabled={inputTextDisabled || messageDraft.trim().length === 0}
                         >
                             <FontAwesomeIcon icon={faPaperPlane} />
                         </button>

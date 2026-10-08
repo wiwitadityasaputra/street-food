@@ -36,15 +36,10 @@ import {
     handleFoodSuggestion,
     handleNavigation
 } from "@/src/lib/route/chat/handle-bot-response";
-import { ChatRequestStatus } from "@/src/lib/route/chat/chat.definition";
-
-export interface ChatStreamResponse {
-    status: ChatRequestStatus;
-    action?: string;
-    replies?: string[];
-    totalCart?: number;
-    messages?: string[];
-}
+import {
+    ChatRequestStatus,
+    ChatStreamResponse
+} from "@/src/lib/route/chat/chat.definition";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -83,11 +78,12 @@ export async function POST(request: Request) {
             console.log("dbg aiInput ", aiInput);
 
             let aiOutput = undefined;
-            const checkEmbedding = process.env.SF_EMBEDDING_CHECK === "true";
+            const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
             console.log("dbg checkEmbedding ", checkEmbedding);
             if (checkEmbedding) {
                 // 1. Call Gemini Embeddings API
                 const embedding = await generateEmbedding(aiInput);
+
                 // 2. Search PostgreSQL using pgvector
                 const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding);
                 console.log("dbg cachedAnswer ", cachedAnswer);
