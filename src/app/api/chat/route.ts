@@ -41,7 +41,7 @@ import {
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
     if (!userId) {
-        return NextResponse.json([]);
+        return NextResponse.json({}, { status: 401 });
     }
 
     const cookieStore = await cookies();

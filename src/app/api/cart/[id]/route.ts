@@ -15,18 +15,15 @@ export interface UserCartDetailRouteDeleteResponse {
 }
 
 export async function PUT(request: Request, { params }: RouteParams): Promise<NextResponse> {
-    console.log("dbg PUT 01")
     const userId = await cookiesGetUserId();
     if (!userId) {
         return NextResponse.json({}, { status: 401 });
     }
-    console.log("dbg PUT 02")
     const { id } = await params;
     const body: EditCartResponse = await request.json();
     if (!Number.isInteger(body.quantity) || body.quantity < 1) {
         return NextResponse.json({}, { status: 400 });
     }
-    console.log("dbg PUT 03 ", userId, id, body.quantity)
     const result = await editUserCartByUserCartId(userId, Number(id), body.quantity);
     if (!result?.count) {
         return NextResponse.json({}, { status: 404 });

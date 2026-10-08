@@ -17,7 +17,7 @@ export interface UserCartRouteGetResponse {
 export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
     const userId = await cookiesGetUserId();
     if (!userId) {
-        return NextResponse.json([]);
+        return NextResponse.json([], { status: 401 });
     }
     const carts: UserCartResponse[] = await getUserCarts(userId);
     const result: UserCartRouteGetResponse[] = [];
@@ -33,7 +33,7 @@ export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
         }
         result.push(data);
     });
-    return NextResponse.json(result);
+    return NextResponse.json(result, {status: 200});
 }
 
 export interface UserCartRoutePostRequest {
@@ -49,7 +49,7 @@ export interface UserCartRoutePostResponse {
 export async function POST(request: Request): Promise<NextResponse<UserCartRoutePostResponse>> {
     const userId = await cookiesGetUserId();
     if (!userId) {
-        return NextResponse.json({});
+        return NextResponse.json({}, { status: 401 });
     }
 
     const body: UserCartRoutePostRequest = await request.json();
@@ -57,12 +57,12 @@ export async function POST(request: Request): Promise<NextResponse<UserCartRoute
     const quantity = body.quantity;
 
     if (!cuisineId || !quantity) {
-        return NextResponse.json({});    
+        return NextResponse.json({}, { status: 400 });
     }
 
     const cuisineDb: CuisinesDb | undefined = await fetchCuisinesById(String(cuisineId));
     if (!cuisineDb) {
-        return NextResponse.json({});    
+        return NextResponse.json({}, { status: 400 });
     }
     const cuisineName = cuisineDb.name;
     const pricePerItem = cuisineDb.price;
@@ -98,5 +98,5 @@ export async function POST(request: Request): Promise<NextResponse<UserCartRoute
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     await cookiesSetUserId(userId);
 
-    return NextResponse.json({ totalCart });
+    return NextResponse.json({ totalCart }, { status: 200});
 }
