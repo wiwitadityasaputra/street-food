@@ -137,3 +137,15 @@ export const validFoodResponse = (food: string) => {
     ];
     return list[Math.floor(Math.random() * list.length)];
 }
+
+export const multipleItemsToBeDeletedResponse = (food: string) => {
+    const f = food.charAt(0).toUpperCase() + food.slice(1);
+    const list = [
+        `You have multiple ${f}, which one should i remove?`,
+        `Looks like you have a few ${f} in your cart! Which one would you like to drop?`,
+        `Multiple ${f} detected. Which one should we remove?`,
+        `Select a ${f} to remove from your cart?`,
+        `Multiple ${f} found. Specify which one to remove?`
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}

@@ -43,6 +43,7 @@ export interface ChatStreamResponse {
     action?: string;
     replies?: string[];
     totalCart?: number;
+    messages?: string[];
 }
 
 export async function POST(request: Request) {
@@ -121,7 +122,7 @@ export async function POST(request: Request) {
                         getCuisines: getCuisines(cookieStore)
                     },
                     stopWhen: isStepCount(5),
-                    prompt: aiInput
+                    messages: [{ content: message, role: "user" }]
                 });
                 aiOutput = await result.text;
             }

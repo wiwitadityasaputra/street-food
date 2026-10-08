@@ -9,6 +9,7 @@ import {
     cartNavigationRsponse,
     editCartResponse,
     menuNavigationResponse,
+    multipleItemsToBeDeletedResponse,
     removeCartResponse,
     unknownFoodDescriptionResponse,
     unknownFoodResponse,
@@ -21,6 +22,8 @@ import { cookies } from "next/headers";
 import { ChatStreamResponse } from "@/src/app/api/chat/route";
 import { ChatRequestStatus } from "./chat.definition";
 import { CuisinesDbIdName } from "../../database/database.definition";
+import { cartOptionsToReadable, formatCurrency } from "../../util/utils";
+import { USER_CART_OPTIONS_SEPARATOR } from "../../service/service.definition";
 
 export interface AddToCartResponse {
     cuisineName: string;
@@ -36,6 +39,7 @@ export interface NavigateResponse {
 
 export interface DeleteCartResponse {
     cuisineName: string;
+    userCartId?: number;
 }
 
 export interface AnswerQuestion {
@@ -162,11 +166,11 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
 
 export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const cuisineName  = deleteCart.cuisineName;
-    const userCartIds = await fetchUserCartIdByUseridAndCuisinename(userId, cuisineName);
-    console.log("dbg handleDeleteCart userCartIds ", userCartIds);
-    if (userCartIds.length === 1) {
+    const carts = await fetchUserCartIdByUseridAndCuisinename(userId, cuisineName);
+    if (deleteCart.userCartId || carts.length === 1) {
         try {
-            const deleteUrl = await deleteUserCartApi(userCartIds[0]);
+            const userCartId = deleteCart.userCartId || carts[0].userCartId;
+            const deleteUrl = await deleteUserCartApi(userCartId);
             const cookieStore = await cookies();
             const deleteResponse = await fetch(deleteUrl, {
                 method: 'DELETE',
@@ -194,8 +198,23 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
                 replies: [responseMsg]
             };
         }
-    } else if (userCartIds.length > 1) {
-        return handleDefaultAnswer(userId);
+    } else if (carts.length > 1) {
+        const m = multipleItemsToBeDeletedResponse(deleteCart.cuisineName);
+        await writeToUserChatMain(userId, "assistant", "standard", m);
+
+        const replies = [ m ];
+        for (const [index, c] of carts.entries()) {
+            const message = cartOptionsToReadable(index + 1, deleteCart.cuisineName, c.finalPrice, c.options);
+            replies.push(message);
+            await writeToUserChatMain(userId, "assistant", "standard", message);
+        }
+        writeToLlmresults(aiInput, aiOutput);
+        return {
+            status: ChatRequestStatus.DONE,
+            replies: replies,
+            action: "CART",
+            messages: replies
+        };
     } else {
         return handleDefaultAnswer(userId);
     }

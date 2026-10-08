@@ -11,6 +11,7 @@ import {
     UserCartDb,
     UserCartDbFlag,
     UserCartDbUserCartId,
+    UserCartFeCartApi,
     UserChatMainDb
 } from '@/src/lib/database/database.definition';
 import { prisma } from '@/src/lib/database/prisma';
@@ -152,7 +153,7 @@ export async function fetchUserCartIdByUserAndFlag(userId: string, flag: UserCar
     }));
 }
 
-export async function fetchUserCartIdByUseridAndCuisinename(userId: string, cuisineName: string): Promise<number[]> {
+export async function fetchUserCartIdByUseridAndCuisinename(userId: string, cuisineName: string): Promise<UserCartFeCartApi[]> {
     const carts = await prisma.user_cart.findMany({
         where: {
             user_id: userId,
@@ -160,11 +161,19 @@ export async function fetchUserCartIdByUseridAndCuisinename(userId: string, cuis
             flag: String(UserCartDbFlag.ACTIVE)
         },
         select: {
-            user_cart_id: true
+            user_cart_id: true,
+            options: true,
+            final_price: true
         }
     });
 
-    return carts.map(c => c.user_cart_id);
+    return carts.map(c => {
+        return {
+            userCartId: c.user_cart_id,
+            options: c.options,
+            finalPrice: c.final_price
+        }
+    });
 }
 
 export async function countUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<number> {

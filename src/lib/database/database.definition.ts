@@ -44,6 +44,12 @@ export type UserCartDbUserCartId = {
     usercartId: number;
 }
 
+export type UserCartFeCartApi = {
+    userCartId: number;
+    finalPrice: number;
+    options: string;
+}
+
 export enum UserCartDbFlag {
     ACTIVE = 1,
     DELETED = 2,

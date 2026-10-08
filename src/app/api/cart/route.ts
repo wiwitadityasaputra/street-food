@@ -9,6 +9,8 @@ import { CuisinesCartDbGroupNamePrice, CuisinesDb, UserCartDbFlag } from "@/src/
 export interface UserCartRouteGetResponse {
     cuisineName: string;
     userCartId: number;
+    finalPrice: number;
+    options?: string[];
 }
 
 export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
@@ -18,12 +20,17 @@ export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
     }
     const carts: UserCartResponse[] = await getUserCarts(userId);
     const result: UserCartRouteGetResponse[] = [];
-    carts.forEach(c => {
-        result.push({
+    carts.forEach((c, index) => {
+        const data: UserCartRouteGetResponse = {
             cuisineName: c.cuisineName,
             userCartId: c.userCartId,
-        })
-    })
+            finalPrice: c.finalPrice
+        };
+        if (c.options) {
+            data.options = c.options;
+        }
+        result.push(data);
+    });
     return NextResponse.json(result);
 }
 

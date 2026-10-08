@@ -1,4 +1,5 @@
 import { OrderDbFlag } from "../database/database.definition";
+import { USER_CART_OPTIONS_SEPARATOR } from "../service/service.definition";
 
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
@@ -43,4 +44,12 @@ export const maskingValue = (value: string) => {
     result += "*";
   }
   return result;
+}
+
+export const cartOptionsToReadable = (index: number, cuisineName: string, finalPrice: number, options?: string) => {
+  let opts = undefined;
+  if (options) {
+    opts = `- ${options.split(USER_CART_OPTIONS_SEPARATOR).join(", ")}`;
+  }
+  return `${index}. ${cuisineName} - ${formatCurrency(finalPrice)} ${opts}`;
 }

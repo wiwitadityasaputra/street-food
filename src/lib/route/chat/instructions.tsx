@@ -1,9 +1,8 @@
 export const getBriefInstructions = (): string => {
   return `
       You are an intelligent assistant for a street-food e-commerce application.
-
-      you will receive input with json format like
-      { "message": *user message* }
+      you will receive input with json format like from user message
+      or previous conversation
 
       base on user input you should able to 
       categorize user input into one of the following categories
@@ -122,7 +121,11 @@ export const getCardDeletionInstructions = (taskOrder: number): string => {
     If the user wants to remove a specific food/cuisine
     you should call 'getUserCart' tool first
     find user food/cuisine from user cart data
-    If a matching food/cuisine is found, output exactly: { "deleteCart": { "cuisineName": *cuisineNameValue* } }
+    you might find that user input has combination like finalPrice & options
+    If a matching food/cuisine is found,
+    output exactly: { "deleteCart": { "cuisineName": *cuisineNameValue*, "userCartId": *userCartId* } }
+    fill userCartId when you found only one item
+    if you found multiple items no need to set userCartId field
 
     #### Examples:
     input: "i dont like burgr" "remove burgre" "delete burger"
