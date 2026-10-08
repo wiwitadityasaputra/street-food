@@ -1,6 +1,7 @@
 # run
     $ nvm use
-    $ pnpm dev
+    $ pnpm run dev
+    $ SF_EMBEDDING_CHECK=false SF_EMBEDDING_WRITE=false pnpm run dev
 # build
     $ pnpm build
 

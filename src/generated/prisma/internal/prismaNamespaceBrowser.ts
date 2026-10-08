@@ -56,7 +56,8 @@ export const ModelName = {
   user_cart: 'user_cart',
   user_chat_main: 'user_chat_main',
   user_order: 'user_order',
-  test01: 'test01'
+  test01: 'test01',
+  llm_results: 'llm_results'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -124,8 +125,7 @@ export const User_chat_mainScalarFieldEnum = {
   message: 'message',
   role: 'role',
   created_date: 'created_date',
-  ai_output: 'ai_output',
-  ai_input: 'ai_input'
+  message_type: 'message_type'
 } as const
 
 export type User_chat_mainScalarFieldEnum = (typeof User_chat_mainScalarFieldEnum)[keyof typeof User_chat_mainScalarFieldEnum]
@@ -161,6 +161,16 @@ export const Test01ScalarFieldEnum = {
 } as const
 
 export type Test01ScalarFieldEnum = (typeof Test01ScalarFieldEnum)[keyof typeof Test01ScalarFieldEnum]
+
+
+export const Llm_resultsScalarFieldEnum = {
+  llm_results_id: 'llm_results_id',
+  llm_input: 'llm_input',
+  llm_output: 'llm_output',
+  created_date: 'created_date'
+} as const
+
+export type Llm_resultsScalarFieldEnum = (typeof Llm_resultsScalarFieldEnum)[keyof typeof Llm_resultsScalarFieldEnum]
 
 
 export const SortOrder = {

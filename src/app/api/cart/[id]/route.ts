@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { deleteUserCartByCuisineId, editUserCartByUserCartId } from "@/src/lib/service/cart.service";
+import { deleteUserCartByUsercartid, editUserCartByUserCartId } from "@/src/lib/service/cart.service";
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { countUserCartByUserAndFlag } from "@/src/lib/database/database";
 import { UserCartDbFlag } from "@/src/lib/database/database.definition";
@@ -31,7 +31,7 @@ export async function DELETE(request: Request, { params }: RouteParams): Promise
         return NextResponse.json({});
     }
     const { id } = await params;
-    await deleteUserCartByCuisineId(userId, Number(id));
+    await deleteUserCartByUsercartid(userId, Number(id));
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
     return NextResponse.json({ totalCart });
 }

@@ -71,3 +71,8 @@ export type user_order = Prisma.user_orderModel
  * 
  */
 export type test01 = Prisma.test01Model
+/**
+ * Model llm_results
+ * 
+ */
+export type llm_results = Prisma.llm_resultsModel

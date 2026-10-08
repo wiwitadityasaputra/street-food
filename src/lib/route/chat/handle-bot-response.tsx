@@ -1,4 +1,9 @@
-import { writeToUserChatMain } from "../../database/database";
+import {
+    fetchCuisineByFoodsuggestion,
+    fetchUserCartIdByUseridAndCuisinename,
+    writeToLlmresults,
+    writeToUserChatMain
+} from "../../database/database";
 import {
     badQuestionResponse,
     cartNavigationRsponse,
@@ -15,6 +20,7 @@ import { UserCartRoutePostRequest } from "@/src/app/api/cart/route";
 import { cookies } from "next/headers";
 import { ChatStreamResponse } from "@/src/app/api/chat/route";
 import { ChatRequestStatus } from "./chat.definition";
+import { CuisinesDbIdName } from "../../database/database.definition";
 
 export interface AddToCartResponse {
     cuisineName: string;
@@ -29,7 +35,7 @@ export interface NavigateResponse {
 }
 
 export interface DeleteCartResponse {
-    cuisineId: number;
+    cuisineName: string;
 }
 
 export interface AnswerQuestion {
@@ -41,6 +47,26 @@ export interface EditCartResponse {
     cuisineId: number;
     quantity: number;
 }
+export enum CuisineType {
+    indonesia = "indonesia",
+    western = "western",
+    chinese = "chinese",
+    korean = "korean"
+}
+export enum PriceType {
+    cheap = "cheap",
+    expensive = "expensive"
+}
+export enum HighLowType {
+    lowest = "lowest",
+    highest = "highest"
+}
+export interface FoodSuggestion {
+    country?: CuisineType;
+    price?: PriceType;
+    rate?: HighLowType;
+    sales?: HighLowType;
+}
 
 export interface AiChatResponse {
     editCart?: EditCartResponse;
@@ -49,7 +75,7 @@ export interface AiChatResponse {
     navigate?: NavigateResponse;
     chatBotTask?: boolean;
     answerQuestion?: AnswerQuestion;
-    foodSuggestion?: string[];
+    foodSuggestion?: FoodSuggestion;
 }
 
 export const handleEditCart = async (userId: string, editCart: EditCartResponse): Promise<ChatStreamResponse> => {
@@ -66,7 +92,7 @@ export const handleEditCart = async (userId: string, editCart: EditCartResponse)
         });
         await editResponse.json();
         const responseMsg = editCartResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant");
+        await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
         return {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],
@@ -88,7 +114,7 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
 
     if (!isValid) {
         const reply = unknownFoodResponse(cuisineName);
-        await writeToUserChatMain(userId, reply, "assistant", aiInput);
+        await writeToUserChatMain(userId, "assistant", "standard", reply);
         return {
             status: ChatRequestStatus.DONE,
             replies: [reply]
@@ -105,7 +131,7 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
         };
 
         const reply = validFoodResponse(cuisineName);
-        await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
+        await writeToUserChatMain(userId, "assistant", "standard", reply);
         const userCartsApi = await getUserCartsApi();
         const cookieStore = await cookies();
 
@@ -134,46 +160,54 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
     }
 }
 
-export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse): Promise<ChatStreamResponse> => {
-    const cuisineId  = deleteCart.cuisineId;
-    try {
-        const deleteUrl = await deleteUserCartApi(cuisineId);
-        const cookieStore = await cookies();
-        const deleteResponse = await fetch(deleteUrl, {
-            method: 'DELETE',
-            headers: {
-                Cookie: cookieStore.toString()
-            },
-        });
-        const bodyResponse = await deleteResponse.json();
-        const totalCart = bodyResponse.totalCart;
+export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
+    const cuisineName  = deleteCart.cuisineName;
+    const userCartIds = await fetchUserCartIdByUseridAndCuisinename(userId, cuisineName);
+    console.log("dbg handleDeleteCart userCartIds ", userCartIds);
+    if (userCartIds.length === 1) {
+        try {
+            const deleteUrl = await deleteUserCartApi(userCartIds[0]);
+            const cookieStore = await cookies();
+            const deleteResponse = await fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    Cookie: cookieStore.toString()
+                },
+            });
+            const bodyResponse = await deleteResponse.json();
+            const totalCart = bodyResponse.totalCart;
 
-        console.log("dbg totalCart ", totalCart)
-
-        const responseMsg = removeCartResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant");
-        return {
-            status: ChatRequestStatus.DONE,
-            replies: [responseMsg],
-            action: "CART",
-            totalCart
-        };
-    } catch (e) {
-        console.error("error ", e)
-        const responseMsg = welcomeResponse();
-        return {
-            status: ChatRequestStatus.DONE,
-            replies: [responseMsg]
-        };
+            const responseMsg = removeCartResponse();
+            await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
+            writeToLlmresults(aiInput, aiOutput);
+            return {
+                status: ChatRequestStatus.DONE,
+                replies: [responseMsg],
+                action: "CART",
+                totalCart
+            };
+        } catch (e) {
+            console.error("error ", e)
+            const responseMsg = welcomeResponse();
+            return {
+                status: ChatRequestStatus.DONE,
+                replies: [responseMsg]
+            };
+        }
+    } else if (userCartIds.length > 1) {
+        return handleDefaultAnswer(userId);
+    } else {
+        return handleDefaultAnswer(userId);
     }
 }
 
 export const handleNavigation = async (userId: string, navigate: NavigateResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const toPage = navigate.toPage;
+    writeToLlmresults(aiInput, aiOutput);
 
     if (toPage === "menu") {
         const responseMsg = menuNavigationResponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant", aiInput, aiOutput);
+        await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
         return {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],
@@ -181,7 +215,7 @@ export const handleNavigation = async (userId: string, navigate: NavigateRespons
         };
     } else {
         const responseMsg = cartNavigationRsponse();
-        await writeToUserChatMain(userId, responseMsg, "assistant", aiInput, aiOutput);
+        await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
         return {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],
@@ -198,9 +232,11 @@ export const handleDescribeTask = async (userId: string, aiInput: string, aiOutp
         "3. Adding food to your cart.",
         "4. Asking your random questions.",
     ];
-    responses.forEach(r => {
-        writeToUserChatMain(userId, r, "assistant", aiInput, aiOutput);
-    })
+    for (const r of responses) {
+        await writeToUserChatMain(userId, "assistant", "standard", r);
+    }
+    writeToLlmresults(aiInput, aiOutput);
+
     return {
         status: ChatRequestStatus.DONE,
         action: "AI_TASKS",
@@ -211,8 +247,9 @@ export const handleDescribeTask = async (userId: string, aiInput: string, aiOutp
 export const handleAnswerQuestion = async (userId: string, answerQuestion: AnswerQuestion, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const isBad = answerQuestion.isBad;
     const response = answerQuestion.response;
+    writeToLlmresults(aiInput, aiOutput);
     if (!isBad && response) {
-        await writeToUserChatMain(userId, response, "assistant", aiInput, aiOutput);
+        await writeToUserChatMain(userId, "assistant", "standard", response);
         return {
             status: ChatRequestStatus.DONE,
             replies: [response]
@@ -222,30 +259,33 @@ export const handleAnswerQuestion = async (userId: string, answerQuestion: Answe
     }
 }
 
-export const handleFoodSuggestion = async (userId: string, foodSuggestion: string[], aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
-    if (foodSuggestion.length == 0) {
+export const handleFoodSuggestion = async (userId: string, foodSuggestion: FoodSuggestion, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
+    writeToLlmresults(aiInput, aiOutput);
+
+    const dbResults: CuisinesDbIdName[] = await fetchCuisineByFoodsuggestion(foodSuggestion);
+    if (dbResults.length == 0) {
         const reply = unknownFoodDescriptionResponse();
-        await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
+        await writeToUserChatMain(userId, "assistant", "standard", reply);
         return {
             status: ChatRequestStatus.DONE,
             replies: [reply]
         };
     } else {
-        const reply = foodSuggestion.join(", ");
-        await writeToUserChatMain(userId, reply, "assistant", aiInput, aiOutput);
+        const replies = dbResults.map(d => d.cuisinename).join(", ");
+        await writeToUserChatMain(userId, "assistant", "standard", replies);
         return {
             status: ChatRequestStatus.DONE,
-            replies: [reply]
+            replies: [replies]
         };
     }
 }
 
 export const handleDefaultAnswer = async (userId: string): Promise<ChatStreamResponse> => {
     const badQuestResponse = badQuestionResponse();
-    await writeToUserChatMain(userId, badQuestResponse, "assistant");
+    await writeToUserChatMain(userId, "assistant", "standard", badQuestResponse);
 
     const responseMsg = welcomeResponse();
-    await writeToUserChatMain(userId, responseMsg, "assistant");
+    await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
 
     return {
         status: ChatRequestStatus.DONE,

@@ -40,8 +40,7 @@ export type User_chat_mainMinAggregateOutputType = {
   message: string | null
   role: string | null
   created_date: Date | null
-  ai_output: string | null
-  ai_input: string | null
+  message_type: string | null
 }
 
 export type User_chat_mainMaxAggregateOutputType = {
@@ -50,8 +49,7 @@ export type User_chat_mainMaxAggregateOutputType = {
   message: string | null
   role: string | null
   created_date: Date | null
-  ai_output: string | null
-  ai_input: string | null
+  message_type: string | null
 }
 
 export type User_chat_mainCountAggregateOutputType = {
@@ -60,8 +58,7 @@ export type User_chat_mainCountAggregateOutputType = {
   message: number
   role: number
   created_date: number
-  ai_output: number
-  ai_input: number
+  message_type: number
   _all: number
 }
 
@@ -80,8 +77,7 @@ export type User_chat_mainMinAggregateInputType = {
   message?: true
   role?: true
   created_date?: true
-  ai_output?: true
-  ai_input?: true
+  message_type?: true
 }
 
 export type User_chat_mainMaxAggregateInputType = {
@@ -90,8 +86,7 @@ export type User_chat_mainMaxAggregateInputType = {
   message?: true
   role?: true
   created_date?: true
-  ai_output?: true
-  ai_input?: true
+  message_type?: true
 }
 
 export type User_chat_mainCountAggregateInputType = {
@@ -100,8 +95,7 @@ export type User_chat_mainCountAggregateInputType = {
   message?: true
   role?: true
   created_date?: true
-  ai_output?: true
-  ai_input?: true
+  message_type?: true
   _all?: true
 }
 
@@ -197,8 +191,7 @@ export type User_chat_mainGroupByOutputType = {
   message: string
   role: string
   created_date: Date | null
-  ai_output: string | null
-  ai_input: string | null
+  message_type: string | null
   _count: User_chat_mainCountAggregateOutputType | null
   _avg: User_chat_mainAvgAggregateOutputType | null
   _sum: User_chat_mainSumAggregateOutputType | null
@@ -230,8 +223,7 @@ export type user_chat_mainWhereInput = {
   message?: Prisma.StringFilter<"user_chat_main"> | string
   role?: Prisma.StringFilter<"user_chat_main"> | string
   created_date?: Prisma.DateTimeNullableFilter<"user_chat_main"> | Date | string | null
-  ai_output?: Prisma.StringNullableFilter<"user_chat_main"> | string | null
-  ai_input?: Prisma.StringNullableFilter<"user_chat_main"> | string | null
+  message_type?: Prisma.StringNullableFilter<"user_chat_main"> | string | null
 }
 
 export type user_chat_mainOrderByWithRelationInput = {
@@ -240,8 +232,7 @@ export type user_chat_mainOrderByWithRelationInput = {
   message?: Prisma.SortOrder
   role?: Prisma.SortOrder
   created_date?: Prisma.SortOrderInput | Prisma.SortOrder
-  ai_output?: Prisma.SortOrderInput | Prisma.SortOrder
-  ai_input?: Prisma.SortOrderInput | Prisma.SortOrder
+  message_type?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type user_chat_mainWhereUniqueInput = Prisma.AtLeast<{
@@ -253,8 +244,7 @@ export type user_chat_mainWhereUniqueInput = Prisma.AtLeast<{
   message?: Prisma.StringFilter<"user_chat_main"> | string
   role?: Prisma.StringFilter<"user_chat_main"> | string
   created_date?: Prisma.DateTimeNullableFilter<"user_chat_main"> | Date | string | null
-  ai_output?: Prisma.StringNullableFilter<"user_chat_main"> | string | null
-  ai_input?: Prisma.StringNullableFilter<"user_chat_main"> | string | null
+  message_type?: Prisma.StringNullableFilter<"user_chat_main"> | string | null
 }, "user_chat_main_id">
 
 export type user_chat_mainOrderByWithAggregationInput = {
@@ -263,8 +253,7 @@ export type user_chat_mainOrderByWithAggregationInput = {
   message?: Prisma.SortOrder
   role?: Prisma.SortOrder
   created_date?: Prisma.SortOrderInput | Prisma.SortOrder
-  ai_output?: Prisma.SortOrderInput | Prisma.SortOrder
-  ai_input?: Prisma.SortOrderInput | Prisma.SortOrder
+  message_type?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.user_chat_mainCountOrderByAggregateInput
   _avg?: Prisma.user_chat_mainAvgOrderByAggregateInput
   _max?: Prisma.user_chat_mainMaxOrderByAggregateInput
@@ -281,8 +270,7 @@ export type user_chat_mainScalarWhereWithAggregatesInput = {
   message?: Prisma.StringWithAggregatesFilter<"user_chat_main"> | string
   role?: Prisma.StringWithAggregatesFilter<"user_chat_main"> | string
   created_date?: Prisma.DateTimeNullableWithAggregatesFilter<"user_chat_main"> | Date | string | null
-  ai_output?: Prisma.StringNullableWithAggregatesFilter<"user_chat_main"> | string | null
-  ai_input?: Prisma.StringNullableWithAggregatesFilter<"user_chat_main"> | string | null
+  message_type?: Prisma.StringNullableWithAggregatesFilter<"user_chat_main"> | string | null
 }
 
 export type user_chat_mainCreateInput = {
@@ -290,8 +278,7 @@ export type user_chat_mainCreateInput = {
   message: string
   role: string
   created_date?: Date | string | null
-  ai_output?: string | null
-  ai_input?: string | null
+  message_type?: string | null
 }
 
 export type user_chat_mainUncheckedCreateInput = {
@@ -300,8 +287,7 @@ export type user_chat_mainUncheckedCreateInput = {
   message: string
   role: string
   created_date?: Date | string | null
-  ai_output?: string | null
-  ai_input?: string | null
+  message_type?: string | null
 }
 
 export type user_chat_mainUpdateInput = {
@@ -309,8 +295,7 @@ export type user_chat_mainUpdateInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   created_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  ai_output?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ai_input?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type user_chat_mainUncheckedUpdateInput = {
@@ -319,8 +304,7 @@ export type user_chat_mainUncheckedUpdateInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   created_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  ai_output?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ai_input?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type user_chat_mainCreateManyInput = {
@@ -329,8 +313,7 @@ export type user_chat_mainCreateManyInput = {
   message: string
   role: string
   created_date?: Date | string | null
-  ai_output?: string | null
-  ai_input?: string | null
+  message_type?: string | null
 }
 
 export type user_chat_mainUpdateManyMutationInput = {
@@ -338,8 +321,7 @@ export type user_chat_mainUpdateManyMutationInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   created_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  ai_output?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ai_input?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type user_chat_mainUncheckedUpdateManyInput = {
@@ -348,8 +330,7 @@ export type user_chat_mainUncheckedUpdateManyInput = {
   message?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   created_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  ai_output?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  ai_input?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type user_chat_mainCountOrderByAggregateInput = {
@@ -358,8 +339,7 @@ export type user_chat_mainCountOrderByAggregateInput = {
   message?: Prisma.SortOrder
   role?: Prisma.SortOrder
   created_date?: Prisma.SortOrder
-  ai_output?: Prisma.SortOrder
-  ai_input?: Prisma.SortOrder
+  message_type?: Prisma.SortOrder
 }
 
 export type user_chat_mainAvgOrderByAggregateInput = {
@@ -372,8 +352,7 @@ export type user_chat_mainMaxOrderByAggregateInput = {
   message?: Prisma.SortOrder
   role?: Prisma.SortOrder
   created_date?: Prisma.SortOrder
-  ai_output?: Prisma.SortOrder
-  ai_input?: Prisma.SortOrder
+  message_type?: Prisma.SortOrder
 }
 
 export type user_chat_mainMinOrderByAggregateInput = {
@@ -382,8 +361,7 @@ export type user_chat_mainMinOrderByAggregateInput = {
   message?: Prisma.SortOrder
   role?: Prisma.SortOrder
   created_date?: Prisma.SortOrder
-  ai_output?: Prisma.SortOrder
-  ai_input?: Prisma.SortOrder
+  message_type?: Prisma.SortOrder
 }
 
 export type user_chat_mainSumOrderByAggregateInput = {
@@ -406,8 +384,7 @@ export type user_chat_mainSelect<ExtArgs extends runtime.Types.Extensions.Intern
   message?: boolean
   role?: boolean
   created_date?: boolean
-  ai_output?: boolean
-  ai_input?: boolean
+  message_type?: boolean
 }, ExtArgs["result"]["user_chat_main"]>
 
 export type user_chat_mainSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -416,8 +393,7 @@ export type user_chat_mainSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   message?: boolean
   role?: boolean
   created_date?: boolean
-  ai_output?: boolean
-  ai_input?: boolean
+  message_type?: boolean
 }, ExtArgs["result"]["user_chat_main"]>
 
 export type user_chat_mainSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -426,8 +402,7 @@ export type user_chat_mainSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   message?: boolean
   role?: boolean
   created_date?: boolean
-  ai_output?: boolean
-  ai_input?: boolean
+  message_type?: boolean
 }, ExtArgs["result"]["user_chat_main"]>
 
 export type user_chat_mainSelectScalar = {
@@ -436,11 +411,10 @@ export type user_chat_mainSelectScalar = {
   message?: boolean
   role?: boolean
   created_date?: boolean
-  ai_output?: boolean
-  ai_input?: boolean
+  message_type?: boolean
 }
 
-export type user_chat_mainOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"user_chat_main_id" | "user_id" | "message" | "role" | "created_date" | "ai_output" | "ai_input", ExtArgs["result"]["user_chat_main"]>
+export type user_chat_mainOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"user_chat_main_id" | "user_id" | "message" | "role" | "created_date" | "message_type", ExtArgs["result"]["user_chat_main"]>
 
 export type $user_chat_mainPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "user_chat_main"
@@ -451,8 +425,7 @@ export type $user_chat_mainPayload<ExtArgs extends runtime.Types.Extensions.Inte
     message: string
     role: string
     created_date: Date | null
-    ai_output: string | null
-    ai_input: string | null
+    message_type: string | null
   }, ExtArgs["result"]["user_chat_main"]>
   composites: {}
 }
@@ -881,8 +854,7 @@ export interface user_chat_mainFieldRefs {
   readonly message: Prisma.FieldRef<"user_chat_main", 'String'>
   readonly role: Prisma.FieldRef<"user_chat_main", 'String'>
   readonly created_date: Prisma.FieldRef<"user_chat_main", 'DateTime'>
-  readonly ai_output: Prisma.FieldRef<"user_chat_main", 'String'>
-  readonly ai_input: Prisma.FieldRef<"user_chat_main", 'String'>
+  readonly message_type: Prisma.FieldRef<"user_chat_main", 'String'>
 }
     
 

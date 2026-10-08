@@ -402,7 +402,8 @@ export const ModelName = {
   user_cart: 'user_cart',
   user_chat_main: 'user_chat_main',
   user_order: 'user_order',
-  test01: 'test01'
+  test01: 'test01',
+  llm_results: 'llm_results'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "cuisine_cart" | "cuisines" | "user_cart" | "user_chat_main" | "user_order" | "test01"
+    modelProps: "cuisine_cart" | "cuisines" | "user_cart" | "user_chat_main" | "user_order" | "test01" | "llm_results"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -866,6 +867,64 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    llm_results: {
+      payload: Prisma.$llm_resultsPayload<ExtArgs>
+      fields: Prisma.llm_resultsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.llm_resultsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.llm_resultsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload>
+        }
+        findFirst: {
+          args: Prisma.llm_resultsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.llm_resultsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload>
+        }
+        findMany: {
+          args: Prisma.llm_resultsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload>[]
+        }
+        delete: {
+          args: Prisma.llm_resultsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload>
+        }
+        update: {
+          args: Prisma.llm_resultsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload>
+        }
+        deleteMany: {
+          args: Prisma.llm_resultsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.llm_resultsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.llm_resultsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$llm_resultsPayload>[]
+        }
+        aggregate: {
+          args: Prisma.Llm_resultsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLlm_results>
+        }
+        groupBy: {
+          args: Prisma.llm_resultsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Llm_resultsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.llm_resultsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Llm_resultsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -954,8 +1013,7 @@ export const User_chat_mainScalarFieldEnum = {
   message: 'message',
   role: 'role',
   created_date: 'created_date',
-  ai_output: 'ai_output',
-  ai_input: 'ai_input'
+  message_type: 'message_type'
 } as const
 
 export type User_chat_mainScalarFieldEnum = (typeof User_chat_mainScalarFieldEnum)[keyof typeof User_chat_mainScalarFieldEnum]
@@ -991,6 +1049,16 @@ export const Test01ScalarFieldEnum = {
 } as const
 
 export type Test01ScalarFieldEnum = (typeof Test01ScalarFieldEnum)[keyof typeof Test01ScalarFieldEnum]
+
+
+export const Llm_resultsScalarFieldEnum = {
+  llm_results_id: 'llm_results_id',
+  llm_input: 'llm_input',
+  llm_output: 'llm_output',
+  created_date: 'created_date'
+} as const
+
+export type Llm_resultsScalarFieldEnum = (typeof Llm_resultsScalarFieldEnum)[keyof typeof Llm_resultsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1270,6 +1338,7 @@ export type GlobalOmitConfig = {
   user_chat_main?: Prisma.user_chat_mainOmit
   user_order?: Prisma.user_orderOmit
   test01?: Prisma.test01Omit
+  llm_results?: Prisma.llm_resultsOmit
 }
 
 /* Types for Logging */

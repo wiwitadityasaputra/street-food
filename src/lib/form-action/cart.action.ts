@@ -54,7 +54,7 @@ export async function processCarts(prevState: any, formData: FormData): Promise<
             if (index > 0) {
                 userCartIdsStr += ", ";
             }
-            userCartIdsStr += u.usercartid;
+            userCartIdsStr += u.usercartId;
         })
         userCartIdsStr += ")";
 

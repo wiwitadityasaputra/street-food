@@ -4,7 +4,7 @@ import { generateText, isStepCount } from 'ai';
 import { cookies } from "next/headers";
 
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
-import { findAioutputOnUserchatmainByEmbedding, writeToUserChatMain } from "@/src/lib/database/database";
+import { findSimilarityOnLlmresultsByEmbedding, writeToUserChatMain } from "@/src/lib/database/database";
 import {
     getAddtocartInstructions,
     getAiTasksInstructions,
@@ -65,12 +65,12 @@ export async function POST(request: Request) {
 
             // Step 1: Processing
             send({ status: ChatRequestStatus.REVIEW });
-            await writeToUserChatMain(userId, message, "user");
+            await writeToUserChatMain(userId, "user", "standard", message);
 
             // message too long
             if (!message || message.length > 200) {
                 const responseMsg = welcomeResponse();
-                await writeToUserChatMain(userId, responseMsg, "assistant");
+                await writeToUserChatMain(userId, "standard", "assistant", responseMsg);
 
                 send({
                     status: ChatRequestStatus.DONE,
@@ -79,19 +79,24 @@ export async function POST(request: Request) {
             }
 
             const aiInput = JSON.stringify({ message });
-            console.log("dbg aiInput ", aiInput)
+            console.log("dbg aiInput ", aiInput);
 
-            // 1. Call Gemini Embeddings API
-            const embedding = await generateEmbedding(aiInput);
-            // 2. Search PostgreSQL using pgvector
-            const cachedAnswer = await findAioutputOnUserchatmainByEmbedding(embedding);
+            let aiOutput = undefined;
+            const checkEmbedding = process.env.SF_EMBEDDING_CHECK === "true";
+            console.log("dbg checkEmbedding ", checkEmbedding);
+            if (checkEmbedding) {
+                // 1. Call Gemini Embeddings API
+                const embedding = await generateEmbedding(aiInput);
+                // 2. Search PostgreSQL using pgvector
+                const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding);
+                console.log("dbg cachedAnswer ", cachedAnswer);
 
-            let aiOutput = "";
-            if (cachedAnswer && cachedAnswer.similarity >= 0.90) {
-                console.log("dbg cachedAnswer.similarity ", cachedAnswer.similarity)
-                // 3. If a suitable answer exists, reuse it
-                aiOutput = cachedAnswer.aioutput;
-            } else {
+                if (cachedAnswer && cachedAnswer.similarity >= 0.90) {
+                    aiOutput = cachedAnswer.llmouput;    
+                }
+            }
+
+            if (!aiOutput) {
                 send({ status: ChatRequestStatus.THINKING });
 
                 console.log("dbg call llm api ")
@@ -121,6 +126,7 @@ export async function POST(request: Request) {
                 aiOutput = await result.text;
             }
 
+
             const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
             console.log("dbg finalResponse ", aiOutput)
             console.log("dbg jsonResponse ", jsonResponse)
@@ -131,8 +137,8 @@ export async function POST(request: Request) {
             } else if (jsonResponse.addToCart) {
                 const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
                 send(data);
-            } else if (jsonResponse.deleteCart && jsonResponse.deleteCart.cuisineId) {
-                const data = await handleDeleteCart(userId, jsonResponse.deleteCart);
+            } else if (jsonResponse.deleteCart) {
+                const data = await handleDeleteCart(userId, jsonResponse.deleteCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.navigate) {
                 const data = await handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);

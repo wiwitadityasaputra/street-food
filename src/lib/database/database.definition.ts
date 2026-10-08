@@ -9,6 +9,11 @@ export type CuisinesDb = {
     review: number;
 };
 
+export type CuisinesDbIdName = {
+    cuisineid: number;
+    cuisinename: string;
+}
+
 export type CuisinesCartDb = {
     id: number;
     cartType: string;
@@ -36,7 +41,7 @@ export type UserCartDb = {
 }
 
 export type UserCartDbUserCartId = {
-    usercartid: number;
+    usercartId: number;
 }
 
 export enum UserCartDbFlag {
@@ -137,6 +142,6 @@ export interface UserChatMainFe {
 }
 
 export interface SimilarEmbedding {
-  aioutput: string;
+  llmouput: string;
   similarity: number;
 };

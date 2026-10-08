@@ -103,7 +103,7 @@ export const getAddtocartInstructions = (taskOrder: number): string => {
     - user want adding Eomuk (Eomuk id is 8)
       final output should be
       { "addToCart": { "cuisineName": "Eomuk", "isValid": true, "cuisineId": 8, "quantity": 1, "addOnsIds": [] } }
-    
+
     #### Exception
     If the user input does not fall into the category above or Category No ${taskOrder},
     then you can continue to Category No ${taskOrderNext} below
@@ -116,18 +116,18 @@ export const getCardDeletionInstructions = (taskOrder: number): string => {
     ### Category No ${taskOrder}: Cart Deletion
 
     #### Format Response
-    { "deleteCart": { "cuisineId": *cuisineId* } }
+    { "deleteCart": { "cuisineName": *cuisineNameValue* } }
 
     #### Specification
     If the user wants to remove a specific food/cuisine
     you should call 'getUserCart' tool first
     find user food/cuisine from user cart data
-    If a matching food/cuisine is found, output exactly: { "deleteCart": { "cuisineId": *cuisineId* } }
+    If a matching food/cuisine is found, output exactly: { "deleteCart": { "cuisineName": *cuisineNameValue* } }
 
     #### Examples:
-    input: "i dont like burger" "remove burger" "delete burger"
-    process: 'getUserCart' has a burger and the cuisineId is 13
-    output: { "deleteCart": { "cuisineId": 13 } }
+    input: "i dont like burgr" "remove burgre" "delete burger"
+    process: 'getUserCart' has a burger and the cuisineName is Burger
+    output: { "deleteCart": { "cuisineName": Burger } }
 
     #### Exception
     - If no food/cuisine matching with User Cart Data you can continue to Category No ${taskOrderNext} below
@@ -195,38 +195,31 @@ export const getFoodSuggestion = (taskOrder: number): string => {
     ### Category No ${taskOrder}: Food Sugestion
 
     #### Format Response
-    { "foodSuggestion": [foodname] }
+    { "foodSuggestion": { 
+      "country"?: *countryValue*,  // "indonesian"|"western"|"korean"|"chinese"
+      "price"?: *priceValue*,      // "cheap"|"expensive"
+      "rate"?: *rateValue*,        // "lowest"|"highest"
+      "sales"?: *salesValue*       // "lowest"|"highest"
+    } }
 
     #### Specification
-    Your final response is an array with maximum 3 foods
-    format: { "foodSuggestion": [food1, food2, food2] }
-    or maybe we only one food: {"foodSuggestion": [food1] }
-    or we dont have food that user asking just return empty array: {"foodSuggestion": [] }
+    the final response above we have available fields: country, price, rate, sales
+    each fields has enum values
+    when you decided the user input is in this category
+    you should able to know at least have one fields or multiple fields are in user input
 
-    In this category user is asking about food suggestion
-    our food/cuisine data have information like
-    - food-name
-    - country
-      available values: indonesian, western, korean, chinese
-    - price
-      food price, small number is cheap one, biggest number is the expensive one
-    - rate
-      the value is between 0 to 5, higher is better
-    - review
-      the number of users who have purchased and provided ratings or rate
-
-    #### Example:
+    #### Examples:
     input: "give me the western foods"
-    what you do: just give random 3 western food
-    output: { "foodSuggestion": ["Hotdog", "Burger", "Shawarma & Gyros"] }
+    process: fields country: western
+    output: { "foodSuggestion": { "country": "western" } }
 
     input: "i want indonesian cheap foods"
-    what you do: find 3 cheapes indonesion food
-    output: { "foodSuggestion": ["Nasi Goreng", "Martabak Telur", "Siomay"] }
+    process: fields country: indonesian, price: cheap
+    output: { "foodSuggestion": { "country": "indonesian", "price": "cheap" } }
 
     input: "what is the popular foods"
-    what you do: find 3 food that have highest rate
-    output: { "foodSuggestion": ["Twigim", "Burger", "Martabak Telur"] }
+    process: fields sales: highest
+    output: { "foodSuggestion": { "sales": "highest" } }
 
     #### Exception
     if its not fall into Category no ${taskOrder}, you can continue to Category no ${taskOrderNext}

@@ -3,6 +3,7 @@ import {
     CuisinesCartDb,
     CuisinesCartDbGroupNamePrice,
     CuisinesDb,
+    CuisinesDbIdName,
     MyOrderAndCartDb,
     OrderDbFlag,
     OrderIdUserOrderDb,
@@ -15,6 +16,7 @@ import {
 import { prisma } from '@/src/lib/database/prisma';
 import { cuisine_type } from '@/src/generated/prisma/enums';
 import { generateEmbedding } from '@/src/lib/route/chat/util';
+import { FoodSuggestion } from '../route/chat/handle-bot-response';
 
 const ALLOWED_CUISINES: readonly string[] = Object.values(cuisine_type);
 
@@ -45,6 +47,48 @@ export async function fetchCuisinesById(id: string): Promise<CuisinesDb | undefi
         }
     })
     return cuisine ?? undefined;
+}
+
+export async function fetchCuisineByFoodsuggestion(suggestion: FoodSuggestion): Promise<CuisinesDbIdName[]> {
+    let whereClause = "";
+    let orderClause = "";
+
+    const country = suggestion.country;
+    const price = suggestion.price;
+    const rate = suggestion.rate;
+    const sales = suggestion.sales;
+
+    if (country) {
+        whereClause = `WHERE cuisine = '${country}'`;
+    }
+    if (price || rate || sales) {
+        const orderList = [];
+        if (price) {
+            orderList.push(` price ${price === "cheap" ? "ASC" : "DESC"} `);
+        }
+        if (rate) {
+            orderList.push(` rate ${rate === "lowest" ? "ASC" : "DESC"} `);
+        }
+        if (sales) {
+            orderList.push(` review ${sales === "lowest" ? "ASC" : "DESC"} `);
+        }
+
+        orderClause = `ORDER BY ${orderList.join(", ")}`;
+    }
+
+    const query = `
+        SELECT
+            id as cuisineid,
+            name as cuisinename
+        FROM cuisines
+        ${whereClause}
+        ${orderClause}
+        LIMIT 3
+    `;
+
+    console.log("dbg query ", query)
+
+    return await prisma.$queryRawUnsafe<CuisinesDbIdName[]>(query);
 }
 
 export async function fetchCuisineCartByCuisineId(cuisineId: string): Promise<CuisinesCartDb[]> {
@@ -104,8 +148,23 @@ export async function fetchUserCartIdByUserAndFlag(userId: string, flag: UserCar
     });
 
     return carts.map((cart) => ({
-        usercartid: cart.user_cart_id
+        usercartId: cart.user_cart_id
     }));
+}
+
+export async function fetchUserCartIdByUseridAndCuisinename(userId: string, cuisineName: string): Promise<number[]> {
+    const carts = await prisma.user_cart.findMany({
+        where: {
+            user_id: userId,
+            cuisine_name: cuisineName,
+            flag: String(UserCartDbFlag.ACTIVE)
+        },
+        select: {
+            user_cart_id: true
+        }
+    });
+
+    return carts.map(c => c.user_cart_id);
 }
 
 export async function countUserCartByUserAndFlag(userId: string, flag: UserCartDbFlag): Promise<number> {
@@ -129,10 +188,10 @@ export async function deleteUserCartByUserAndUserCartId(userId: string, userCart
     });
 }
 
-export async function deleteUserCartByUserAndCuisineid(userId: string, cuisineId: number) {
+export async function deleteUserCartByUsercartid(userId: string, userCartId: number) {
     return await prisma.user_cart.updateMany({
         where: {
-            cuisine_id: cuisineId,
+            user_cart_id: userCartId,
             user_id: userId
         },
         data: {
@@ -390,44 +449,43 @@ export async function updateUserOrderDelivereddateByIds(ids: number[]): Promise<
     });
 }
 
-export async function writeToUserChatMain(userId: string, message: string, role: string, aiInput?: string, aiOutput?: string): Promise<string> {
+export async function writeToUserChatMain(userId: string, role: string, messageType: string, message: string): Promise<string> {
     const result = await prisma.user_chat_main.create({
         data: {
             user_id: userId,
+            message_type: messageType,
             message: message,
             role: role,
-            created_date: new Date(),
-            ai_input: aiInput,
-            ai_output: aiOutput
+            created_date: new Date()
         },
         select: {
             user_chat_main_id: true
         }
     });
 
-    // Generate and store the embedding when aiInput is provided.
-    if (aiInput && aiOutput) {
-        // const embedding = await generateEmbedding(aiInput);
-        // await prisma.$executeRaw`
-        //     UPDATE user_chat_main
-        //     SET ai_input_embedding = ${JSON.stringify(embedding)}::vector
-        //     WHERE user_chat_main_id = ${result.user_chat_main_id}
-        // `;
-    }
-
     return String(result.user_chat_main_id);
 }
 
-export async function findAioutputOnUserchatmainByEmbedding(embedding: number[]): Promise<SimilarEmbedding | null> {
+export async function writeToLlmresults(input: string, output: string) {
+    if (process.env.SF_EMBEDDING_WRITE === "true") {
+        const embedding = await generateEmbedding(input);
+        await prisma.$executeRaw`
+            INSERT INTO llm_results ("llm_input", "llm_output", "llm_input_embedding", "created_date")
+            VALUES ( ${input}, ${output}, ${`[${embedding.join(",")}]`}::vector, NOW() )
+        `;
+    }
+}
+
+export async function findSimilarityOnLlmresultsByEmbedding(embedding: number[]): Promise<SimilarEmbedding | null> {
     const vector = `[${embedding.join(",")}]`;
     const results = await prisma.$queryRaw<SimilarEmbedding[]>`
         SELECT
-            ai_output as aioutput,
-            1 - ( ai_input_embedding <=> ${vector}::vector ) AS similarity
-        FROM user_chat_main
-        WHERE ai_input_embedding IS NOT NULL
-            AND ai_output IS NOT NULL
-        ORDER BY ai_input_embedding <=> ${vector}::vector
+            llm_output as llmouput,
+            1 - ( llm_input_embedding <=> ${vector}::vector ) AS similarity
+        FROM llm_results
+        WHERE llm_input_embedding IS NOT NULL
+            AND llm_output IS NOT NULL
+        ORDER BY llm_input_embedding <=> ${vector}::vector
         LIMIT 1
     `;
     return results[0] ?? null;

@@ -8,7 +8,7 @@ import { CuisinesCartDbGroupNamePrice, CuisinesDb, UserCartDbFlag } from "@/src/
 
 export interface UserCartRouteGetResponse {
     cuisineName: string;
-    cuisineId: number;
+    userCartId: number;
 }
 
 export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
@@ -21,7 +21,7 @@ export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
     carts.forEach(c => {
         result.push({
             cuisineName: c.cuisineName,
-            cuisineId: c.cuisineId,
+            userCartId: c.userCartId,
         })
     })
     return NextResponse.json(result);
