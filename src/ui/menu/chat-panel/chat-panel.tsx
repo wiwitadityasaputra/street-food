@@ -21,6 +21,7 @@ export default function ChatPanel(props: ChatPanelProps) {
     const [inputTextDisabled, setInputTextDisabled] = useState(false);
     const [chatInProgress, setChatInProgress] = useState(false);
     const [chatStreamOptions, setChatStreamOptions] = useState<undefined | ChatStreamOptionList[]>(undefined);
+    const [chatOptionQuestion, setChatOptionQuestion] = useState<ChatMessage | undefined>(undefined);
 
     const [sendingStatus, setSendingStatus] = useState<string | undefined>(undefined);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -34,10 +35,10 @@ export default function ChatPanel(props: ChatPanelProps) {
     }, [isChatPanelOpen, messages, props.messages, inputTextDisabled, chatInProgress]);
 
     useEffect(() => {
-        if (isChatPanelOpen) {
+        if (isChatPanelOpen && !inputTextDisabled) {
             messageInputRef.current?.focus();
         }
-    }, [isChatPanelOpen]);
+    }, [isChatPanelOpen, inputTextDisabled]);
 
     async function changeChatOpen(nextOpen: boolean) {
         setIsChatPanelOpen(nextOpen);
@@ -74,7 +75,14 @@ export default function ChatPanel(props: ChatPanelProps) {
 
     async function chooseChatStreamOption(option: ChatStreamOptionList) {
         setChatStreamOptions(undefined);
+        setChatOptionQuestion(undefined);
         await sendChatMessage(option.value);
+    }
+
+    function cancelChatStreamOptions() {
+        setChatStreamOptions(undefined);
+        setChatOptionQuestion(undefined);
+        setInputTextDisabled(false);
     }
 
     async function sendChatMessage(message: string) {
@@ -84,6 +92,7 @@ export default function ChatPanel(props: ChatPanelProps) {
 
         setMessages((currentMessages) => [...currentMessages, { role: "user", content: message }]);
         setChatStreamOptions(undefined);
+        setChatOptionQuestion(undefined);
         setInputTextDisabled(true);
         setChatInProgress(true);
 
@@ -139,13 +148,12 @@ export default function ChatPanel(props: ChatPanelProps) {
 
                         if (option && option.options.length > 0) {
                             setInputTextDisabled(true);
-                            setMessages((currentMessages) => [
-                                ...currentMessages,
-                                {
-                                    role: "assistant",
-                                    content: option.message
-                                },
-                            ]);
+                            const question: ChatMessage = {
+                                role: "assistant",
+                                content: option.message
+                            };
+                            setMessages((currentMessages) => [...currentMessages, question]);
+                            setChatOptionQuestion(question);
                             setChatStreamOptions(option.options);
                         } else if (replies && replies.length > 0) {
                             for (let i = 0; i < replies.length; i++) {
@@ -222,11 +230,29 @@ export default function ChatPanel(props: ChatPanelProps) {
                         ))}
 
                         {messages.map((message, index) => (
-                            <div
-                                key={index}
-                                className={`start-chat-message start-chat-message-${message.role}`}>
-                                {message.content}
-                            </div>
+                            message === chatOptionQuestion ? (
+                                <div key={index} className="start-chat-option">
+                                    <div className="start-chat-message start-chat-message-assistant">
+                                        {message.content}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="start-chat-option-cancel"
+                                        aria-label="Cancel options"
+                                        title="Cancel options"
+                                        disabled={chatInProgress}
+                                        onClick={cancelChatStreamOptions}
+                                    >
+                                        <FontAwesomeIcon icon={faXmark} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div
+                                    key={index}
+                                    className={`start-chat-message start-chat-message-${message.role}`}>
+                                    {message.content}
+                                </div>
+                            )
                         ))}
                         {chatInProgress && (
                             <div className="start-chat-message start-chat-message-assistant" role="status">

@@ -36,6 +36,7 @@
 .start-chat-trigger:focus-visible,
 .start-chat-close:focus-visible,
 .start-chat-option-button:focus-visible,
+.start-chat-option-cancel:focus-visible,
 .start-chat-composer button:focus-visible {
     outline: 3px solid #2c2118;
     outline-offset: 3px;
@@ -192,7 +193,8 @@
     min-width: 0;
 }
 
-.start-chat-option-button {
+.start-chat-option-button,
+.start-chat-option-cancel {
     display: grid;
     width: 40px;
     height: 40px;
@@ -208,15 +210,18 @@
     cursor: pointer;
 }
 
-.start-chat-option-button:hover:not(:disabled) {
+.start-chat-option-button:hover:not(:disabled),
+.start-chat-option-cancel:hover:not(:disabled) {
     background: #e56707;
 }
 
-.start-chat-option-button:active:not(:disabled) {
+.start-chat-option-button:active:not(:disabled),
+.start-chat-option-cancel:active:not(:disabled) {
     background: #d15c00;
 }
 
-.start-chat-option-button:disabled {
+.start-chat-option-button:disabled,
+.start-chat-option-cancel:disabled {
     opacity: 0.55;
     cursor: not-allowed;
 }
