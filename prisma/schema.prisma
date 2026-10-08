@@ -78,16 +78,10 @@ model user_order {
   user_cart       user_cart[]
 }
 
-model test01 {
-  id           Int      @id @default(autoincrement())
-  name         String   @db.VarChar
-  created_date DateTime @db.Date
-}
-
 model llm_results {
   llm_results_id      Int                   @id @unique(map: "llm_results_id_pkey") @default(autoincrement())
-  llm_input           String                @db.VarChar(200)
-  llm_output          String                @db.VarChar(500)
+  llm_input           String                @db.VarChar(1000)
+  llm_output          String                @db.VarChar(1000)
   llm_input_embedding Unsupported("vector")
   created_date        DateTime?             @db.Timestamp(6)
 }
