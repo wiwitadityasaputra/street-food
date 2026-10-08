@@ -9,6 +9,7 @@ import { CuisinesCartDbGroupNamePrice, CuisinesDb, UserCartDbFlag } from "@/src/
 export interface UserCartRouteGetResponse {
     cuisineName: string;
     userCartId: number;
+    quantity: number;
     finalPrice: number;
     options?: string[];
 }
@@ -24,6 +25,7 @@ export async function GET(): Promise<NextResponse<UserCartRouteGetResponse[]>> {
         const data: UserCartRouteGetResponse = {
             cuisineName: c.cuisineName,
             userCartId: c.userCartId,
+            quantity: c.quantity,
             finalPrice: c.finalPrice
         };
         if (c.options) {

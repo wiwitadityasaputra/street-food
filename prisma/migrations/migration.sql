@@ -15,3 +15,5 @@ ALTER TABLE "user_chat_main" DROP COLUMN "ai_output";
 ALTER TABLE "user_chat_main" DROP COLUMN "ai_input";
 ALTER TABLE "user_chat_main" DROP COLUMN "ai_input_embedding";
 ALTER TABLE "user_chat_main" ADD COLUMN "message_type" VARCHAR(200);
+ALTER TABLE "llm_results" ALTER COLUMN "llm_input" SET DATA TYPE varchar(1000) USING "llm_input"::varchar(1000);
+ALTER TABLE "llm_results" ALTER COLUMN "llm_output" SET DATA TYPE varchar(1000) USING "llm_output"::varchar(1000);

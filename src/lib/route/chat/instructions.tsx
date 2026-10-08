@@ -15,13 +15,19 @@ export const getEditCartInstructions = (taskOrder: number): string => {
     ### Category No ${taskOrder}: modify cart.
 
     ### Format Response
-    { "editCart": { "cuisineId": *cuisineId*, "quantity": *quantity* }}
+    { "editCart": { "cuisineName": *cuisineName*, "quantity": *quantity*, "userCartId"?: *userCartId* }}
 
     #### Specification
-    - User want to modify their cart by given food/cuisine name
+    - User wants to change the quantity of an existing cart item, and will provide the food/cuisine name 
+      and the new quantity.
     - You should call 'getUserCart' tool to get the user cart data
-    - You should able to find the cuisineId when food/cuisine name is matching in User cart list/data above
-      final edit cart response should: 
+    - Match the food/cuisine name against the active cart items and use its exact cuisineName in the response.
+      if input has food/cuisine options, also matching the option in user cart item
+      finalPrice in user cart is in cent but user input is in $, so you should convert it
+    - If exactly one cart item matches, return its cuisineName and the requested new quantity. 
+      do not forget to set set userCartId, because we want to edit it.
+    - If more than one cart item matches, do not choose one. Return cuisineName and the requested 
+      quantity without userCartId so the application can ask the user to select a cart item.
 
     #### Examples
       messages:
@@ -30,9 +36,14 @@ export const getEditCartInstructions = (taskOrder: number): string => {
       - edit burger to 3
       - modify my burger to 3
       process:
-        base on User cart list/data we can find cuisineId is 4
+        base on User cart list/data we can find cuisineName is Burger and exactly one matching cart item
+        adn the userCartId is 431
       output:
-        { "editCart": { "cuisineId": 4, "quantity": 3 }}
+        { "editCart": { "cuisineName": "Burger", "quantity": 3, "userCartId": 431 }}
+
+      if the user has multiple burger cart items, do not choose one yet
+      output:
+        { "editCart": { "cuisineName": "Burger", "quantity": 3 }}
 
     #### Exception
     you understand that user want to modify their carts but their given food name / input not mathcing with 
@@ -257,4 +268,3 @@ export const getAnswerQuestionInstructions = (taskOrder: number): string => {
     Output: {"answerQuestion": { "isBad": true, "response": null }}
 	`;
 }
-

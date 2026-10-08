@@ -46,6 +46,7 @@ export type UserCartDbUserCartId = {
 
 export type UserCartFeCartApi = {
     userCartId: number;
+    quantity: number;
     finalPrice: number;
     options: string;
 }

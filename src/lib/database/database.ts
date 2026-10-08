@@ -155,11 +155,15 @@ export async function fetchUserCartIdByUseridAndCuisinename(userId: string, cuis
     const carts = await prisma.user_cart.findMany({
         where: {
             user_id: userId,
-            cuisine_name: cuisineName,
+            cuisine_name: {
+                equals: cuisineName,
+                mode: "insensitive"
+            },
             flag: String(UserCartDbFlag.ACTIVE)
         },
         select: {
             user_cart_id: true,
+            quantity: true,
             options: true,
             final_price: true
         }
@@ -168,6 +172,7 @@ export async function fetchUserCartIdByUseridAndCuisinename(userId: string, cuis
     return carts.map(c => {
         return {
             userCartId: c.user_cart_id,
+            quantity: c.quantity,
             options: c.options,
             finalPrice: c.final_price
         }
@@ -207,11 +212,12 @@ export async function deleteUserCartByUsercartid(userId: string, userCartId: num
     });
 }
 
-export async function editUserCartByUserAndUserCartId(userId: string, cuisineId: number, quantity: number) {
+export async function editUserCartByUserAndUserCartId(userId: string, userCartId: number, quantity: number) {
     const cart = await prisma.user_cart.findFirst({
         where: {
-            cuisine_id: cuisineId,
-            user_id: userId
+            user_cart_id: userCartId,
+            user_id: userId,
+            flag: String(UserCartDbFlag.ACTIVE)
         }
     });
 
@@ -223,8 +229,9 @@ export async function editUserCartByUserAndUserCartId(userId: string, cuisineId:
 
     return await prisma.user_cart.updateMany({
         where: {
-            cuisine_id: Number(cuisineId),
-            user_id: userId
+            user_cart_id: userCartId,
+            user_id: userId,
+            flag: String(UserCartDbFlag.ACTIVE)
         },
         data: {
             quantity: quantity,

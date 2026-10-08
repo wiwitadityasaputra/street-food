@@ -149,3 +149,13 @@ export const multipleItemsToBeDeletedResponse = (food: string) => {
     ];
     return list[Math.floor(Math.random() * list.length)];
 }
+
+export const multipleItemsToBeEditedResponse = (food: string) => {
+    const f = food.charAt(0).toUpperCase() + food.slice(1);
+    const list = [
+        `You have multiple ${f} in your cart. Which one would you like to update?`,
+        `I found more than one ${f}. Choose the cart item you want to edit.`,
+        `Which ${f} should I update? Select the item with the options you want.`
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+}

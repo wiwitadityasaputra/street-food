@@ -46,10 +46,10 @@ export const maskingValue = (value: string) => {
   return result;
 }
 
-export const cartOptionsToReadable = (index: number, cuisineName: string, finalPrice: number, options?: string) => {
+export const cartOptionsToReadable = (cuisineName: string, finalPrice: number, index?: number, options?: string) => {
   let opts = undefined;
   if (options) {
     opts = `- ${options.split(USER_CART_OPTIONS_SEPARATOR).join(", ")}`;
   }
-  return `${index}. ${cuisineName} - ${formatCurrency(finalPrice)} ${opts ? opts : ''}`;
+  return `${index ? (index + '.') : ''} ${cuisineName} - ${formatCurrency(finalPrice)} ${opts ? opts : ''}`;
 }

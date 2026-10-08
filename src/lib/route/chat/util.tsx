@@ -41,6 +41,10 @@ export const deleteUserCartApi = async function(userCartId: number) {
     return generateApi("cart/" + userCartId);
 }
 
+export const editUserCartApi = async function(userCartId: number) {
+    return generateApi("cart/" + userCartId);
+}
+
 export const getCuisinesApi = async function() {
     return generateApi("cuisines");
 }

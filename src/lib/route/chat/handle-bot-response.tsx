@@ -9,6 +9,7 @@ import {
     cartNavigationRsponse,
     editCartResponse,
     menuNavigationResponse,
+    multipleItemsToBeEditedResponse,
     multipleItemsToBeDeletedResponse,
     removeCartResponse,
     unknownFoodDescriptionResponse,
@@ -16,7 +17,7 @@ import {
     validFoodResponse,
     welcomeResponse
 } from "./responses";
-import { deleteUserCartApi, getUserCartsApi } from "./util";
+import { deleteUserCartApi, editUserCartApi, getUserCartsApi } from "./util";
 import { UserCartRoutePostRequest } from "@/src/app/api/cart/route";
 import { cookies } from "next/headers";
 import { ChatRequestStatus, ChatStreamOption, ChatStreamOptionList, ChatStreamResponse } from "./chat.definition";
@@ -46,8 +47,9 @@ export interface AnswerQuestion {
 }
 
 export interface EditCartResponse {
-    cuisineId: number;
+    cuisineName: string;
     quantity: number;
+    userCartId?: number;
 }
 export enum CuisineType {
     indonesia = "indonesia",
@@ -80,33 +82,58 @@ export interface AiChatResponse {
     foodSuggestion?: FoodSuggestion;
 }
 
-export const handleEditCart = async (userId: string, editCart: EditCartResponse): Promise<ChatStreamResponse> => {
-    try {
-        const cuisineId = editCart.cuisineId
-        const editUrl = await deleteUserCartApi(cuisineId);
-        const cookieStore = await cookies();
-        const editResponse = await fetch(editUrl, {
-            method: 'PUT',
-            headers: {
-                Cookie: cookieStore.toString()
-            },
-            body: JSON.stringify(editCart)
+export const handleEditCart = async (userId: string, editCart: EditCartResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
+    const carts = await fetchUserCartIdByUseridAndCuisinename(userId, editCart.cuisineName);
+    if (editCart.userCartId) {
+        try {
+            const editUrl = await editUserCartApi(carts[0].userCartId);
+            const cookieStore = await cookies();
+            const editResponse = await fetch(editUrl, {
+                method: 'PUT',
+                headers: {
+                    Cookie: cookieStore.toString(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ quantity: editCart.quantity })
+            });
+            await editResponse.json();
+            const responseMsg = editCartResponse();
+            await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
+            return {
+                status: ChatRequestStatus.DONE,
+                replies: [responseMsg],
+                action: "CART"
+            };
+        } catch (e) {
+            console.error("error edit cart", e)
+            const responseMsg = welcomeResponse();
+            return {
+                status: ChatRequestStatus.DONE,
+                replies: [responseMsg]
+            };
+        }
+    } else if (carts.length > 1) {
+        const message = multipleItemsToBeEditedResponse(editCart.cuisineName);
+        await writeToUserChatMain(userId, "assistant", "standard", message);
+
+        const options: ChatStreamOptionList[] = carts.map((cart, index) => {
+            const label = `${cartOptionsToReadable(editCart.cuisineName, cart.finalPrice, index + 1, cart.options)} (quantity: ${cart.quantity})`;
+            return {
+                label,
+                value: `Edit user cart, set quantity to ${editCart.quantity} for ${cartOptionsToReadable(editCart.cuisineName, cart.finalPrice, undefined, cart.options)}`
+            };
         });
-        await editResponse.json();
-        const responseMsg = editCartResponse();
-        await writeToUserChatMain(userId, "assistant", "standard", responseMsg);
+
         return {
+            action: "CART",
             status: ChatRequestStatus.DONE,
-            replies: [responseMsg],
-            action: "CART"
+            option: {
+                message,
+                options
+            }
         };
-    } catch (e) {
-        console.error("error edit cart", e)
-        const responseMsg = welcomeResponse();
-        return {
-            status: ChatRequestStatus.DONE,
-            replies: [responseMsg]
-        };
+    } else {
+        return handleDefaultAnswer(userId);
     }
 }
 
@@ -202,14 +229,13 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
         const options: ChatStreamOptionList[] = [];
         const replies = [ m ];
         for (const [index, c] of carts.entries()) {
-            const message = cartOptionsToReadable(index + 1, deleteCart.cuisineName, c.finalPrice, c.options);
+            const message = cartOptionsToReadable(deleteCart.cuisineName, c.finalPrice, index + 1, c.options);
             options.push({
                 label: message,
-                value: `Remove from cart: ${message}`
+                value: `Remove from cart: ${cartOptionsToReadable(deleteCart.cuisineName, c.finalPrice, undefined, c.options)}`
             })
             replies.push(message);
         }
-        writeToLlmresults(aiInput, aiOutput);
         return {
             status: ChatRequestStatus.DONE,
             action: "CART",

@@ -2,6 +2,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import type { UserCartRouteGetResponse } from "@/src/app/api/cart/route";
 import { CuisineDetailGetResponse } from "@/src/app/api/cuisines/[id]/route";
 import { getCuisineDetailApi, getCuisinesApi, getUserCartsApi } from "@/src/lib/route/chat/util";
 
@@ -38,7 +39,7 @@ export const getUserCart = (cookieStore: ReadonlyRequestCookies) => tool({
                     Cookie: cookieStore.toString()
                 },
             });
-            const result: CuisineDetailGetResponse = await response.json();
+            const result: UserCartRouteGetResponse[] = await response.json();
             return result;
         } catch (e) {
             console.error(`Failed to fetch ${url}`, e);

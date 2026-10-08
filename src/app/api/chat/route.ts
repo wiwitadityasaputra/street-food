@@ -85,7 +85,7 @@ export async function POST(request: Request) {
                 const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding);
                 console.log("dbg cachedAnswer ", cachedAnswer);
 
-                if (cachedAnswer && cachedAnswer.similarity >= 0.90) {
+                if (cachedAnswer && cachedAnswer.similarity >= 0.95) {
                     aiOutput = cachedAnswer.llmouput;    
                 }
             }
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
             console.log("dbg aiOutput ", aiOutput)
 
             if (jsonResponse.editCart) {
-                const data = await handleEditCart(userId, jsonResponse.editCart);
+                const data = await handleEditCart(userId, jsonResponse.editCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.addToCart) {
                 const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);

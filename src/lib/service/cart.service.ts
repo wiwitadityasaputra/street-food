@@ -32,8 +32,6 @@ export async function deleteUserCartByUsercartid(userId: string, userCartId: num
     await deleteUserCartByUsercartidDb(userId, userCartId);
 }
 
-export async function editUserCartByUserCartId(userId: string, cuisineId: number, quantity?: number) {
-    if (quantity) {
-        await editUserCartByUserAndUserCartId(userId, cuisineId, quantity);
-    }
+export async function editUserCartByUserCartId(userId: string, userCartId: number, quantity: number) {
+    return await editUserCartByUserAndUserCartId(userId, userCartId, quantity);
 }

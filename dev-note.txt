@@ -25,3 +25,17 @@ Human approval for dangerous actions
 User → AI Agent ─┼── PDFs
                  ├── Slack/messages
                  └── Internal APIs
+
+in chat bot currently when i asking for delete cart by given food name
+and in the cart i have multiple cart items with same food name
+then chat will let me choose which food that i want to delete
+but when only have one item in cart then we can delete that item
+
+lets change similar consep for edit cart
+user input will have quantity and food name
+when have one food then change that cart quantity with new value
+but when have multiple cart items
+then asking user which item that he want to edit
+and also dont forget the cancel edit button (just cross sign)
+
+please also update the instructions
