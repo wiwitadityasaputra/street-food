@@ -1,29 +1,52 @@
-import logger from "@/src/lib/util/logger";
 import { generateText, isStepCount, ModelMessage } from "ai";
 import { ChatRequestStatus, ChatStreamResponse } from "../../v1/chat.definition";
 import { deepSeek } from "@ai-sdk/deepseek";
 import { getPageNavigationInstructions } from "./instructions";
-import { NavAgentResponse } from "./nav-taent.definition";
+import { NAV_AGENT_LLMTYPE, NavAgentResponse } from "./nav-taent.definition";
 import { cartNavigationRsponse, menuNavigationResponse } from "../../v1/responses";
+import { findSimilarityOnLlmresultsByEmbedding, writeToLlmresults, writeToUserChatMain } from "@/src/lib/database/database";
+import { generateEmbedding } from "../../v1/util";
+import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
 
 export const NavigationAgent = async (userId: string, messages: ModelMessage[]): Promise<ChatStreamResponse> => {
-    logger.info({messages}, "NavigationAgent input");
-    const llmResponse = await generateText({
-        model: deepSeek('deepseek-v4-pro'),
-        instructions: `
-            ${getPageNavigationInstructions()}
-        `,
-        stopWhen: isStepCount(5),
-        messages
-    });
-    const resultStr = await llmResponse.text;
-    logger.info({resultStr}, "NavigationAgent resultStr");
-    const output: NavAgentResponse = JSON.parse(resultStr);
-    logger.info({output}, "NavigationAgent output");
+    const input = JSON.stringify({ messages });
+    const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
 
-    const toPage = output.toPage;
+    console.log("NavigationAgent input ", input);
+    console.log("NavigationAgent checkEmbedding ", checkEmbedding);
+
+    let output = undefined;
+    if (checkEmbedding) {
+        const embedding = await generateEmbedding(input);
+        const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding, NAV_AGENT_LLMTYPE);
+        console.log("NavigationAgent cachedAnswer ", cachedAnswer);
+
+        if (cachedAnswer && cachedAnswer.similarity >= SIMILARITY_THRESHOLD) {
+            output = cachedAnswer.llmouput;
+        }
+    }
+
+    if (!output) {
+        console.log("NavigationAgent call llm ");
+        const llmResponse = await generateText({
+            model: deepSeek(DEEPSEEK_MODEL),
+            instructions: `
+                ${getPageNavigationInstructions()}
+            `,
+            stopWhen: isStepCount(5),
+            messages
+        });
+        output = await llmResponse.text;
+        writeToLlmresults(input, output, NAV_AGENT_LLMTYPE);
+    }
+
+    console.log("NavigationAgent output ", output);
+    const outputObj: NavAgentResponse = JSON.parse(output);
+    const toPage = outputObj.toPage;
+
     if (toPage === "menu") {
         const responseMsg = menuNavigationResponse();
+        writeToUserChatMain(userId, "standard", "assistant", responseMsg);
         return {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],
@@ -31,6 +54,7 @@ export const NavigationAgent = async (userId: string, messages: ModelMessage[]):
         };
     } else {
         const responseMsg = cartNavigationRsponse();
+        writeToUserChatMain(userId, "standard", "assistant", responseMsg);
         return {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],

@@ -11,7 +11,6 @@ import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
 import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
 import { ChatRequestStatus, ChatStreamOptionList, ChatStreamResponse } from "@/src/lib/route/chat/v1/chat.definition";
-import logger from "@/src/lib/util/logger";
 
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
@@ -187,7 +186,7 @@ export default function ChatPanel(props: ChatPanelProps) {
                 }
             }
         } catch (e) {
-            logger.error({e}, "chat-panel - sendChatMessage - failed to send chat message");
+            console.error(`chat-panel - sendChatMessage - failed to send chat message ${e}`);
         }
     }
 

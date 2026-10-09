@@ -1,6 +1,9 @@
 import { OrderDbFlag } from "../database/database.definition";
 import { USER_CART_OPTIONS_SEPARATOR } from "../service/service.definition";
 
+export const SIMILARITY_THRESHOLD = 0.95;
+export const DEEPSEEK_MODEL = "deepseek-flash";
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',

@@ -34,7 +34,6 @@ import {
 import {
     cartOptionsToReadable
 } from "@/src/lib/util/utils";
-import logger from "@/src/lib/util/logger";
 
 export interface AddToCartResponse {
     cuisineName: string;
@@ -117,7 +116,7 @@ export const handleEditCart = async (userId: string, editCart: EditCartResponse,
                 action: "CART"
             };
         } catch (e) {
-            logger.error({e}, "handle-bot-response - handleEditCart - error edit cart");
+            console.error("handle-bot-response - handleEditCart - error edit cart ", e)
             const responseMsg = welcomeResponse();
             return {
                 status: ChatRequestStatus.DONE,
@@ -189,7 +188,7 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
             const bodyResponse = await response.json();
             totalCart = bodyResponse.totalCart;
         } catch (e) {
-            logger.error({e}, "handle-bot-response - handleAddtocart - Failed to post new cart data");
+            console.error("handle-bot-response - handleAddtocart - Failed to post new cart data ", e)
         }
 
         return {
@@ -227,7 +226,7 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
                 totalCart
             };
         } catch (e) {
-            logger.error({e}, "handle-bot-response - handleDeleteCart - error delete 1 cart");
+            console.error(`handleDeleteCart - error delete 1 cart ${e}`);
             const responseMsg = welcomeResponse();
             return {
                 status: ChatRequestStatus.DONE,
