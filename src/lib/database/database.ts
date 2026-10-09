@@ -484,12 +484,12 @@ export async function writeToUserChatMain(userId: string, role: string, messageT
     return String(result.user_chat_main_id);
 }
 
-export async function writeToLlmresults(input: string, output: string) {
+export async function writeToLlmresults(input: string, output: string, llmType: string) {
     if (process.env.SF_EMBEDDING_WRITE) {
         const embedding = await generateEmbedding(input);
         await prisma.$executeRaw`
-            INSERT INTO llm_results ("llm_input", "llm_output", "llm_input_embedding", "created_date")
-            VALUES ( ${input}, ${output}, ${`[${embedding.join(",")}]`}::vector, NOW() )
+            INSERT INTO llm_results ("llm_input", "llm_output", "llm_input_embedding", "created_date", "llm_type")
+            VALUES ( ${input}, ${output}, ${`[${embedding.join(",")}]`}::vector, NOW(), ${llmType} )
         `;
     }
 }

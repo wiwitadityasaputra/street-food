@@ -34,6 +34,7 @@ import {
 import {
     cartOptionsToReadable
 } from "@/src/lib/util/utils";
+import logger from "@/src/lib/util/logger";
 
 export interface AddToCartResponse {
     cuisineName: string;
@@ -116,7 +117,7 @@ export const handleEditCart = async (userId: string, editCart: EditCartResponse,
                 action: "CART"
             };
         } catch (e) {
-            console.error("error edit cart", e)
+            logger.error({e}, "handle-bot-response - handleEditCart - error edit cart");
             const responseMsg = welcomeResponse();
             return {
                 status: ChatRequestStatus.DONE,
@@ -188,7 +189,7 @@ export const handleAddtocart = async (userId: string, addToCart: AddToCartRespon
             const bodyResponse = await response.json();
             totalCart = bodyResponse.totalCart;
         } catch (e) {
-            console.error(`Failed to post new cart data `, e);
+            logger.error({e}, "handle-bot-response - handleAddtocart - Failed to post new cart data");
         }
 
         return {
@@ -226,7 +227,7 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
                 totalCart
             };
         } catch (e) {
-            console.error("error ", e)
+            logger.error({e}, "handle-bot-response - handleDeleteCart - error delete 1 cart");
             const responseMsg = welcomeResponse();
             return {
                 status: ChatRequestStatus.DONE,
@@ -262,7 +263,7 @@ export const handleDeleteCart = async (userId: string, deleteCart: DeleteCartRes
 
 export const handleNavigation = async (userId: string, navigate: NavigateResponse, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const toPage = navigate.toPage;
-    writeToLlmresults(aiInput, aiOutput);
+    writeToLlmresults(aiInput, aiOutput, "v1");
 
     if (toPage === "menu") {
         const responseMsg = menuNavigationResponse();
@@ -294,7 +295,7 @@ export const handleDescribeTask = async (userId: string, aiInput: string, aiOutp
     for (const r of responses) {
         await writeToUserChatMain(userId, "assistant", "standard", r);
     }
-    writeToLlmresults(aiInput, aiOutput);
+    writeToLlmresults(aiInput, aiOutput, "v1");
 
     return {
         status: ChatRequestStatus.DONE,
@@ -306,7 +307,7 @@ export const handleDescribeTask = async (userId: string, aiInput: string, aiOutp
 export const handleAnswerQuestion = async (userId: string, answerQuestion: AnswerQuestion, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
     const isBad = answerQuestion.isBad;
     const response = answerQuestion.response;
-    writeToLlmresults(aiInput, aiOutput);
+    writeToLlmresults(aiInput, aiOutput, "v1");
     if (!isBad && response) {
         await writeToUserChatMain(userId, "assistant", "standard", response);
         return {
@@ -319,7 +320,7 @@ export const handleAnswerQuestion = async (userId: string, answerQuestion: Answe
 }
 
 export const handleFoodSuggestion = async (userId: string, foodSuggestion: FoodSuggestion, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
-    writeToLlmresults(aiInput, aiOutput);
+    writeToLlmresults(aiInput, aiOutput, "v1");
 
     const dbResults: CuisinesDbIdName[] = await fetchCuisineByFoodsuggestion(foodSuggestion);
     if (dbResults.length == 0) {

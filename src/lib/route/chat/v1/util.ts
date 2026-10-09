@@ -1,6 +1,7 @@
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { headers } from "next/headers";
 import { GoogleGenAI } from "@google/genai";
+import logger from "@/src/lib/util/logger";
 
 const googleAI = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GEMINI_API_KEY,
@@ -62,7 +63,7 @@ export const getDataFromApi = async function(api: string, cookieStore: ReadonlyR
         });
         return await response.json();
     } catch (e) {
-        console.error(`Failed to fetch ${api}`, e);
+        logger.error({e}, "utils - getDataFromApi - failed fetch");
         return [];
     }
 }

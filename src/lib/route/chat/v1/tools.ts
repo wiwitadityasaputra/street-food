@@ -5,6 +5,7 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 import type { UserCartRouteGetResponse } from "@/src/app/api/cart/route";
 import { CuisineDetailGetResponse } from "@/src/app/api/cuisines/[id]/route";
 import { getCuisineDetailApi, getCuisinesApi, getUserCartsApi } from "@/src/lib/route/chat/v1/util";
+import logger from '@/src/lib/util/logger';
 
 export const getCuisineDetail = (cookieStore: ReadonlyRequestCookies) => tool({
     inputSchema: z.object({
@@ -23,7 +24,7 @@ export const getCuisineDetail = (cookieStore: ReadonlyRequestCookies) => tool({
             const result: CuisineDetailGetResponse = await response.json();
             return result;
         } catch (e) {
-            console.error(`Failed to fetch ${url}`, e);
+            logger.error({e}, "tools - getCuisineDetail - failed fetch");
             return {};
         }
     }
@@ -42,7 +43,7 @@ export const getUserCart = (cookieStore: ReadonlyRequestCookies) => tool({
             const result: UserCartRouteGetResponse[] = await response.json();
             return result;
         } catch (e) {
-            console.error(`Failed to fetch ${url}`, e);
+            logger.error({e}, "tools - getUserCart - failed fetch");
             return {};
         }
     }
@@ -61,7 +62,7 @@ export const getCuisines = (cookieStore: ReadonlyRequestCookies) => tool({
             const result: CuisineDetailGetResponse = await response.json();
             return result;
         } catch (e) {
-            console.error(`Failed to fetch ${url}`, e);
+            logger.error({e}, "tools - getCuisines - failed fetch");
             return {};
         }
     }

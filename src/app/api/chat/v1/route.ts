@@ -37,6 +37,7 @@ import {
     ChatRequestStatus,
     ChatStreamResponse
 } from "@/src/lib/route/chat/v1/chat.definition";
+import logger from "@/src/lib/util/logger";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -72,28 +73,30 @@ export async function POST(request: Request) {
             }
 
             const aiInput = JSON.stringify({ message });
-            console.log("dbg aiInput ", aiInput);
+            logger.info({aiInput}, "POST /api/chat/v2 - aiInput");
 
             let aiOutput = undefined;
             const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
-            console.log("dbg checkEmbedding ", checkEmbedding);
+            logger.info({checkEmbedding}, "POST /api/chat/v2 - checkEmbedding");
             if (checkEmbedding) {
                 // 1. Call Gemini Embeddings API
                 const embedding = await generateEmbedding(aiInput);
 
                 // 2. Search PostgreSQL using pgvector
                 const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding, "v1");
-                console.log("dbg cachedAnswer ", cachedAnswer);
+                logger.info({cachedAnswer}, "POST /api/chat/v2 - cachedAnswer");
 
                 if (cachedAnswer && cachedAnswer.similarity >= 0.95) {
-                    aiOutput = cachedAnswer.llmouput;    
+                    // 3. Found the data with high similarity threshold, check similarity
+                    aiOutput = cachedAnswer.llmouput;
                 }
             }
 
             if (!aiOutput) {
+                // 4. Call llm api
                 send({ status: ChatRequestStatus.THINKING });
 
-                console.log("dbg call llm api ")
+                logger.info("POST /api/chat/v2 - call llm");
                 // 4. Otherwise, call your LLM
                 const result = await generateText({
                     model: deepSeek('deepseek-v4-pro'),
@@ -120,9 +123,8 @@ export async function POST(request: Request) {
                 aiOutput = await result.text;
             }
 
-
             const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
-            console.log("dbg aiOutput ", aiOutput)
+            logger.info({aiOutput}, "POST /api/chat/v2 - aiOutput");
 
             if (jsonResponse.editCart) {
                 const data = await handleEditCart(userId, jsonResponse.editCart, aiInput, aiOutput);
