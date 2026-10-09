@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { generateText, isStepCount } from "ai";
+import { deepSeek } from "@ai-sdk/deepseek";
 
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { ChatRequestStatus, ChatStreamResponse } from "@/src/lib/route/chat/v1/chat.definition";
 import { welcomeResponse } from "@/src/lib/route/chat/v1/responses";
 import { writeToUserChatMain } from "@/src/lib/database/database";
+import logger from "@/src/lib/util/logger";
+import { CsAgent } from "@/src/lib/route/chat/v2/customerservice-agent/cs-agent";
+import { CsAgentName } from "@/src/lib/route/chat/v2/customerservice-agent/cs-agent.definition";
+import { RhetoricianAgent } from "@/src/lib/route/chat/v2/rhetorician-agent/rhetorician-agent";
+import { handleDefaultResponse } from "@/src/lib/route/chat/v2/handle-default-response";
+import { NavigationAgent } from "@/src/lib/route/chat/v2/navigation-agent/nav-agent";
+
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -38,6 +47,31 @@ export async function POST(request: Request) {
                 });
             }
 
+            send({ status: ChatRequestStatus.THINKING });
+            logger.info({message}, "POST /api/chat/v2 - call CsAgent - message");
+
+            let csAgentOutput = undefined;
+            csAgentOutput = await CsAgent([{ content: message, role: "user" }]);
+            
+            if (csAgentOutput.agent === CsAgentName.NavigationAgent) {
+                const data = await NavigationAgent(userId, [{ content: csAgentOutput.message, role: "user" }]);
+                send(data);
+            } else if (csAgentOutput.agent === CsAgentName.RhetoricianAgent) {
+                const data = await RhetoricianAgent(userId, [{ content: csAgentOutput.message, role: "user" }]);
+                send(data);
+            } else {
+                const data = await handleDefaultResponse(userId);
+                send(data);
+            }
+
+            controller.close();
         }
+    });
+
+    return new Response(stream, {
+        headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+        },
     });
 }

@@ -73,18 +73,18 @@ export async function POST(request: Request) {
             }
 
             const aiInput = JSON.stringify({ message });
-            logger.info({aiInput}, "POST /api/chat/v2 - aiInput");
+            logger.info({aiInput}, "POST /api/chat/v1 - aiInput");
 
             let aiOutput = undefined;
             const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
-            logger.info({checkEmbedding}, "POST /api/chat/v2 - checkEmbedding");
+            logger.info({checkEmbedding}, "POST /api/chat/v1 - checkEmbedding");
             if (checkEmbedding) {
                 // 1. Call Gemini Embeddings API
                 const embedding = await generateEmbedding(aiInput);
 
                 // 2. Search PostgreSQL using pgvector
                 const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding, "v1");
-                logger.info({cachedAnswer}, "POST /api/chat/v2 - cachedAnswer");
+                logger.info({cachedAnswer}, "POST /api/chat/v1 - cachedAnswer");
 
                 if (cachedAnswer && cachedAnswer.similarity >= 0.95) {
                     // 3. Found the data with high similarity threshold, check similarity
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
                 // 4. Call llm api
                 send({ status: ChatRequestStatus.THINKING });
 
-                logger.info("POST /api/chat/v2 - call llm");
+                logger.info("POST /api/chat/v1 - call llm");
                 // 4. Otherwise, call your LLM
                 const result = await generateText({
                     model: deepSeek('deepseek-v4-pro'),
@@ -124,7 +124,7 @@ export async function POST(request: Request) {
             }
 
             const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
-            logger.info({aiOutput}, "POST /api/chat/v2 - aiOutput");
+            logger.info({aiOutput}, "POST /api/chat/v1 - aiOutput");
 
             if (jsonResponse.editCart) {
                 const data = await handleEditCart(userId, jsonResponse.editCart, aiInput, aiOutput);

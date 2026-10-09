@@ -16,7 +16,7 @@ import logger from "@/src/lib/util/logger";
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage } = useAppContext();
+    const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage, chatVersion } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
     const [inputTextDisabled, setInputTextDisabled] = useState(false);
@@ -98,7 +98,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         setChatInProgress(true);
 
         try {
-            const response = await fetch("/api/chat/v1", {
+            const response = await fetch(`/api/chat/${chatVersion}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
