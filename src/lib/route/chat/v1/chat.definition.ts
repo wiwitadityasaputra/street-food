@@ -7,7 +7,9 @@ export enum ChatRequestStatus {
     NAV_AGENT_REVIEW = 6,
     NAV_AGENT_THINKING = 7,
     RHETO_AGENT_REVIEW = 8,
-    RHETO_AGENT_THINKING = 9
+    RHETO_AGENT_THINKING = 9,
+    CA_AGENT_REVIEW = 10,
+    CA_AGENT_THINKING = 11
 }
 
 export const chatReqStatusFormated = (status: ChatRequestStatus) => {
@@ -27,6 +29,10 @@ export const chatReqStatusFormated = (status: ChatRequestStatus) => {
         return "Rhetorician agent reviewing...";
     } else if (status === ChatRequestStatus.RHETO_AGENT_THINKING) {
         return "Rhetorician agent thinking...";
+    } else if (status === ChatRequestStatus.CA_AGENT_REVIEW) {
+        return "Culinary adisor reviewing...";
+    } else if (status === ChatRequestStatus.CA_AGENT_THINKING) {
+        return "Culinary adisor thinking...";
     } else {
         return undefined;
     }

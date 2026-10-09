@@ -13,6 +13,7 @@ import { RhetoricianAgent } from "@/src/lib/route/chat/v2/rhetorician-agent/rhet
 import { handleDefaultResponse } from "@/src/lib/route/chat/v2/handle-default-response";
 import { NavigationAgent } from "@/src/lib/route/chat/v2/navigation-agent/nav-agent";
 import { generateEmbedding } from "@/src/lib/route/chat/v1/util";
+import { CulinaryAdvisorAgent } from "@/src/lib/route/chat/v2/culinsaryadivsor-agent/ca-agent";
 
 
 export async function POST(request: Request) {
@@ -56,6 +57,9 @@ export async function POST(request: Request) {
                 send(data);
             } else if (csAgentOutput.agent === CsAgentName.RhetoricianAgent) {
                 const data = await RhetoricianAgent(userId, [{ content: csAgentOutput.message, role: "user" }], send);
+                send(data);
+            } else if (csAgentOutput.agent === CsAgentName.CulinaryAdvisorAgent) {
+                const data = await CulinaryAdvisorAgent(userId, [{ content: csAgentOutput.message, role: "user" }], send);
                 send(data);
             } else {
                 const data = await handleDefaultResponse(userId);

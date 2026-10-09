@@ -1,6 +1,7 @@
 export enum CsAgentName {
     RhetoricianAgent = "RhetoricianAgent",
-    NavigationAgent = "NavigationAgent"
+    NavigationAgent = "NavigationAgent",
+    CulinaryAdvisorAgent = "CulinaryAdvisorAgent"
 }
 
 export interface CsAgentResponse {
