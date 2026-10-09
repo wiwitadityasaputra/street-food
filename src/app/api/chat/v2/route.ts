@@ -32,7 +32,7 @@ export async function POST(request: Request) {
                 );
             };
 
-            send({ status: ChatRequestStatus.REVIEW });
+            send({ status: ChatRequestStatus.CS_AGENT_REVIEW });
             await writeToUserChatMain(userId, "user", "standard", message);
 
             // message too long
@@ -46,17 +46,16 @@ export async function POST(request: Request) {
                 });
             }
 
-            send({ status: ChatRequestStatus.THINKING });
             const csAgentInput: ModelMessage[] = [{ content: message, role: "user" }];
             const aiInput = JSON.stringify({ csAgentInput });
             console.log("POST /api/chat/v1 - aiInput ", aiInput);
 
-            const csAgentOutput = await CsAgent(csAgentInput);
+            const csAgentOutput = await CsAgent(csAgentInput, send);
             if (csAgentOutput.agent === CsAgentName.NavigationAgent) {
-                const data = await NavigationAgent(userId, [{ content: csAgentOutput.message, role: "user" }]);
+                const data = await NavigationAgent(userId, [{ content: csAgentOutput.message, role: "user" }], send);
                 send(data);
             } else if (csAgentOutput.agent === CsAgentName.RhetoricianAgent) {
-                const data = await RhetoricianAgent(userId, [{ content: csAgentOutput.message, role: "user" }]);
+                const data = await RhetoricianAgent(userId, [{ content: csAgentOutput.message, role: "user" }], send);
                 send(data);
             } else {
                 const data = await handleDefaultResponse(userId);

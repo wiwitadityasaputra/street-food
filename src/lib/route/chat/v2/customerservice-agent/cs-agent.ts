@@ -5,8 +5,9 @@ import { CS_AGENT_LLMTYPE, CsAgentResponse } from "./cs-agent.definition";
 import { findSimilarityOnLlmresultsByEmbedding, writeToLlmresults } from "@/src/lib/database/database";
 import { generateEmbedding } from "../../v1/util";
 import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
+import { ChatRequestStatus, ChatStreamResponse } from "../../v1/chat.definition";
 
-export const CsAgent = async (messages: ModelMessage[]): Promise<CsAgentResponse> => {
+export const CsAgent = async (messages: ModelMessage[], send: (data: ChatStreamResponse) => void): Promise<CsAgentResponse> => {
     const input = JSON.stringify({ messages });
     const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
 
@@ -26,6 +27,7 @@ export const CsAgent = async (messages: ModelMessage[]): Promise<CsAgentResponse
 
     if (!output) {
         console.log("CsAgent call llm ");
+        send({ status: ChatRequestStatus.CS_AGENT_THINKING });
         const response = await generateText({
             model: deepSeek(DEEPSEEK_MODEL),
             instructions: `

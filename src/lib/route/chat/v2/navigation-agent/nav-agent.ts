@@ -8,7 +8,8 @@ import { findSimilarityOnLlmresultsByEmbedding, writeToLlmresults, writeToUserCh
 import { generateEmbedding } from "../../v1/util";
 import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
 
-export const NavigationAgent = async (userId: string, messages: ModelMessage[]): Promise<ChatStreamResponse> => {
+export const NavigationAgent = async (userId: string, messages: ModelMessage[], send: (data: ChatStreamResponse) => void): Promise<ChatStreamResponse> => {
+    send({ status: ChatRequestStatus.NAV_AGENT_REVIEW });
     const input = JSON.stringify({ messages });
     const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
 
@@ -28,6 +29,7 @@ export const NavigationAgent = async (userId: string, messages: ModelMessage[]):
 
     if (!output) {
         console.log("NavigationAgent call llm ");
+        send({ status: ChatRequestStatus.NAV_AGENT_THINKING });
         const llmResponse = await generateText({
             model: deepSeek(DEEPSEEK_MODEL),
             instructions: `
