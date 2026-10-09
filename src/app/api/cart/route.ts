@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { cookiesGetUserId, cookiesSetUserId } from "@/src/lib/util/cookie-util";
+import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { USER_CART_OPTIONS_SEPARATOR, UserCartResponse } from "@/src/lib/service/service.definition";
 import { getUserCarts } from "@/src/lib/service/cart.service";
 import { countUserCartByUserAndFlag, fetchCuisineCartPrices, fetchCuisinesById, writeToUserCart } from "@/src/lib/database/database";
