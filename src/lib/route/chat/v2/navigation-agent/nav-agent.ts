@@ -1,14 +1,19 @@
 import { generateText, isStepCount, ModelMessage } from "ai";
-import { ChatRequestStatus, ChatStreamResponse } from "../../v1/chat.definition";
 import { deepSeek } from "@ai-sdk/deepseek";
-import { getPageNavigationInstructions } from "./instructions";
-import { NAV_AGENT_LLMTYPE, NavAgentResponse } from "./nav-taent.definition";
-import { cartNavigationRsponse, menuNavigationResponse } from "../../v1/responses";
-import { findSimilarityOnLlmresultsByEmbedding, writeToLlmresults, writeToUserChatMain } from "@/src/lib/database/database";
-import { generateEmbedding } from "../../v1/util";
-import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
 
-export const NavigationAgent = async (userId: string, messages: ModelMessage[], send: (data: ChatStreamResponse) => void): Promise<ChatStreamResponse> => {
+import { ChatRequestStatus, ChatStreamResponse } from "@/src/lib/route/chat/v1/chat.definition";
+import { cartNavigationRsponse, menuNavigationResponse } from "@/src/lib/route/chat/v1/responses";
+import {
+    findSimilarityOnLlmresultsByEmbedding,
+    writeToLlmresults,
+    writeToUserChatMain
+} from "@/src/lib/database/database";
+import { generateEmbedding } from "@/src/lib/route/chat/v1/util";
+import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
+import { getPageNavigationInstructions } from "@/src/lib/route/chat/v2/navigation-agent/instructions";
+import { NAV_AGENT_LLMTYPE, NavAgentResponse } from "@/src/lib/route/chat/v2/navigation-agent/nav-taent.definition";
+
+export const NavigationAgent = async (userId: string, messages: ModelMessage[], send: (data: ChatStreamResponse) => void) => {
     send({ status: ChatRequestStatus.NAV_AGENT_REVIEW });
     const input = JSON.stringify({ messages });
     const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
@@ -49,18 +54,20 @@ export const NavigationAgent = async (userId: string, messages: ModelMessage[], 
     if (toPage === "menu") {
         const responseMsg = menuNavigationResponse();
         writeToUserChatMain(userId, "standard", "assistant", responseMsg);
-        return {
+        const data =  {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],
             action: "MENU"
         };
+        send(data);
     } else {
         const responseMsg = cartNavigationRsponse();
         writeToUserChatMain(userId, "standard", "assistant", responseMsg);
-        return {
+        const data = {
             status: ChatRequestStatus.DONE,
             replies: [responseMsg],
             action: "CART"
         };
+        send(data);
     }
 }

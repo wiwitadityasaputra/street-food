@@ -23,7 +23,7 @@ export const getCulinaryAdvisorAgentInstructions = (): string => {
           output **only** a valid JSON object containing the extracted fields. 
           Do not include markdown code blocks, backticks, or extra conversational text.
         - If it fails (zero parameters found, or values do not match the enums),
-          output **only**: {"agent": "RhetoricianAgent", message: *user-input*}
+          output **only**: {"backToCs": true}
         
         ### Examples:
         input: "Show me cheap Indonesian food with the highest sales"
@@ -34,7 +34,7 @@ export const getCulinaryAdvisorAgentInstructions = (): string => {
         }
 
         input: "Recommend some nice restaurants nearby"
-        output: {"agent": "RhetoricianAgent", message: "Recommend some nice restaurants nearby"}
+        output: {"backToCs": true}
 
         input: "give me the western foods"
         output: { "country": "western" }

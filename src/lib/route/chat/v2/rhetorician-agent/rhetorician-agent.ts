@@ -1,15 +1,19 @@
 import { deepSeek } from "@ai-sdk/deepseek";
 import { generateText, isStepCount, ModelMessage } from "ai";
 
-import { RHETO_AGENT_LLMTYPE, RhetoricianAgentResponse } from "./rhetorician-agent.definition";
-import { getRhetoricianAgentInstructions } from "./instrtuctions";
-import { handleDefaultResponse } from "../handle-default-response";
-import { ChatRequestStatus, ChatStreamResponse } from "../../v1/chat.definition";
-import { findSimilarityOnLlmresultsByEmbedding, writeToLlmresults, writeToUserChatMain } from "@/src/lib/database/database";
-import { generateEmbedding } from "../../v1/util";
+import { handleDefaultResponse } from "@/src/lib/route/chat/v2/handle-default-response";
+import { ChatRequestStatus, ChatStreamResponse } from "@/src/lib/route/chat/v1/chat.definition";
+import {
+    findSimilarityOnLlmresultsByEmbedding,
+    writeToLlmresults,
+    writeToUserChatMain
+} from "@/src/lib/database/database";
+import { generateEmbedding } from "@/src/lib/route/chat/v1/util";
 import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
+import { RHETO_AGENT_LLMTYPE, RhetoricianAgentResponse } from "@/src/lib/route/chat/v2/rhetorician-agent/rhetorician-agent.definition";
+import { getRhetoricianAgentInstructions } from "@/src/lib/route/chat/v2/rhetorician-agent/instrtuctions";
 
-export const RhetoricianAgent = async (userId: string, messages: ModelMessage[], send: (data: ChatStreamResponse) => void): Promise<ChatStreamResponse> => {
+export const RhetoricianAgent = async (userId: string, messages: ModelMessage[], send: (data: ChatStreamResponse) => void) => {
     send({ status: ChatRequestStatus.RHETO_AGENT_REVIEW });
     const input = JSON.stringify({ messages });
     const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
@@ -50,11 +54,13 @@ export const RhetoricianAgent = async (userId: string, messages: ModelMessage[],
 
     if (!isBad && rcResponse) {
         writeToUserChatMain(userId, "standard", "assistant", rcResponse);
-        return {
+        const data = {
             status: ChatRequestStatus.DONE,
             replies: [rcResponse]
         };
+        send(data);
     } else {
-        return handleDefaultResponse(userId);
+        const data = await handleDefaultResponse(userId);
+        send(data);
     }
 }

@@ -1,5 +1,3 @@
-import { CsAgentName } from "../customerservice-agent/cs-agent.definition";
-
 export enum CuisineType {
     indonesia = "indonesia",
     western = "western",

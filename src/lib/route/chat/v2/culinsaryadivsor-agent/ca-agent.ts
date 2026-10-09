@@ -10,17 +10,15 @@ import {
     writeToUserChatMain
 } from "@/src/lib/database/database";
 import { DEEPSEEK_MODEL, SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
-import { CsAgentName, CsAgentResponse } from "@/src/lib/route/chat/v2/customerservice-agent/cs-agent.definition";
+import { AiAgentName, CaAgentRespoponseBacktoCs } from "@/src/lib/route/chat/v2/customerservice-agent/cs-agent.definition";
 import { FoodSuggestion } from "@/src/lib/route/chat/v1/handle-bot-response";
 import { CuisinesDbIdName } from "@/src/lib/database/database.definition";
 import { unknownFoodDescriptionResponse } from "@/src/lib/route/chat/v1/responses";
-import { RhetoricianAgent } from "@/src/lib/route/chat/v2/rhetorician-agent/rhetorician-agent";
-import { handleDefaultResponse } from "@/src/lib/route/chat/v2/handle-default-response";
-
 import { CA_AGENT_LLMTYPE, CaAgentResponse } from "@/src/lib/route/chat/v2/culinsaryadivsor-agent/ca-agent.definition";
 import { getCulinaryAdvisorAgentInstructions } from "@/src/lib/route/chat/v2/culinsaryadivsor-agent/instructions";
+import { CustomerServiceAgent } from "@/src/lib/route/chat/v2/customerservice-agent/cs-agent";
 
-export const CulinaryAdvisorAgent = async (userId: string, messages: ModelMessage[], send: (data: ChatStreamResponse) => void): Promise<ChatStreamResponse> => {
+export const CulinaryAdvisorAgent = async (userId: string, messages: ModelMessage[], previousAgents: AiAgentName[], send: (data: ChatStreamResponse) => void) => {
     send({ status: ChatRequestStatus.CA_AGENT_REVIEW });
     const input = JSON.stringify({ messages });
     const checkEmbedding = process.env.SF_EMBEDDING_CHECK;
@@ -54,14 +52,11 @@ export const CulinaryAdvisorAgent = async (userId: string, messages: ModelMessag
     }
 
     console.log("CulinaryAdvisorAgent output ", output);
-    const outputObj: CaAgentResponse | CsAgentResponse = JSON.parse(output);
+    const outputObj: CaAgentResponse | CaAgentRespoponseBacktoCs = JSON.parse(output);
 
-    if ("agent" in outputObj) {
-        if (outputObj.agent === CsAgentName.RhetoricianAgent) {
-            return await RhetoricianAgent(userId, messages, send);
-        } else {
-            return await handleDefaultResponse(userId);
-        }
+    if ("backToCs" in outputObj) {
+        previousAgents.push(AiAgentName.CulinaryAdvisorAgent);
+        await CustomerServiceAgent(userId, messages, previousAgents, send);
     } else {
         const fs: FoodSuggestion  = {};
         if (outputObj.country) { fs.country = outputObj.country }
@@ -73,17 +68,19 @@ export const CulinaryAdvisorAgent = async (userId: string, messages: ModelMessag
         if (dbResults.length == 0) {
             const reply = unknownFoodDescriptionResponse();
             await writeToUserChatMain(userId, "assistant", "standard", reply);
-            return {
+            const data = {
                 status: ChatRequestStatus.DONE,
                 replies: [reply]
             };
+            send(data);
         } else {
             const replies = dbResults.map(d => d.cuisinename).join(", ");
             await writeToUserChatMain(userId, "assistant", "standard", replies);
-            return {
+            const data = {
                 status: ChatRequestStatus.DONE,
                 replies: [replies]
             };
+            send(data);
         }
     }
 }
