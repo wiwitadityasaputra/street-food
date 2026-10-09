@@ -97,6 +97,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         setChatInProgress(true);
 
         try {
+            setSendingStatus("Please wait...");
             const response = await fetch(`/api/chat/${chatVersion}`, {
                 method: "POST",
                 headers: {
