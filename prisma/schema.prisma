@@ -84,6 +84,7 @@ model llm_results {
   llm_output          String                @db.VarChar(1000)
   llm_input_embedding Unsupported("vector")
   created_date        DateTime?             @db.Timestamp(6)
+  llm_type            String                @default("v1")
 }
 
 enum cuisine_cart_types {

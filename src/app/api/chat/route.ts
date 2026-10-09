@@ -14,14 +14,14 @@ import {
     getEditCartInstructions,
     getFoodSuggestion,
     getPageNavigationInstructions
-} from "@/src/lib/route/chat/instructions";
+} from "@/src/lib/route/chat/v1/instructions";
 import {
     welcomeResponse
-} from "@/src/lib/route/chat/responses";
+} from "@/src/lib/route/chat/v1/responses";
 import {
     generateEmbedding
-} from "@/src/lib/route/chat/util";
-import { getCuisineDetail, getCuisines, getUserCart } from "@/src/lib/route/chat/tools";
+} from "@/src/lib/route/chat/v1/util";
+import { getCuisineDetail, getCuisines, getUserCart } from "@/src/lib/route/chat/v1/tools";
 import {
     AiChatResponse,
     handleAddtocart,
@@ -32,11 +32,11 @@ import {
     handleEditCart,
     handleFoodSuggestion,
     handleNavigation
-} from "@/src/lib/route/chat/handle-bot-response";
+} from "@/src/lib/route/chat/v1/handle-bot-response";
 import {
     ChatRequestStatus,
     ChatStreamResponse
-} from "@/src/lib/route/chat/chat.definition";
+} from "@/src/lib/route/chat/v1/chat.definition";
 
 export async function POST(request: Request) {
     const userId = await cookiesGetUserId();
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
                 const embedding = await generateEmbedding(aiInput);
 
                 // 2. Search PostgreSQL using pgvector
-                const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding);
+                const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding, "v1");
                 console.log("dbg cachedAnswer ", cachedAnswer);
 
                 if (cachedAnswer && cachedAnswer.similarity >= 0.95) {

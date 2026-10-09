@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import type { UserCartRouteGetResponse } from "@/src/app/api/cart/route";
 import { CuisineDetailGetResponse } from "@/src/app/api/cuisines/[id]/route";
-import { getCuisineDetailApi, getCuisinesApi, getUserCartsApi } from "@/src/lib/route/chat/util";
+import { getCuisineDetailApi, getCuisinesApi, getUserCartsApi } from "@/src/lib/route/chat/v1/util";
 
 export const getCuisineDetail = (cookieStore: ReadonlyRequestCookies) => tool({
     inputSchema: z.object({

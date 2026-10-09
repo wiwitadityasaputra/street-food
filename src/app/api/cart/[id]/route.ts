@@ -4,7 +4,7 @@ import { deleteUserCartByUsercartid, editUserCartByUserCartId } from "@/src/lib/
 import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
 import { countUserCartByUserAndFlag } from "@/src/lib/database/database";
 import { UserCartDbFlag } from "@/src/lib/database/database.definition";
-import type { EditCartResponse } from "@/src/lib/route/chat/handle-bot-response";
+import type { EditCartResponse } from "@/src/lib/route/chat/v1/handle-bot-response";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

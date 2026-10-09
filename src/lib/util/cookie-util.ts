@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { faker } from '@faker-js/faker';
-import { welcomeResponse } from '../route/chat/responses';
+import { welcomeResponse } from '@/src/lib/route/chat/v1/responses';
 
 export const COOKIES_KEY = "street-food-cookie";
 

@@ -16,8 +16,12 @@ import {
 } from '@/src/lib/database/database.definition';
 import { prisma } from '@/src/lib/database/prisma';
 import { cuisine_type } from '@/src/generated/prisma/enums';
-import { generateEmbedding } from '@/src/lib/route/chat/util';
-import { FoodSuggestion } from '../route/chat/handle-bot-response';
+import {
+    generateEmbedding
+} from '@/src/lib/route/chat/v1/util';
+import {
+    FoodSuggestion
+} from '@/src/lib/route/chat/v1/handle-bot-response';
 
 const ALLOWED_CUISINES: readonly string[] = Object.values(cuisine_type);
 
@@ -490,15 +494,17 @@ export async function writeToLlmresults(input: string, output: string) {
     }
 }
 
-export async function findSimilarityOnLlmresultsByEmbedding(embedding: number[]): Promise<SimilarEmbedding | null> {
+export async function findSimilarityOnLlmresultsByEmbedding(embedding: number[], llmType: string): Promise<SimilarEmbedding | null> {
     const vector = `[${embedding.join(",")}]`;
     const results = await prisma.$queryRaw<SimilarEmbedding[]>`
         SELECT
             llm_output as llmouput,
             1 - ( llm_input_embedding <=> ${vector}::vector ) AS similarity
         FROM llm_results
-        WHERE llm_input_embedding IS NOT NULL
+        WHERE
+            llm_input_embedding IS NOT NULL
             AND llm_output IS NOT NULL
+            AND llm_type = ${llmType}
         ORDER BY llm_input_embedding <=> ${vector}::vector
         LIMIT 1
     `;

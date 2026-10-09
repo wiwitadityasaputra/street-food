@@ -1,9 +1,12 @@
+import { cookies } from "next/headers";
+
 import {
     fetchCuisineByFoodsuggestion,
     fetchUserCartIdByUseridAndCuisinename,
     writeToLlmresults,
     writeToUserChatMain
-} from "../../database/database";
+} from "@/src/lib/database/database";
+import { CuisinesDbIdName } from "@/src/lib/database/database.definition";
 import {
     badQuestionResponse,
     cartNavigationRsponse,
@@ -16,13 +19,21 @@ import {
     unknownFoodResponse,
     validFoodResponse,
     welcomeResponse
-} from "./responses";
-import { deleteUserCartApi, editUserCartApi, getUserCartsApi } from "./util";
+} from "@/src/lib/route/chat/v1/responses";
+import {
+    deleteUserCartApi,
+    editUserCartApi,
+    getUserCartsApi
+} from "@/src/lib/route/chat/v1/util";
 import { UserCartRoutePostRequest } from "@/src/app/api/cart/route";
-import { cookies } from "next/headers";
-import { ChatRequestStatus, ChatStreamOption, ChatStreamOptionList, ChatStreamResponse } from "./chat.definition";
-import { CuisinesDbIdName } from "../../database/database.definition";
-import { cartOptionsToReadable } from "../../util/utils";
+import {
+    ChatRequestStatus,
+    ChatStreamOptionList,
+    ChatStreamResponse
+} from "@/src/lib/route/chat/v1/chat.definition";
+import {
+    cartOptionsToReadable
+} from "@/src/lib/util/utils";
 
 export interface AddToCartResponse {
     cuisineName: string;

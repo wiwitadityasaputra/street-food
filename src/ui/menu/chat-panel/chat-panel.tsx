@@ -10,7 +10,7 @@ import { useAppContext } from "@/src/lib/util/app-contex";
 import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
 import { setTotalCart } from "@/src/lib/util/redux-provider/app-slice";
-import { ChatRequestStatus, ChatStreamOptionList, ChatStreamResponse } from "@/src/lib/route/chat/chat.definition";
+import { ChatRequestStatus, ChatStreamOptionList, ChatStreamResponse } from "@/src/lib/route/chat/v1/chat.definition";
 
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
@@ -97,7 +97,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         setChatInProgress(true);
 
         try {
-            const response = await fetch("/api/chat", {
+            const response = await fetch("/api/chat/v1", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
