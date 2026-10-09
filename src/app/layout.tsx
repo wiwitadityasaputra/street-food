@@ -12,7 +12,7 @@ import { cookiesGet } from "@/src/lib/util/cookie-util";
 import DashboardNav from "@/src/ui/dashhboard-nav/dashboard-nav";
 import { countUserCartByUserAndFlag } from "@/src/lib/database/database";
 import { UserCartDbFlag } from "@/src/lib/database/database.definition";
-import { AppProvider } from "../lib/util/app-contex";
+import { AppProvider } from "@/src/lib/util/app-contex";
 
 const ReduxProvider = dynamic(() => import("@/src/lib/util/redux-provider/redux-provider"));
 

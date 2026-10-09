@@ -6,9 +6,9 @@ import "@/src/ui/queue/me/queue-me.css";
 
 import { formatDate, orderFlagToStatus } from "@/src/lib/util/utils";
 import { QueueMeContentProps } from "@/src/ui/queue/me/queue-me.definition";
-import { UserInfo } from "../user-info/user-info";
-import { OrderStatus } from "../order-status/order-status";
-import { CuisineItem } from "../cuisine-item/cuisine-item";
+import { UserInfo } from "@/src/ui/queue/user-info/user-info";
+import { OrderStatus } from "@/src/ui/queue/order-status/order-status";
+import { CuisineItem } from "@/src/ui/queue/cuisine-item/cuisine-item";
 
 export function QueueMeContent(props: QueueMeContentProps) {
 

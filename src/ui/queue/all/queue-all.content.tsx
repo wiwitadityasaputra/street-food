@@ -1,7 +1,7 @@
 import { QueueAllContentProps } from "@/src/ui/queue/all/queue-all.definition";
 import { CuisineItem } from "@/src/ui/queue/cuisine-item/cuisine-item";
 import { OrderStatus } from "@/src/ui/queue/order-status/order-status";
-import { UserInfo } from "../user-info/user-info";
+import { UserInfo } from "@/src/ui/queue/user-info/user-info";
 
 export function QueueAllContent(props: QueueAllContentProps) {
     return (<>
