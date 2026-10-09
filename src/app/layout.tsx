@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 
 import "@/src/app/globals.css";
-import { cookiesGet } from "@/src/lib/util/cookie-util";
+import { getCookieData } from "@/src/lib/util/cookie-util";
 import DashboardNav from "@/src/ui/dashhboard-nav/dashboard-nav";
 import { countUserCartByUserAndFlag } from "@/src/lib/database/database";
 import { UserCartDbFlag } from "@/src/lib/database/database.definition";
@@ -26,10 +26,11 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieData = await cookiesGet();
+  const cookieData = await getCookieData();
   const userId = cookieData.userId;
   const isChatPanelOpen = cookieData.isChatPanelOpen;
   const welcomeMessage = cookieData.welcomeMessage;
+  const chatVersion = cookieData.chatVersion;
   const totalCartDb = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
   return (
     <html
@@ -84,6 +85,7 @@ export default async function AppLayout({
             userId={userId}
             isChatPanelOpen={isChatPanelOpen}
             welcomeMessage={welcomeMessage}
+            chatVersion={chatVersion}
           >
             {children}
           </AppProvider>

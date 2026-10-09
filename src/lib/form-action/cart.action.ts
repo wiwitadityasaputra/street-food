@@ -66,10 +66,6 @@ export async function processCarts(prevState: any, formData: FormData): Promise<
             SET flag = ${UserCartDbFlag.COOKING}, user_order_id=${newOrderId} 
             WHERE user_cart_id in ${userCartIdsStr};`;
         await updateUserCartFlagIsCooking(sqlString);
-
-        // update cookie, set cart to 0
-        // dev-note by adding "await", somehow it will refresh the page 
-        // cookiesSetUserId(userId);
     } catch (error) {
         return {
             erroMessage: String(error)

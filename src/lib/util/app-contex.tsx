@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { UserChatMainFe } from "@/src/lib/database/database.definition";
+import { useSearchParams } from "next/navigation";
 
 export type ChatVersion = "v1" | "v2";
 
@@ -10,7 +10,7 @@ export interface AppContextProps {
   userId: string;
   isChatPanelOpen: boolean;
   setIsChatPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  chatVersion: ChatVersion;
+  chatVersion?: ChatVersion;
 
   messages?: UserChatMainFe[];
   setMessages: React.Dispatch<React.SetStateAction<UserChatMainFe[]>>;
@@ -23,6 +23,7 @@ export interface AppProviderProps {
   isChatPanelOpen?: boolean;
   welcomeMessage: string;
   children: React.ReactNode;
+  chatVersion?: ChatVersion;
 }
 
 const defaultAppContext: AppContextProps = {
@@ -39,7 +40,28 @@ export const AppContext = createContext<AppContextProps>(defaultAppContext);
 
 export function AppProvider(props: AppProviderProps): React.ReactElement {
   const searchParams = useSearchParams();
-  const chatVersion: ChatVersion = searchParams.get("chatVersion") === "v1" ? "v1" : "v2";
+  let chatVersionProps: ChatVersion | undefined = props.chatVersion;
+  const chatVersionParam = searchParams.get("chatVersion");
+  let chatVersionUpdate = undefined;
+  if (chatVersionParam && (chatVersionParam === "v1" || chatVersionParam === "v2")) {
+    chatVersionUpdate = chatVersionParam;
+    chatVersionProps = chatVersionParam;
+  }
+
+  useEffect(() => {
+    if (chatVersionUpdate) {
+      fetch("/api/chat/chat-version", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            chatVersion: chatVersionUpdate
+          })
+      })
+    }
+  }, [])
+
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(props.isChatPanelOpen ?? false);
   const [messages, setMessages] = useState([] as UserChatMainFe[]);
 
@@ -47,7 +69,7 @@ export function AppProvider(props: AppProviderProps): React.ReactElement {
     userId: props.userId,
     isChatPanelOpen,
     setIsChatPanelOpen,
-    chatVersion,
+    chatVersion: chatVersionProps,
 
     messages,
     setMessages,

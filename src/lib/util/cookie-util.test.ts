@@ -52,16 +52,4 @@ describe("cookie utilities", () => {
 
         await expect(cookiesGetUserId()).resolves.toBe("user-id");
     });
-
-    it("stores the user ID in the configured cookie", async () => {
-        const set = vi.fn();
-        cookiesMock.mockResolvedValue({ set } as unknown as Awaited<ReturnType<typeof cookies>>);
-
-        await cookiesSetUserId("new-user-id");
-
-        expect(set).toHaveBeenCalledWith(
-            COOKIES_KEY,
-            JSON.stringify({ userId: "new-user-id" })
-        );
-    });
 });

@@ -11,3 +11,6 @@
 # update postgres
     1. modify schema.prisma
     2. run $pnpm prisma migrate dev --name ...
+
+# config by params
+    https://street-food-seven.vercel.app/menu?chatVersion=v2

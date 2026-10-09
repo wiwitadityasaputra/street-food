@@ -96,7 +96,6 @@ export async function POST(request: Request): Promise<NextResponse<UserCartRoute
 
     await writeToUserCart(String(cuisineId), cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
-    await cookiesSetUserId(userId);
 
     return NextResponse.json({ totalCart }, { status: 200});
 }

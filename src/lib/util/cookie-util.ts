@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { faker } from '@faker-js/faker';
 import { welcomeResponse } from '@/src/lib/route/chat/v1/responses';
+import { ChatVersion } from './app-contex';
 
 export const COOKIES_KEY = "street-food-cookie";
 
@@ -8,6 +9,7 @@ export interface CookieDataInterface {
     userId: string;
     isChatPanelOpen?: boolean;
     welcomeMessage: string;
+    chatVersion?: ChatVersion;
 }
 
 export async function getCookieData(): Promise<CookieDataInterface> {
@@ -28,24 +30,14 @@ export async function cookiesGetUserId(): Promise<string> {
     return cookieData.userId;
 }
 
-export async function cookiesGet(): Promise<CookieDataInterface> {
-    return await getCookieData();
-}
-
-export async function cookiesSetUserId(userId: string): Promise<void> {
-    const cookieData: CookieDataInterface = {
-        userId: userId,
-        welcomeMessage: welcomeResponse()
-    };
+export async function cookiesSetChatPanel(isChatPanelOpen: boolean): Promise<void> {
+    const cookieData = await getCookieData();
+    cookieData.isChatPanelOpen = isChatPanelOpen;
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }
 
-export async function cookiesSetChatPanel(isChatPanelOpen: boolean): Promise<void> {
-    const userId = await cookiesGetUserId();
-    const cookieData: CookieDataInterface = {
-        userId: userId,
-        isChatPanelOpen,
-        welcomeMessage: welcomeResponse()
-    };
+export async function cookiesSetChatversion(chatVersion: ChatVersion): Promise<void> {
+    const cookieData = await getCookieData();
+    cookieData.chatVersion = chatVersion;
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }

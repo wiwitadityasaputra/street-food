@@ -9,9 +9,6 @@ import {
     USER_CART_OPTIONS_SEPARATOR
 } from '@/src/lib/service/service.definition';
 import {
-    cookiesSetUserId
-} from '@/src/lib/util/cookie-util';
-import {
     AddtoCartActionResponse,
     AddToCartOption,
     DEFAULT_SUCCESS_MESSAGE
@@ -99,7 +96,6 @@ export async function addToCart(prevState: any, formData: FormData): Promise<Add
 
     await writeToUserCart(cuisineId, cuisineName, userId, pricePerItem, quantity, finalPrice, userCartOptions);
     const totalCart = await countUserCartByUserAndFlag(userId, UserCartDbFlag.ACTIVE);
-    await cookiesSetUserId(userId);
 
     return {
         successMessage: DEFAULT_SUCCESS_MESSAGE,
