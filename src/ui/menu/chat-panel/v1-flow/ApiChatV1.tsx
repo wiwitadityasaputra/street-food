@@ -23,8 +23,8 @@ function CustomerServiceNode({ data }: NodeProps<CustomerServiceNodeType>) {
         <>
             <Handle id="from-user" type="target" position={Position.Top} />
             <Handle id="to-gemini" type="source" position={Position.Left} />
-            <Handle id="from-gemini" type="target" position={Position.Left} />
-            <Handle id="from-deepseek" type="target" position={Position.Right} />
+            <Handle id="from-gemini" type="target" position={Position.Top} />
+            <Handle id="from-deepseek" type="target" position={Position.Top} />
             <Handle id="to-deepseek" type="source" position={Position.Right} />
             <Handle id="to-cart-edit" type="source" position={Position.Bottom} />
             <Handle id="to-cart-add" type="source" position={Position.Bottom} />
@@ -49,74 +49,86 @@ const initialNodes: Node[] = [
         type: "input",
         sourcePosition: Position.Bottom,
         position: { x: 240, y: 50 },
+        style: { border: "5px solid red", fontSize: 16 },
         data: { label: "User" }
     },
     {
         id: "node-cs",
         type: "customerService",
         position: { x: 240, y: 150 },
+        style: { border: "5px solid green" },
         data: { label: "CustomerService Agent" }
     },
     {
         id: "node-gemini",
-        sourcePosition: Position.Right,
+        sourcePosition: Position.Top,
         targetPosition: Position.Right,
         position: { x: 40, y: 150 },
-        data: { label: "Gemini Embedding" }
+        style: { border: "5px solid blue" },
+        data: { label: "LLM Gemini Embedding" }
     },
     {
         id: "node-llm",
-        sourcePosition: Position.Left,
+        sourcePosition: Position.Top,
         targetPosition: Position.Left,
         position: { x: 440, y: 150 },
+        style: { border: "5px solid blue" },
         data: { label: "LLM Deepseek" }
     },
     {
         id: "node-cart-edit",
         targetPosition: Position.Right,
         position: { x: 40, y: 250 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Cart Edit" }
     },
     {
         id: "node-cart-add",
         targetPosition: Position.Right,
         position: { x: 40, y: 350 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Cart Add" }
     },
     {
         id: "node-cart-delete",
         targetPosition: Position.Right,
         position: { x: 40, y: 450 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Cart Delete" }
     },
     {
         id: "node-page-nav",
         targetPosition: Position.Right,
         position: { x: 120, y: 550 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Page Navigation" }
     },
     {
         id: "node-default-response",
         targetPosition: Position.Left,
         position: { x: 360, y: 550 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Default Response" }
     },
     {
         id: "node-describe-task",
         targetPosition: Position.Left,
         position: { x: 440, y: 450 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Describe Task" }
     },
     {
         id: "node-food-suggest",
         targetPosition: Position.Left,
         position: { x: 440, y: 350 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Food Suggest" }
     },
     {
         id: "node-aq",
         targetPosition: Position.Left,
         position: { x: 440, y: 250 },
+        style: { border: "5px solid #10B981" },
         data: { label: "Answer Question" }
     }
 ];
@@ -129,7 +141,7 @@ const initialEdges: Edge[] = [
         targetHandle: "from-user",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-gemini",
@@ -138,7 +150,7 @@ const initialEdges: Edge[] = [
         target: "node-gemini",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "gemini-to-cs",
@@ -146,7 +158,7 @@ const initialEdges: Edge[] = [
         target: "node-cs",
         targetHandle: "from-gemini",
         type: "smoothstep",
-        style: { strokeWidth: 0 },
+        style: { stroke: "#10b981", strokeWidth: 0 },
         animated: true
     },
     {
@@ -155,7 +167,7 @@ const initialEdges: Edge[] = [
         sourceHandle: "to-deepseek",
         target: "node-llm",
         type: "smoothstep",
-        style: { strokeWidth: 0 },
+        style: { stroke: "indigo", strokeWidth: 0 },
         animated: true
     },
     {
@@ -164,7 +176,7 @@ const initialEdges: Edge[] = [
         target: "node-cs",
         targetHandle: "from-deepseek",
         type: "smoothstep",
-        style: { strokeWidth: 0 },
+        style: { stroke: "#10b981", strokeWidth: 0 },
         animated: true
     },
     {
@@ -174,7 +186,7 @@ const initialEdges: Edge[] = [
         target: "node-cart-edit",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-cart-add",
@@ -183,7 +195,7 @@ const initialEdges: Edge[] = [
         target: "node-cart-add",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-cart-delete",
@@ -192,7 +204,7 @@ const initialEdges: Edge[] = [
         target: "node-cart-delete",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo",strokeWidth: 0 }
     },
     {
         id: "cs-to-page-nav",
@@ -201,7 +213,7 @@ const initialEdges: Edge[] = [
         target: "node-page-nav",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-default-response",
@@ -210,7 +222,7 @@ const initialEdges: Edge[] = [
         target: "node-default-response",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-describe-task",
@@ -219,7 +231,7 @@ const initialEdges: Edge[] = [
         target: "node-describe-task",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-food-suggest",
@@ -228,7 +240,7 @@ const initialEdges: Edge[] = [
         target: "node-food-suggest",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     },
     {
         id: "cs-to-aq",
@@ -237,7 +249,7 @@ const initialEdges: Edge[] = [
         target: "node-aq",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 0 }
+        style: { stroke: "indigo", strokeWidth: 0 }
     }
 ];
 
