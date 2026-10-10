@@ -28,7 +28,7 @@ export interface AppProviderProps {
 }
 
 async function postChatVersion(chatVersion: ChatVersion): Promise<ChatVersion> {
-  const response = await fetch("/api/chat/chat-version", {
+  const response = await fetch("/api/chat/version", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
