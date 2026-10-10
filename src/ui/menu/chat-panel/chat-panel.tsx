@@ -355,7 +355,8 @@ export default function ChatPanel(props: ChatPanelProps) {
                     <div className="start-chat-error" role="alert">{chatVersionError}</div>
                 )}
                 {isChatPanelOpen && (
-                    <>
+                    <div className="start-chat-version-group">
+                        <span className="start-chat-version-label">Chat version:</span>
                         <button
                             type="button"
                             className={`start-chat-version-button${chatVersion === "v1" ? " start-chat-version-button-active" : ""}`}
@@ -374,7 +375,7 @@ export default function ChatPanel(props: ChatPanelProps) {
                         >
                             V2
                         </button>
-                    </>
+                    </div>
                 )}
                 <button
                     type="button"
