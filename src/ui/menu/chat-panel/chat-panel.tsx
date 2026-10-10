@@ -15,13 +15,15 @@ import { chatReqStatusFormated, ChatRequestStatus, ChatStreamOptionList, ChatStr
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage, chatVersion } = useAppContext();
+    const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage, chatVersion, setChatVersion } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
     const [inputTextDisabled, setInputTextDisabled] = useState(false);
     const [chatInProgress, setChatInProgress] = useState(false);
     const [chatStreamOptions, setChatStreamOptions] = useState<undefined | ChatStreamOptionList[]>(undefined);
     const [chatOptionQuestion, setChatOptionQuestion] = useState<ChatMessage | undefined>(undefined);
+    const [chatVersionError, setChatVersionError] = useState<string | undefined>(undefined);
+    const [chatVersionUpdating, setChatVersionUpdating] = useState(false);
 
     const [sendingStatus, setSendingStatus] = useState<string | undefined>(undefined);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -52,6 +54,19 @@ export default function ChatPanel(props: ChatPanelProps) {
                 isChatPanelOpen: nextOpen
             })
         });
+    }
+
+    async function changeChatVersion(nextChatVersion: "v1" | "v2") {
+        setChatVersionError(undefined);
+        setChatVersionUpdating(true);
+        try {
+            await setChatVersion(nextChatVersion);
+        } catch (error) {
+            console.error("chat-panel - changeChatVersion - failed to update chat version", error);
+            setChatVersionError("Unable to change chat version. Please try again.");
+        } finally {
+            setChatVersionUpdating(false);
+        }
     }
 
     const chatMessages: ChatMessage[] = [];
@@ -187,6 +202,7 @@ export default function ChatPanel(props: ChatPanelProps) {
 
     return (
         <div className="start-chat">
+            {isChatPanelOpen && <div className="start-chat-flow-panel" />}
             {isChatPanelOpen && (
                 <section className="start-chat-panel" role="dialog" aria-label="Customer service chat">
                     <header className="start-chat-header">
@@ -292,18 +308,45 @@ export default function ChatPanel(props: ChatPanelProps) {
                     </form>
                 </section>
             )}
-            <button
-                type="button"
-                className="start-chat-trigger"
-                aria-expanded={isChatPanelOpen}
-                aria-haspopup="dialog"
-                onClick={() => void changeChatOpen(!isChatPanelOpen)}
-            >
-                <span className="start-chat-trigger-icon" aria-hidden="true">
-                    <FontAwesomeIcon icon={faHeadset} />
-                </span>
-                <span>{isChatPanelOpen ? "Close chat" : "Need AI helper"}</span>
-            </button>
+            <div className="start-chat-launcher">
+                {chatVersionError && isChatPanelOpen && (
+                    <div className="start-chat-error" role="alert">{chatVersionError}</div>
+                )}
+                {isChatPanelOpen && (
+                    <>
+                        <button
+                            type="button"
+                            className={`start-chat-version-button${chatVersion === "v1" ? " start-chat-version-button-active" : ""}`}
+                            aria-pressed={chatVersion === "v1"}
+                            disabled={chatVersionUpdating || chatVersion === "v1"}
+                            onClick={() => void changeChatVersion("v1")}
+                        >
+                            V1
+                        </button>
+                        <button
+                            type="button"
+                            className={`start-chat-version-button${chatVersion === "v2" ? " start-chat-version-button-active" : ""}`}
+                            aria-pressed={chatVersion === "v2"}
+                            disabled={chatVersionUpdating || chatVersion === "v2"}
+                            onClick={() => void changeChatVersion("v2")}
+                        >
+                            V2
+                        </button>
+                    </>
+                )}
+                <button
+                    type="button"
+                    className="start-chat-trigger"
+                    aria-expanded={isChatPanelOpen}
+                    aria-haspopup="dialog"
+                    onClick={() => void changeChatOpen(!isChatPanelOpen)}
+                >
+                    <span className="start-chat-trigger-icon" aria-hidden="true">
+                        <FontAwesomeIcon icon={faHeadset} />
+                    </span>
+                    <span>{isChatPanelOpen ? "Close chat" : "Need AI helper"}</span>
+                </button>
+            </div>
         </div>
     );
 }

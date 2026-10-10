@@ -11,6 +11,7 @@ export interface AppContextProps {
   isChatPanelOpen: boolean;
   setIsChatPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   chatVersion?: ChatVersion;
+  setChatVersion: (chatVersion: ChatVersion) => Promise<void>;
 
   messages?: UserChatMainFe[];
   setMessages: React.Dispatch<React.SetStateAction<UserChatMainFe[]>>;
@@ -26,10 +27,34 @@ export interface AppProviderProps {
   chatVersion?: ChatVersion;
 }
 
+async function postChatVersion(chatVersion: ChatVersion): Promise<ChatVersion> {
+  const response = await fetch("/api/chat/chat-version", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ chatVersion })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update chat version: ${response.status}`);
+  }
+
+  const result: { chatVersion?: ChatVersion } = await response.json();
+  if (result.chatVersion !== chatVersion) {
+    throw new Error("The server did not confirm the requested chat version");
+  }
+
+  return result.chatVersion;
+}
+
 const defaultAppContext: AppContextProps = {
   userId: "",
   isChatPanelOpen: false,
   chatVersion: "v1",
+  setChatVersion: async () => {
+    throw new Error("Cannot change chat version outside of AppProvider");
+  },
   welcomeMessage: "",
   setIsChatPanelOpen: () => {},
 
@@ -40,36 +65,36 @@ export const AppContext = createContext<AppContextProps>(defaultAppContext);
 
 export function AppProvider(props: AppProviderProps): React.ReactElement {
   const searchParams = useSearchParams();
-  let chatVersionProps: ChatVersion | undefined = props.chatVersion ? props.chatVersion : "v2";
   const chatVersionParam = searchParams.get("chatVersion");
-  let chatVersionUpdate = undefined;
-  if (chatVersionParam && (chatVersionParam === "v1" || chatVersionParam === "v2")) {
-    chatVersionUpdate = chatVersionParam;
-    chatVersionProps = chatVersionParam;
-  }
+  const chatVersionUpdate: ChatVersion | undefined =
+    chatVersionParam === "v1" || chatVersionParam === "v2" ? chatVersionParam : undefined;
+  const chatVersionProps = chatVersionUpdate ?? props.chatVersion ?? "v2";
+  const [chatVersion, setChatVersionState] = useState(chatVersionProps);
 
   useEffect(() => {
     if (chatVersionUpdate) {
-      fetch("/api/chat/chat-version", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            chatVersion: chatVersionUpdate
-          })
-      })
+      void postChatVersion(chatVersionUpdate)
+        .then(setChatVersionState)
+        .catch((error: unknown) => {
+          console.error("app-context - failed to apply chat version from URL", error);
+        });
     }
-  }, [])
+  }, [chatVersionUpdate]);
 
   const [isChatPanelOpen, setIsChatPanelOpen] = useState(props.isChatPanelOpen ?? false);
   const [messages, setMessages] = useState([] as UserChatMainFe[]);
+
+  async function setChatVersion(nextChatVersion: ChatVersion): Promise<void> {
+    const confirmedChatVersion = await postChatVersion(nextChatVersion);
+    setChatVersionState(confirmedChatVersion);
+  }
 
   const value: AppContextProps = {
     userId: props.userId,
     isChatPanelOpen,
     setIsChatPanelOpen,
-    chatVersion: chatVersionProps,
+    chatVersion,
+    setChatVersion,
 
     messages,
     setMessages,

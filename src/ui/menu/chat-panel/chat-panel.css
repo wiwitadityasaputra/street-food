@@ -1,5 +1,8 @@
 .start-chat {
     position: fixed;
+    --start-chat-panel-width: min(360px, calc(100vw - 32px));
+    --start-chat-panel-height: min(470px, calc(100dvh - 112px));
+    --start-chat-edge: 24px;
     width: 210px !important;
     right: 24px;
     bottom: 24px;
@@ -13,6 +16,8 @@
 
 .start-chat-trigger {
     display: inline-flex;
+    box-sizing: border-box;
+    width: 190px;
     align-items: center;
     gap: 10px;
     padding: 12px 18px 12px 12px;
@@ -52,10 +57,16 @@
     font-size: 17px;
 }
 
+.start-chat-launcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .start-chat-panel {
     display: flex;
-    width: min(360px, calc(100vw - 32px));
-    height: min(470px, calc(100dvh - 112px));
+    width: var(--start-chat-panel-width);
+    height: var(--start-chat-panel-height);
     min-height: 300px;
     flex-direction: column;
     overflow: hidden;
@@ -63,6 +74,42 @@
     border-radius: 18px;
     background: #fff;
     box-shadow: 0 12px 40px rgb(35 25 15 / 20%);
+}
+
+.start-chat-flow-panel {
+    position: fixed;
+    z-index: 1099;
+    left: var(--start-chat-edge);
+    bottom: calc(var(--start-chat-edge) + 72px);
+    box-sizing: border-box;
+    width: calc(100vw - var(--start-chat-panel-width) - 74px);
+    height: calc(var(--start-chat-panel-height) + 2px);
+    min-height: 302px;
+    border: 1px solid #eee5dc;
+    border-radius: 18px;
+    background: #fff;
+}
+
+.start-chat-version-button {
+    padding: 8px 12px;
+    border: 1px solid var(--colorPrimary, #ff7c08);
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(30 24 18 / 22%);
+    color: var(--colorPrimary, #ff7c08);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.start-chat-version-button:disabled {
+    cursor: default;
+}
+
+.start-chat-version-button-active {
+    background: var(--colorPrimary, #ff7c08);
+    color: #fff;
 }
 
 .start-chat-error {
@@ -278,10 +325,17 @@
     .start-chat {
         right: 16px;
         bottom: 16px;
+        --start-chat-edge: 16px;
     }
 
     .start-chat-panel {
-        width: calc(100vw - 32px);
+        width: var(--start-chat-panel-width);
+    }
+}
+
+@media (max-width: 767px) {
+    .start-chat-flow-panel {
+        display: none;
     }
 }
 
