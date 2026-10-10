@@ -52,10 +52,14 @@ export default function ChatPanel(props: ChatPanelProps) {
     useEffect(() => {
         if (isChatPanelOpen && !inputTextDisabled) {
             messageInputRef.current?.focus();
-            resetV1Flow();
-            console.log("dbg resetv1Flow")
         }
     }, [isChatPanelOpen, inputTextDisabled]);
+
+    useEffect(() => {
+        if (isChatPanelOpen) {
+            resetV1Flow();
+        }
+    }, [isChatPanelOpen]);
 
     async function changeChatOpen(nextOpen: boolean) {
         setIsChatPanelOpen(nextOpen);

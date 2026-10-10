@@ -71,7 +71,7 @@ export enum V1Flow {
     CS_TO_CART_DELETE = "cs-to-cart-delete",
     CS_TO_PAGE_NAV = "cs-to-page-nav",
     CS_TO_AQ = "cs-to-default-response",
-    CS_TO_FOOD_SUGGEST = "cs-to-describe-task",
-    CS_TO_DESCRIBE_TASK = "cs-to-food-suggest",
+    CS_TO_FOOD_SUGGEST = "cs-to-food-suggest",
+    CS_TO_DESCRIBE_TASK = "cs-to-describe-task",
     CS_TO_DEFAULT_RESPONSE = "cs-to-aq"
 }

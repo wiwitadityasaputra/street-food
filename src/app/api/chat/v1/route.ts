@@ -3,7 +3,7 @@ import { deepSeek } from '@ai-sdk/deepseek';
 import { generateText, isStepCount } from 'ai';
 import { cookies } from "next/headers";
 
-import { cookiesGetUserId } from "@/src/lib/util/cookie-util";
+import { getCookieData } from "@/src/lib/util/cookie-util";
 import { findSimilarityOnLlmresultsByEmbedding, writeToUserChatMain } from "@/src/lib/database/database";
 import {
     getAddtocartInstructions,
@@ -40,8 +40,11 @@ import {
 } from "@/src/lib/route/chat/v1/chat.definition";
 import { SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
 
+const V1_FLOW_DELAY_MS = 1000;
+
 export async function POST(request: Request) {
-    const userId = await cookiesGetUserId();
+    const cookieData = await getCookieData();
+    const userId = cookieData.userId;
     if (!userId) {
         return NextResponse.json({}, { status: 401 });
     }
@@ -57,9 +60,15 @@ export async function POST(request: Request) {
                     encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
                 );
             };
+            const sendV1Flow = async (v1Flow: V1Flow) => {
+                send({ v1Flow });
+                if (cookieData.delay) {
+                    await new Promise((resolve) => setTimeout(resolve, V1_FLOW_DELAY_MS));
+                }
+            };
 
             // Step 1: Processing
-            send({ v1Flow: V1Flow.USER_TO_CS });
+            await sendV1Flow(V1Flow.USER_TO_CS);
             send({ status: ChatRequestStatus.REVIEW });
             await writeToUserChatMain(userId, "user", "standard", message);
 
@@ -83,11 +92,11 @@ export async function POST(request: Request) {
 
             if (checkEmbedding) {
                 // 1. Call Gemini Embeddings API
-                send({ v1Flow: V1Flow.CS_TO_GEMINI });
+                await sendV1Flow(V1Flow.CS_TO_GEMINI);
                 const embedding = await generateEmbedding(aiInput);
 
                 // 2. Search PostgreSQL using pgvector
-                send({ v1Flow: V1Flow.GEMINI_TO_CS });
+                await sendV1Flow(V1Flow.GEMINI_TO_CS);
                 const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding, "v1");
                 console.log("POST /api/chat/v1 - cachedAnswer ", cachedAnswer);
 
@@ -99,7 +108,7 @@ export async function POST(request: Request) {
 
             if (!aiOutput) {
                 // 4. Call llm api
-                send({ v1Flow: V1Flow.CS_TO_LLM });
+                await sendV1Flow(V1Flow.CS_TO_LLM);
                 send({ status: ChatRequestStatus.THINKING });
 
                 console.log("POST /api/chat/v1 - call llm")
@@ -126,42 +135,42 @@ export async function POST(request: Request) {
                     messages: [{ content: message, role: "user" }]
                 });
 
-                send({ v1Flow: V1Flow.LLM_TO_CS });
+                await sendV1Flow(V1Flow.LLM_TO_CS);
                 aiOutput = await result.text;
             }
             console.log("POST /api/chat/v1 - aiOutput ", aiOutput);
             const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
 
             if (jsonResponse.editCart) {
-                send({ v1Flow: V1Flow.CS_TO_CART_EDIT });
+                await sendV1Flow(V1Flow.CS_TO_CART_EDIT);
                 const data = await handleEditCart(userId, jsonResponse.editCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.addToCart) {
-                send({ v1Flow: V1Flow.CS_TO_CART_ADD });
+                await sendV1Flow(V1Flow.CS_TO_CART_ADD);
                 const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.deleteCart) {
-                send({ v1Flow: V1Flow.CS_TO_CART_DELETE });
+                await sendV1Flow(V1Flow.CS_TO_CART_DELETE);
                 const data = await handleDeleteCart(userId, jsonResponse.deleteCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.navigate) {
-                send({ v1Flow: V1Flow.CS_TO_PAGE_NAV });
+                await sendV1Flow(V1Flow.CS_TO_PAGE_NAV);
                 const data = await handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.chatBotTask === true) {
-                send({ v1Flow: V1Flow.CS_TO_DESCRIBE_TASK });
+                await sendV1Flow(V1Flow.CS_TO_DESCRIBE_TASK);
                 const data = await handleDescribeTask(userId, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.answerQuestion) {
-                send({ v1Flow: V1Flow.CS_TO_AQ });
+                await sendV1Flow(V1Flow.CS_TO_AQ);
                 const data = await handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.foodSuggestion) {
-                send({ v1Flow: V1Flow.CS_TO_FOOD_SUGGEST });
+                await sendV1Flow(V1Flow.CS_TO_FOOD_SUGGEST);
                 const data = await handleFoodSuggestion(userId, jsonResponse.foodSuggestion, aiInput, aiOutput);
                 send(data);
             } else {
-                send({ v1Flow: V1Flow.CS_TO_DEFAULT_RESPONSE });
+                await sendV1Flow(V1Flow.CS_TO_DEFAULT_RESPONSE);
                 const data = await handleDefaultAnswer(userId);
                 send(data);
             }
