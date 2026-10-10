@@ -74,11 +74,29 @@
     background: #fff;
 }
 
+.start-chat-delay-group {
+    box-sizing: border-box;
+    min-height: 37px;
+    cursor: pointer;
+}
+
 .start-chat-version-label {
     color: #473c32;
     font-size: 12px;
     font-weight: 600;
     white-space: nowrap;
+}
+
+.start-chat-delay-group .start-chat-version-label {
+    cursor: pointer;
+}
+
+.start-chat-delay-checkbox {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: var(--colorPrimary, #ff7c08);
+    cursor: pointer;
 }
 
 .start-chat-panel {

@@ -355,6 +355,18 @@ export default function ChatPanel(props: ChatPanelProps) {
                     <div className="start-chat-error" role="alert">{chatVersionError}</div>
                 )}
                 {isChatPanelOpen && (
+                    <div className="start-chat-version-group start-chat-delay-group">
+                        <label className="start-chat-version-label" htmlFor="start-chat-delay">
+                            Delay:
+                        </label>
+                        <input
+                            id="start-chat-delay"
+                            className="start-chat-delay-checkbox"
+                            type="checkbox"
+                        />
+                    </div>
+                )}
+                {isChatPanelOpen && (
                     <div className="start-chat-version-group">
                         <span className="start-chat-version-label">Chat version:</span>
                         <button
