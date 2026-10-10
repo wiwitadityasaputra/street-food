@@ -29,7 +29,8 @@ function CustomerServiceNode({ data }: NodeProps<CustomerServiceNodeType>) {
             <Handle id="to-cart-edit" type="source" position={Position.Bottom} />
             <Handle id="to-cart-add" type="source" position={Position.Bottom} />
             <Handle id="to-cart-delete" type="source" position={Position.Bottom} />
-            <Handle id="to-cart-page-nav" type="source" position={Position.Bottom} />
+            <Handle id="to-page-nav" type="source" position={Position.Bottom} />
+            <Handle id="to-default-response" type="source" position={Position.Bottom} />
             <Handle id="to-describe-task" type="source" position={Position.Bottom} />
             <Handle id="to-food-suggest" type="source" position={Position.Bottom} />
             <Handle id="to-aq" type="source" position={Position.Bottom} />
@@ -90,9 +91,15 @@ const initialNodes: Node[] = [
     },
     {
         id: "node-page-nav",
-        targetPosition: Position.Top,
-        position: { x: 240, y: 550 },
+        targetPosition: Position.Right,
+        position: { x: 120, y: 550 },
         data: { label: "Page Navigation" }
+    },
+    {
+        id: "node-default-response",
+        targetPosition: Position.Left,
+        position: { x: 360, y: 550 },
+        data: { label: "Default Response" }
     },
     {
         id: "node-describe-task",
@@ -190,8 +197,17 @@ const initialEdges: Edge[] = [
     {
         id: "cs-to-page-nav",
         source: "node-cs",
-        sourceHandle: "to-cart-page-nav",
+        sourceHandle: "to-page-nav",
         target: "node-page-nav",
+        type: "smoothstep",
+        animated: true,
+        style: { strokeWidth: 0 }
+    },
+    {
+        id: "cs-to-default-response",
+        source: "node-cs",
+        sourceHandle: "to-default-response",
+        target: "node-default-response",
         type: "smoothstep",
         animated: true,
         style: { strokeWidth: 0 }

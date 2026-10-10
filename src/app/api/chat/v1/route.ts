@@ -35,7 +35,8 @@ import {
 } from "@/src/lib/route/chat/v1/handle-bot-response";
 import {
     ChatRequestStatus,
-    ChatStreamResponse
+    ChatStreamResponse,
+    V1Flow
 } from "@/src/lib/route/chat/v1/chat.definition";
 import { SIMILARITY_THRESHOLD } from "@/src/lib/util/utils";
 
@@ -81,9 +82,11 @@ export async function POST(request: Request) {
 
             if (checkEmbedding) {
                 // 1. Call Gemini Embeddings API
+                send({ v1Flow: V1Flow.CS_TO_GEMINI });
                 const embedding = await generateEmbedding(aiInput);
 
                 // 2. Search PostgreSQL using pgvector
+                send({ v1Flow: V1Flow.GEMINI_TO_CS });
                 const cachedAnswer = await findSimilarityOnLlmresultsByEmbedding(embedding, "v1");
                 console.log("POST /api/chat/v1 - cachedAnswer ", cachedAnswer);
 
@@ -95,10 +98,10 @@ export async function POST(request: Request) {
 
             if (!aiOutput) {
                 // 4. Call llm api
+                send({ v1Flow: V1Flow.CS_TO_LLM });
                 send({ status: ChatRequestStatus.THINKING });
 
                 console.log("POST /api/chat/v1 - call llm")
-                // 4. Otherwise, call your LLM
                 const result = await generateText({
                     model: deepSeek('deepseek-v4-pro'),
                     instructions: `
@@ -121,33 +124,43 @@ export async function POST(request: Request) {
                     stopWhen: isStepCount(5),
                     messages: [{ content: message, role: "user" }]
                 });
+
+                send({ v1Flow: V1Flow.LLM_TO_CS });
                 aiOutput = await result.text;
             }
             console.log("POST /api/chat/v1 - aiOutput ", aiOutput);
             const jsonResponse: AiChatResponse = JSON.parse(aiOutput);
 
             if (jsonResponse.editCart) {
+                send({ v1Flow: V1Flow.CS_TO_CART_EDIT });
                 const data = await handleEditCart(userId, jsonResponse.editCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.addToCart) {
+                send({ v1Flow: V1Flow.CS_TO_CART_ADD });
                 const data = await handleAddtocart(userId, jsonResponse.addToCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.deleteCart) {
+                send({ v1Flow: V1Flow.CS_TO_CART_DELETE });
                 const data = await handleDeleteCart(userId, jsonResponse.deleteCart, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.navigate) {
+                send({ v1Flow: V1Flow.CS_TO_PAGE_NAV });
                 const data = await handleNavigation(userId, jsonResponse.navigate, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.chatBotTask === true) {
+                send({ v1Flow: V1Flow.CS_TO_DESCRIBE_TASK });
                 const data = await handleDescribeTask(userId, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.answerQuestion) {
+                send({ v1Flow: V1Flow.CS_TO_AQ });
                 const data = await handleAnswerQuestion(userId, jsonResponse.answerQuestion, aiInput, aiOutput);
                 send(data);
             } else if (jsonResponse.foodSuggestion) {
+                send({ v1Flow: V1Flow.CS_TO_FOOD_SUGGEST });
                 const data = await handleFoodSuggestion(userId, jsonResponse.foodSuggestion, aiInput, aiOutput);
                 send(data);
             } else {
+                send({ v1Flow: V1Flow.CS_TO_DEFAULT_RESPONSE });
                 const data = await handleDefaultAnswer(userId);
                 send(data);
             }

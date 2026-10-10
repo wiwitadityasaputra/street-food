@@ -121,6 +121,7 @@ export default function ChatPanel(props: ChatPanelProps) {
             "cs-to-cart-add": { strokeWidth: 0 },
             "cs-to-cart-delete": { strokeWidth: 0 },
             "cs-to-page-nav": { strokeWidth: 0 },
+            "cs-to-default-response": { strokeWidth: 0 },
             "cs-to-describe-task": { strokeWidth: 0 },
             "cs-to-food-suggest": { strokeWidth: 0 },
             "cs-to-aq": { strokeWidth: 0 },
@@ -169,11 +170,22 @@ export default function ChatPanel(props: ChatPanelProps) {
                         const action = payload.action;
                         const totalCart = payload.totalCart;
                         const option = payload.option;
+                        const status = payload.status;
+                        const v1Flow = payload.v1Flow;
 
-                        setSendingStatus(chatReqStatusFormated(payload.status));
-                        if (payload.status === ChatRequestStatus.DONE) {
-                            setInputTextDisabled(false);
-                            setChatInProgress(false);
+                        if (v1Flow) {
+                            setEdgeStyles((currentStyles) => ({
+                                ...currentStyles,
+                                [v1Flow]: { strokeWidth: 5 },
+                            }));
+                        }
+
+                        if (status) {
+                            setSendingStatus(chatReqStatusFormated(status));
+                            if (status === ChatRequestStatus.DONE) {
+                                setInputTextDisabled(false);
+                                setChatInProgress(false);
+                            }
                         }
 
                         if (option && option.options.length > 0) {

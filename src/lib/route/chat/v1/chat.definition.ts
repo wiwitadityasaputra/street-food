@@ -52,9 +52,26 @@ export interface ChatStreamOptionList {
 }
 
 export interface ChatStreamResponse {
-    status: ChatRequestStatus;
+    status?: ChatRequestStatus;
     action?: string;
     replies?: string[];
     totalCart?: number;
     option?: ChatStreamOption;
+    v1Flow?: V1Flow;
+}
+
+export enum V1Flow {
+    USER_TO_CS = "user-to-cs",
+    CS_TO_GEMINI = "cs-to-gemini",
+    GEMINI_TO_CS = "gemini-to-cs",
+    CS_TO_LLM = "cs-to-llm",
+    LLM_TO_CS = "llm-to-cs",
+    CS_TO_CART_EDIT = "cs-to-cart-edit",
+    CS_TO_CART_ADD = "cs-to-cart-add",
+    CS_TO_CART_DELETE = "cs-to-cart-delete",
+    CS_TO_PAGE_NAV = "cs-to-page-nav",
+    CS_TO_AQ = "cs-to-default-response",
+    CS_TO_FOOD_SUGGEST = "cs-to-describe-task",
+    CS_TO_DESCRIBE_TASK = "cs-to-food-suggest",
+    CS_TO_DEFAULT_RESPONSE = "cs-to-aq"
 }
