@@ -121,7 +121,7 @@ const initialEdges: Edge[] = [
         targetHandle: "from-user",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-gemini",
@@ -130,7 +130,7 @@ const initialEdges: Edge[] = [
         target: "node-gemini",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "gemini-to-cs",
@@ -156,7 +156,7 @@ const initialEdges: Edge[] = [
         target: "node-cs",
         targetHandle: "from-deepseek",
         type: "smoothstep",
-        style: { strokeWidth: 5 },
+        style: { strokeWidth: 0 },
         animated: true
     },
     {
@@ -166,7 +166,7 @@ const initialEdges: Edge[] = [
         target: "node-cart-edit",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-cart-add",
@@ -175,7 +175,7 @@ const initialEdges: Edge[] = [
         target: "node-cart-add",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-cart-delete",
@@ -184,7 +184,7 @@ const initialEdges: Edge[] = [
         target: "node-cart-delete",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-page-nav",
@@ -193,7 +193,7 @@ const initialEdges: Edge[] = [
         target: "node-page-nav",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-describe-task",
@@ -202,7 +202,7 @@ const initialEdges: Edge[] = [
         target: "node-describe-task",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-food-suggest",
@@ -211,7 +211,7 @@ const initialEdges: Edge[] = [
         target: "node-food-suggest",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     },
     {
         id: "cs-to-aq",
@@ -220,7 +220,7 @@ const initialEdges: Edge[] = [
         target: "node-aq",
         type: "smoothstep",
         animated: true,
-        style: { strokeWidth: 5 }
+        style: { strokeWidth: 0 }
     }
 ];
 
