@@ -1,21 +1,20 @@
-import { generateText, isStepCount, ModelMessage } from "ai";
-import { ChatRequestStatus, ChatStreamOptionList, ChatStreamResponse } from "../../v1/chat.definition";
-import { cartOptionsToReadable, DEEPSEEK_MODEL } from "@/src/lib/util/utils";
 import { deepSeek } from "@ai-sdk/deepseek";
-import { getWaitersAgentInstructions } from "./instructions";
-import { WaitersAgentResponse } from "./waiters-agent.definition";
-import { handleDefaultResponse } from "../handle-default-response";
-import { deleteUserCartApi } from "../../v1/util";
+import { generateText, isStepCount, ModelMessage } from "ai";
 import { cookies } from "next/headers";
-import { multipleItemsToBeDeletedResponse, removeCartResponse } from "../../v1/responses";
+
+import { ChatRequestStatus, ChatStreamOptionList, ChatStreamResponse } from "@/src/lib/route/chat/v1/chat.definition";
+import { cartOptionsToReadable, DEEPSEEK_MODEL } from "@/src/lib/util/utils";
+import { deleteUserCartApi } from "@/src/lib/route/chat/v1/util";
+import { multipleItemsToBeDeletedResponse, removeCartResponse } from "@/src/lib/route/chat/v1/responses";
 import { fetchUserCartIdByUseridAndCuisinename, writeToUserChatMain } from "@/src/lib/database/database";
 import { UserCartFeCartApi } from "@/src/lib/database/database.definition";
-import { getUserCart } from "../../v1/tools";
-import { AiAgentName } from "../customerservice-agent/cs-agent.definition";
-import { CustomerServiceAgent } from "../customerservice-agent/cs-agent";
-import { RhetoricianAgent } from "../rhetorician-agent/rhetorician-agent";
+import { getUserCart } from "@/src/lib/route/chat/v1/tools";
+import { AiAgentName } from "@/src/lib/route/chat/v2/customerservice-agent/cs-agent.definition";
+import { RhetoricianAgent } from "@/src/lib/route/chat/v2/rhetorician-agent/rhetorician-agent";
+import { getWaitersAgentInstructions } from "@/src/lib/route/chat/v2/waiters-agent/instructions";
+import { WaitersAgentResponse } from "@/src/lib/route/chat/v2/waiters-agent/waiters-agent.definition";
 
-export const WaitersAgent = async (userId: string, messages: ModelMessage[], previousAgents: AiAgentName[], send: (data: ChatStreamResponse) => void): Promise<CsAgentResponse> => {
+export const WaitersAgent = async (userId: string, messages: ModelMessage[], previousAgents: AiAgentName[], send: (data: ChatStreamResponse) => void) => {
     send({ status: ChatRequestStatus.WAITERS_AGENT_THINKING });
 
     const input = JSON.stringify({ messages });
