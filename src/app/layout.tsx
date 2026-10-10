@@ -27,7 +27,6 @@ export default async function AppLayout({
   children: React.ReactNode;
 }>) {
   const cookieData = await getCookieData();
-  console.log("dbg cookieData ", cookieData)
   const userId = cookieData.userId;
   const isChatPanelOpen = cookieData.isChatPanelOpen;
   const welcomeMessage = cookieData.welcomeMessage;
