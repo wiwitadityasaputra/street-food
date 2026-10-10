@@ -6,6 +6,8 @@ import { faCheck, faHeadset, faPaperPlane, faXmark } from "@fortawesome/free-sol
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "@/src/ui/menu/chat-panel/chat-panel.css";
+import ApiChatV1 from "@/src/ui/menu/chat-panel/v1-flow/ApiChatV1";
+import ApiChatV2 from "@/src/ui/menu/chat-panel/v2-flow/ApiChatV2";
 import { useAppContext } from "@/src/lib/util/app-contex";
 import { ChatMessage, ChatPanelProps } from "@/src/ui/menu/chat-panel/chat-panel.definition";
 import { useAppDispatch } from "@/src/lib/util/redux-provider";
@@ -202,7 +204,12 @@ export default function ChatPanel(props: ChatPanelProps) {
 
     return (
         <div className="start-chat">
-            {isChatPanelOpen && <div className="start-chat-flow-panel" />}
+            {isChatPanelOpen && (
+                <div className="start-chat-flow-panel">
+                    {chatVersion === "v1" && <ApiChatV1 />}
+                    {chatVersion === "v2" && <ApiChatV2 />}
+                </div>
+            )}
             {isChatPanelOpen && (
                 <section className="start-chat-panel" role="dialog" aria-label="Customer service chat">
                     <header className="start-chat-header">
