@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; 
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import "@xyflow/react/dist/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faUpwork } from "@fortawesome/free-brands-svg-icons";
 
