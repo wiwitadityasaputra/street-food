@@ -79,7 +79,7 @@
 .start-chat-flow-panel {
     position: fixed;
     z-index: 1099;
-    left: var(--start-chat-edge);
+    right: calc(var(--start-chat-edge) + var(--start-chat-panel-width) + 16px);
     bottom: calc(var(--start-chat-edge) + 72px);
     box-sizing: border-box;
     width: calc(100vw - var(--start-chat-panel-width) - 90px);
@@ -88,6 +88,14 @@
     border: 1px solid #eee5dc;
     border-radius: 18px;
     background: #fff;
+}
+
+.start-chat-flow-panel-v1 {
+    max-width: 400px;
+}
+
+.start-chat-flow-panel-v2 {
+    max-width: 200px;
 }
 
 .start-chat-flow-panel .start-chat-v1-flow {

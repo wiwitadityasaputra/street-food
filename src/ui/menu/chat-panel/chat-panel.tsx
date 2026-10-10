@@ -20,9 +20,7 @@ export default function ChatPanel(props: ChatPanelProps) {
     const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage, chatVersion, setChatVersion } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
-    const [edgeStyles, setEdgeStyles] = useState<Record<string, CSSProperties>>({
-        "user-to-cs": { strokeWidth: 0 }
-    });
+    const [edgeStyles, setEdgeStyles] = useState<Record<string, CSSProperties>>({});
     const [inputTextDisabled, setInputTextDisabled] = useState(false);
     const [chatInProgress, setChatInProgress] = useState(false);
     const [chatStreamOptions, setChatStreamOptions] = useState<undefined | ChatStreamOptionList[]>(undefined);
@@ -44,6 +42,8 @@ export default function ChatPanel(props: ChatPanelProps) {
     useEffect(() => {
         if (isChatPanelOpen && !inputTextDisabled) {
             messageInputRef.current?.focus();
+            resetV1Flow();
+            console.log("dbg resetv1Flow")
         }
     }, [isChatPanelOpen, inputTextDisabled]);
 
@@ -62,6 +62,7 @@ export default function ChatPanel(props: ChatPanelProps) {
     }
 
     async function changeChatVersion(nextChatVersion: "v1" | "v2") {
+        resetV1Flow();
         setChatVersionError(undefined);
         setChatVersionUpdating(true);
         try {
@@ -105,14 +106,10 @@ export default function ChatPanel(props: ChatPanelProps) {
         setInputTextDisabled(false);
     }
 
-    async function sendChatMessage(message: string) {
-        if (!message || chatInProgress) {
-            return;
-        }
-
+    function resetV1Flow () {
         setEdgeStyles((currentStyles) => ({
             ...currentStyles,
-            "user-to-cs": { strokeWidth: 5 },
+            "user-to-cs": { strokeWidth: 0 },
             "cs-to-gemini": { strokeWidth: 0 },
             "gemini-to-cs": { strokeWidth: 0 },
             "cs-to-llm": { strokeWidth: 0 },
@@ -126,6 +123,14 @@ export default function ChatPanel(props: ChatPanelProps) {
             "cs-to-food-suggest": { strokeWidth: 0 },
             "cs-to-aq": { strokeWidth: 0 },
         }));
+    }
+
+    async function sendChatMessage(message: string) {
+        if (!message || chatInProgress) {
+            return;
+        }
+
+        resetV1Flow();
         setMessages((currentMessages) => [...currentMessages, { role: "user", content: message }]);
         setChatStreamOptions(undefined);
         setChatOptionQuestion(undefined);
@@ -235,7 +240,7 @@ export default function ChatPanel(props: ChatPanelProps) {
     return (
         <div className="start-chat">
             {isChatPanelOpen && (
-                <div className="start-chat-flow-panel">
+                <div className={`start-chat-flow-panel start-chat-flow-panel-${chatVersion}`}>
                     {chatVersion === "v1" && <ApiChatV1 edgeStyles={edgeStyles} />}
                     {chatVersion === "v2" && <ApiChatV2 />}
                 </div>

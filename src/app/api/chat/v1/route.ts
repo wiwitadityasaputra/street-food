@@ -59,6 +59,7 @@ export async function POST(request: Request) {
             };
 
             // Step 1: Processing
+            send({ v1Flow: V1Flow.USER_TO_CS });
             send({ status: ChatRequestStatus.REVIEW });
             await writeToUserChatMain(userId, "user", "standard", message);
 
