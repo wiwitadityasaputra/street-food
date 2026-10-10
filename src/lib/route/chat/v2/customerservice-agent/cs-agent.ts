@@ -12,6 +12,7 @@ import { RhetoricianAgent } from "@/src/lib/route/chat/v2/rhetorician-agent/rhet
 import { CulinaryAdvisorAgent } from "@/src/lib/route/chat/v2/culinsaryadivsor-agent/ca-agent";
 import { handleDefaultResponse } from "@/src/lib/route/chat/v2/handle-default-response";
 import { DescribeTasksAgent } from "../describetasks-agent/dt-agent";
+import { WaitersAgent } from "../waiters-agent/waiters-agent";
 
 export const CustomerServiceAgent = async (userId: string, messages: ModelMessage[], previousAgents: AiAgentName[], send: (data: ChatStreamResponse) => void): Promise<CsAgentResponse> => {
     send({ status: ChatRequestStatus.CS_AGENT_REVIEW });
@@ -51,15 +52,18 @@ export const CustomerServiceAgent = async (userId: string, messages: ModelMessag
 
     console.log("CsAgent output ", output);
     const outputObj: CsAgentResponse = JSON.parse(output);
+    const messagesInput: ModelMessage[] = [{ content: outputObj.message, role: "user" }];
 
-    if (outputObj.agent === AiAgentName.DescribeTasksAgent) {
+    if (outputObj.agent === AiAgentName.WaitersAgent) {
+        await WaitersAgent(userId, messagesInput, previousAgents, send);
+    } else if (outputObj.agent === AiAgentName.CulinaryAdvisorAgent) {
+        await CulinaryAdvisorAgent(userId, messagesInput, previousAgents, send);
+    } else if (outputObj.agent === AiAgentName.DescribeTasksAgent) {
         await DescribeTasksAgent(userId, send);
     } else if (outputObj.agent === AiAgentName.NavigationAgent) {
-        await NavigationAgent(userId, [{ content: outputObj.message, role: "user" }], send);
+        await NavigationAgent(userId, messagesInput, send);
     } else if (outputObj.agent === AiAgentName.RhetoricianAgent) {
-        await RhetoricianAgent(userId, [{ content: outputObj.message, role: "user" }], send);
-    } else if (outputObj.agent === AiAgentName.CulinaryAdvisorAgent) {
-        await CulinaryAdvisorAgent(userId, [{ content: outputObj.message, role: "user" }], previousAgents, send);
+        await RhetoricianAgent(userId, messagesInput, send);
     } else {
         const data = await handleDefaultResponse(userId);
         send(data);

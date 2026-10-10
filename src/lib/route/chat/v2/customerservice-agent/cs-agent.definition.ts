@@ -3,7 +3,8 @@ export enum AiAgentName {
     DescribeTasksAgent = "DescribeTasksAgent",
     RhetoricianAgent = "RhetoricianAgent",
     NavigationAgent = "NavigationAgent",
-    CulinaryAdvisorAgent = "CulinaryAdvisorAgent"
+    CulinaryAdvisorAgent = "CulinaryAdvisorAgent",
+    WaitersAgent = "WaitersAgent"
 }
 
 export interface CsAgentResponse {
