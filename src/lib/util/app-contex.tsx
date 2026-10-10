@@ -12,6 +12,8 @@ export interface AppContextProps {
   setIsChatPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   chatVersion?: ChatVersion;
   setChatVersion: (chatVersion: ChatVersion) => Promise<void>;
+  delay: boolean;
+  setDelay: (delay: boolean) => Promise<void>;
 
   messages?: UserChatMainFe[];
   setMessages: React.Dispatch<React.SetStateAction<UserChatMainFe[]>>;
@@ -25,6 +27,28 @@ export interface AppProviderProps {
   welcomeMessage: string;
   children: React.ReactNode;
   chatVersion?: ChatVersion;
+  delay?: boolean;
+}
+
+async function postChatDelay(delay: boolean): Promise<boolean> {
+  const response = await fetch("/api/chat/delay", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ delay })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update chat delay: ${response.status}`);
+  }
+
+  const result: { delay?: boolean } = await response.json();
+  if (result.delay !== delay) {
+    throw new Error("The server did not confirm the requested chat delay");
+  }
+
+  return result.delay;
 }
 
 async function postChatVersion(chatVersion: ChatVersion): Promise<ChatVersion> {
@@ -55,6 +79,10 @@ const defaultAppContext: AppContextProps = {
   setChatVersion: async () => {
     throw new Error("Cannot change chat version outside of AppProvider");
   },
+  delay: false,
+  setDelay: async () => {
+    throw new Error("Cannot change chat delay outside of AppProvider");
+  },
   welcomeMessage: "",
   setIsChatPanelOpen: () => {},
 
@@ -70,6 +98,7 @@ export function AppProvider(props: AppProviderProps): React.ReactElement {
     chatVersionParam === "v1" || chatVersionParam === "v2" ? chatVersionParam : undefined;
   const chatVersionProps = chatVersionUpdate ?? props.chatVersion ?? "v2";
   const [chatVersion, setChatVersionState] = useState(chatVersionProps);
+  const [delay, setDelayState] = useState(props.delay ?? false);
 
   useEffect(() => {
     if (chatVersionUpdate) {
@@ -89,12 +118,19 @@ export function AppProvider(props: AppProviderProps): React.ReactElement {
     setChatVersionState(confirmedChatVersion);
   }
 
+  async function setDelay(nextDelay: boolean): Promise<void> {
+    const confirmedDelay = await postChatDelay(nextDelay);
+    setDelayState(confirmedDelay);
+  }
+
   const value: AppContextProps = {
     userId: props.userId,
     isChatPanelOpen,
     setIsChatPanelOpen,
     chatVersion,
     setChatVersion,
+    delay,
+    setDelay,
 
     messages,
     setMessages,

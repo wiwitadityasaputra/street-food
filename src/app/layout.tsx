@@ -87,6 +87,7 @@ export default async function AppLayout({
             isChatPanelOpen={isChatPanelOpen}
             welcomeMessage={welcomeMessage}
             chatVersion={chatVersion}
+            delay={cookieData.delay}
           >
             {children}
           </AppProvider>

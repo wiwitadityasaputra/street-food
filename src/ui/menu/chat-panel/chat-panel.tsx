@@ -17,7 +17,15 @@ import { chatReqStatusFormated, ChatRequestStatus, ChatStreamOptionList, ChatStr
 export default function ChatPanel(props: ChatPanelProps) {
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage, chatVersion, setChatVersion } = useAppContext();
+    const {
+        isChatPanelOpen,
+        setIsChatPanelOpen,
+        welcomeMessage,
+        chatVersion,
+        setChatVersion,
+        delay,
+        setDelay
+    } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
     const [edgeStyles, setEdgeStyles] = useState<Record<string, CSSProperties>>({});
@@ -27,6 +35,8 @@ export default function ChatPanel(props: ChatPanelProps) {
     const [chatOptionQuestion, setChatOptionQuestion] = useState<ChatMessage | undefined>(undefined);
     const [chatVersionError, setChatVersionError] = useState<string | undefined>(undefined);
     const [chatVersionUpdating, setChatVersionUpdating] = useState(false);
+    const [delayUpdating, setDelayUpdating] = useState(false);
+    const [delayError, setDelayError] = useState<string | undefined>(undefined);
 
     const [sendingStatus, setSendingStatus] = useState<string | undefined>(undefined);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -72,6 +82,19 @@ export default function ChatPanel(props: ChatPanelProps) {
             setChatVersionError("Unable to change chat version. Please try again.");
         } finally {
             setChatVersionUpdating(false);
+        }
+    }
+
+    async function changeChatDelay(nextDelay: boolean) {
+        setDelayError(undefined);
+        setDelayUpdating(true);
+        try {
+            await setDelay(nextDelay);
+        } catch (error) {
+            console.error("chat-panel - changeChatDelay - failed to update chat delay", error);
+            setDelayError("Unable to update delay. Please try again.");
+        } finally {
+            setDelayUpdating(false);
         }
     }
 
@@ -363,8 +386,14 @@ export default function ChatPanel(props: ChatPanelProps) {
                             id="start-chat-delay"
                             className="start-chat-delay-checkbox"
                             type="checkbox"
+                            checked={delay}
+                            disabled={delayUpdating}
+                            onChange={(event) => void changeChatDelay(event.target.checked)}
                         />
                     </div>
+                )}
+                {delayError && isChatPanelOpen && (
+                    <div className="start-chat-error" role="alert">{delayError}</div>
                 )}
                 {isChatPanelOpen && (
                     <div className="start-chat-version-group">
