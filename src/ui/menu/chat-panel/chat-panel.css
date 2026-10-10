@@ -82,7 +82,7 @@
     left: var(--start-chat-edge);
     bottom: calc(var(--start-chat-edge) + 72px);
     box-sizing: border-box;
-    width: calc(100vw - var(--start-chat-panel-width) - 74px);
+    width: calc(100vw - var(--start-chat-panel-width) - 90px);
     height: calc(var(--start-chat-panel-height) + 2px);
     min-height: 302px;
     border: 1px solid #eee5dc;
