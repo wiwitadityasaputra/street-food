@@ -21,7 +21,8 @@ export async function getCookieData(): Promise<CookieDataInterface> {
     }
     return {
         userId: faker.string.uuid(),
-        welcomeMessage: welcomeResponse()
+        welcomeMessage: welcomeResponse(),
+        chatVersion: "v2"
     };
 }
 

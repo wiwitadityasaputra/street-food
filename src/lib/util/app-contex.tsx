@@ -40,7 +40,7 @@ export const AppContext = createContext<AppContextProps>(defaultAppContext);
 
 export function AppProvider(props: AppProviderProps): React.ReactElement {
   const searchParams = useSearchParams();
-  let chatVersionProps: ChatVersion | undefined = props.chatVersion;
+  let chatVersionProps: ChatVersion | undefined = props.chatVersion ? props.chatVersion : "v2";
   const chatVersionParam = searchParams.get("chatVersion");
   let chatVersionUpdate = undefined;
   if (chatVersionParam && (chatVersionParam === "v1" || chatVersionParam === "v2")) {
