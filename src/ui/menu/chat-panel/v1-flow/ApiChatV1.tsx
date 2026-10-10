@@ -12,6 +12,7 @@ import {
     type Node,
     type NodeProps
 } from "@xyflow/react";
+import type { CSSProperties } from "react";
 import { AnimatedSVGEdge } from "./AnimatedSVGEdge";
 
 type CustomerServiceNodeData = { label: string };
@@ -228,15 +229,23 @@ const edgeTypes = {
   animatedSvg: AnimatedSVGEdge,
 };
 
-export default function ApiChatV1() {
+interface ApiChatV1Props {
+    edgeStyles: Record<string, CSSProperties>;
+}
+
+export default function ApiChatV1({ edgeStyles }: ApiChatV1Props) {
     const [nodes, , onNodesChange] = useNodesState(initialNodes);
     const [edges, , onEdgesChange] = useEdgesState(initialEdges);
+    const flowEdges = edges.map((edge) => ({
+        ...edge,
+        style: { ...edge.style, ...edgeStyles[edge.id] }
+    }));
 
     return (
         <ReactFlow
             className="start-chat-v1-flow"
             nodes={nodes}
-            edges={edges}
+            edges={flowEdges}
             nodeTypes={nodeTypes}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}

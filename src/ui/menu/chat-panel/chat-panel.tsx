@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type SubmitEvent } from "react";
 import { useRouter } from 'next/navigation';
 import { faCheck, faHeadset, faPaperPlane, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,6 +20,9 @@ export default function ChatPanel(props: ChatPanelProps) {
     const { isChatPanelOpen, setIsChatPanelOpen, welcomeMessage, chatVersion, setChatVersion } = useAppContext();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [messageDraft, setMessageDraft] = useState("");
+    const [edgeStyles, setEdgeStyles] = useState<Record<string, CSSProperties>>({
+        "user-to-cs": { strokeWidth: 0 }
+    });
     const [inputTextDisabled, setInputTextDisabled] = useState(false);
     const [chatInProgress, setChatInProgress] = useState(false);
     const [chatStreamOptions, setChatStreamOptions] = useState<undefined | ChatStreamOptionList[]>(undefined);
@@ -107,6 +110,21 @@ export default function ChatPanel(props: ChatPanelProps) {
             return;
         }
 
+        setEdgeStyles((currentStyles) => ({
+            ...currentStyles,
+            "user-to-cs": { strokeWidth: 5 },
+            "cs-to-gemini": { strokeWidth: 0 },
+            "gemini-to-cs": { strokeWidth: 0 },
+            "cs-to-llm": { strokeWidth: 0 },
+            "llm-to-cs": { strokeWidth: 0 },
+            "cs-to-cart-edit": { strokeWidth: 0 },
+            "cs-to-cart-add": { strokeWidth: 0 },
+            "cs-to-cart-delete": { strokeWidth: 0 },
+            "cs-to-page-nav": { strokeWidth: 0 },
+            "cs-to-describe-task": { strokeWidth: 0 },
+            "cs-to-food-suggest": { strokeWidth: 0 },
+            "cs-to-aq": { strokeWidth: 0 },
+        }));
         setMessages((currentMessages) => [...currentMessages, { role: "user", content: message }]);
         setChatStreamOptions(undefined);
         setChatOptionQuestion(undefined);
@@ -206,7 +224,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         <div className="start-chat">
             {isChatPanelOpen && (
                 <div className="start-chat-flow-panel">
-                    {chatVersion === "v1" && <ApiChatV1 />}
+                    {chatVersion === "v1" && <ApiChatV1 edgeStyles={edgeStyles} />}
                     {chatVersion === "v2" && <ApiChatV2 />}
                 </div>
             )}
