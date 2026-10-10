@@ -8,17 +8,21 @@ export const getCsAgentInstructions = (previousAgents: AiAgentName[]): string =>
       You may have previously executed the following agent: ${JSON.stringify(previousAgents)}
       Do not select an agent that has already executed.
       Base on the input you should able to categorize user input into one of the following categories
-      1. NavigationAgent (Moving between pages)
-         - you should not pick this categorize when previously executed contain 'NavigationAgent'
+      1. DescribeTasksAgent (Capability inquiry ai/chat-bot task)
+         - User asks what you can do
+         - What features do you have
+         - Requests a list of your capabilities
+      2. NavigationAgent (Moving between pages)
+         - You should not pick this categorize when previously executed contain 'NavigationAgent'
          - User want to navigate to other pages
          - User want to do checkout
          - User want to see more foods/product
-      2. CulinaryAdvisorAgent (Food/cuisine suggestion)
-         - you should not pick this categorize when previously executed contain 'CulinaryAdvisorAgent'
+      3. CulinaryAdvisorAgent (Food/cuisine suggestion)
+         - You should not pick this categorize when previously executed contain 'CulinaryAdvisorAgent'
          - User asking about food suggestion
          - User not sure about what he/she want to eat
-      3. RhetoricianAgent - (Fallback Classifier)
-         - you should not pick this categorize when previously executed contain 'RhetoricianAgent'
+      4. RhetoricianAgent - (Fallback Classifier)
+         - You should not pick this categorize when previously executed contain 'RhetoricianAgent'
          - You cannot categorize user input/message from previous categories
       do not try to answer the question, you are just to categorize user input
 
@@ -27,6 +31,7 @@ export const getCsAgentInstructions = (previousAgents: AiAgentName[]): string =>
       format output:
       {"agent": "*Agent*", message: *user-input*}
       examples:
+      - {"agent": "DescribeTasksAgent", message: *user-input*}
       - {"agent": "NavigationAgent", message: *user-input*}
       - {"agent": "CulinaryAdvisorAgent", message: *user-input*}
       - {"agent": "RhetoricianAgent", message: *user-input*}

@@ -18,7 +18,8 @@ import {
     unknownFoodDescriptionResponse,
     unknownFoodResponse,
     validFoodResponse,
-    welcomeResponse
+    welcomeResponse,
+    describeTaksResponse
 } from "@/src/lib/route/chat/v1/responses";
 import {
     deleteUserCartApi,
@@ -284,13 +285,7 @@ export const handleNavigation = async (userId: string, navigate: NavigateRespons
 }
 
 export const handleDescribeTask = async (userId: string, aiInput: string, aiOutput: string): Promise<ChatStreamResponse> => {
-    const responses = [
-        "Hi i able to do following task",
-        "1. Move between menu & cart page only.",
-        "2. Delete food from your cart.",
-        "3. Adding food to your cart.",
-        "4. Asking your random questions.",
-    ];
+    const responses = describeTaksResponse();
     for (const r of responses) {
         await writeToUserChatMain(userId, "assistant", "standard", r);
     }

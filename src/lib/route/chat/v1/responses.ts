@@ -159,3 +159,14 @@ export const multipleItemsToBeEditedResponse = (food: string) => {
     ];
     return list[Math.floor(Math.random() * list.length)];
 }
+
+export const describeTaksResponse = () => {
+    const responses = [
+        "Hi i able to do following task",
+        "1. Move between menu & cart page only.",
+        "2. Delete food from your cart.",
+        "3. Adding food to your cart.",
+        "4. Asking your random questions.",
+    ];
+    return responses;
+}

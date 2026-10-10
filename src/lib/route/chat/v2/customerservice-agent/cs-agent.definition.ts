@@ -1,5 +1,6 @@
 export enum AiAgentName {
     CustomerServiceAgent = "CustomerServiceAgent",
+    DescribeTasksAgent = "DescribeTasksAgent",
     RhetoricianAgent = "RhetoricianAgent",
     NavigationAgent = "NavigationAgent",
     CulinaryAdvisorAgent = "CulinaryAdvisorAgent"

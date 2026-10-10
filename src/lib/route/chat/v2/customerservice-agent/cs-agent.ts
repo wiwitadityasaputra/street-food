@@ -11,6 +11,7 @@ import { NavigationAgent } from "@/src/lib/route/chat/v2/navigation-agent/nav-ag
 import { RhetoricianAgent } from "@/src/lib/route/chat/v2/rhetorician-agent/rhetorician-agent";
 import { CulinaryAdvisorAgent } from "@/src/lib/route/chat/v2/culinsaryadivsor-agent/ca-agent";
 import { handleDefaultResponse } from "@/src/lib/route/chat/v2/handle-default-response";
+import { DescribeTasksAgent } from "../describetasks-agent/dt-agent";
 
 export const CustomerServiceAgent = async (userId: string, messages: ModelMessage[], previousAgents: AiAgentName[], send: (data: ChatStreamResponse) => void): Promise<CsAgentResponse> => {
     send({ status: ChatRequestStatus.CS_AGENT_REVIEW });
@@ -51,7 +52,9 @@ export const CustomerServiceAgent = async (userId: string, messages: ModelMessag
     console.log("CsAgent output ", output);
     const outputObj: CsAgentResponse = JSON.parse(output);
 
-    if (outputObj.agent === AiAgentName.NavigationAgent) {
+    if (outputObj.agent === AiAgentName.DescribeTasksAgent) {
+        await DescribeTasksAgent(userId, send);
+    } else if (outputObj.agent === AiAgentName.NavigationAgent) {
         await NavigationAgent(userId, [{ content: outputObj.message, role: "user" }], send);
     } else if (outputObj.agent === AiAgentName.RhetoricianAgent) {
         await RhetoricianAgent(userId, [{ content: outputObj.message, role: "user" }], send);
