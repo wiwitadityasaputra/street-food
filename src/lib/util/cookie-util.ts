@@ -8,6 +8,7 @@ export const COOKIES_KEY = "street-food-cookie";
 export interface CookieDataInterface {
     userId: string;
     isChatPanelOpen?: boolean;
+    delay?: boolean;
     welcomeMessage: string;
     chatVersion?: ChatVersion;
 }
@@ -22,7 +23,8 @@ export async function getCookieData(): Promise<CookieDataInterface> {
     return {
         userId: faker.string.uuid(),
         welcomeMessage: welcomeResponse(),
-        chatVersion: "v2"
+        chatVersion: "v2",
+        delay: false
     };
 }
 
@@ -34,6 +36,12 @@ export async function cookiesGetUserId(): Promise<string> {
 export async function cookiesSetChatPanel(isChatPanelOpen: boolean): Promise<void> {
     const cookieData = await getCookieData();
     cookieData.isChatPanelOpen = isChatPanelOpen;
+    (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
+}
+
+export async function cookiesSetChatDelay(delay: boolean): Promise<void> {
+    const cookieData = await getCookieData();
+    cookieData.delay = delay;
     (await cookies()).set(COOKIES_KEY, JSON.stringify(cookieData));
 }
 
